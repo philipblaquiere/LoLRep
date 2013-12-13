@@ -1,7 +1,7 @@
 <!-- Header -->
 <div class="page-header">
   <h1>Sign In</h1>
-  <h4>Sign in to see your upcoming games, stats, and more!</h4>
+  <h4>Sign in to see your upcoming games, stats, and more!.</h4>
 </div>
 <!-- Header -->
 
@@ -26,6 +26,13 @@
           <input type="checkbox"> Remember me
         </label>
       </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <label>
+        <h4><small>No account? Register <a href="<?php echo "index.php?/RegisterNew"?>">here</a></small></h4>
+      </label>
     </div>
   </div>
   <div class="form-group">

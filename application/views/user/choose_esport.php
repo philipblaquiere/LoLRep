@@ -30,4 +30,8 @@
   </a>
 </div>
 <!-- Select Game List -->
+
+<div >
+  <button class="btn btn-default">Not Now</button>  Fine, but you'll be redirected to a "limited" profile page.
+</div>
                          
