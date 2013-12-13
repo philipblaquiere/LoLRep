@@ -9,16 +9,11 @@ class MY_Controller extends CI_Controller  {
   public function __construct() {
     parent::__construct();
     session_start();
-    $this->load->library('database_layer');
+    //$this->load->library('database_layer');
     $this->load->helper('url');
     $this->load->helper('form');
     $this->load->helper('date');
-    $this->load->model('system_message_model');
-    $this->load->model('event_model');
-    $this->load->model('conference_model');
-    $this->load->model('user_roles_model');
-    $this->load->model('user_position_model');
-    $this->load->model('user_model');
+    //load all models
   }
 
   /**

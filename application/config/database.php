@@ -64,6 +64,6 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
-
+$config['database'] = $db;
 /* End of file database.php */
 /* Location: ./application/config/database.php */

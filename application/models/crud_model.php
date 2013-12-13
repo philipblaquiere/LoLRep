@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 class Crud_Model extends CI_Model {
   protected $table = '';
   protected $pkey = '';

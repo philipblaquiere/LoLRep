@@ -12,12 +12,11 @@ class User extends CI_Controller{
 	 * User Page for this controller.
 	 */
 	public function index(){
-    $this->login();
 	}
 
   public function register_lol() {
     $this->load->view('header');
-    $this->load->view('register/league_of_legends');
+    $this->load->view('user/register_lol');
     $this->load->view('footer');
   }
 
