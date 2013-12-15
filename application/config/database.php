@@ -49,9 +49,9 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = '';
-$db['default']['password'] = '';
-$db['default']['database'] = '';
+$db['default']['username'] = 'admin';
+$db['default']['password'] = 'admin';
+$db['default']['database'] = 'juicydb';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -63,7 +63,21 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
-
+$db['dev']['hostname'] = '';
+$db['dev']['username'] = '';
+$db['dev']['password'] = '';
+$db['dev']['database'] = '';
+$db['dev']['dbdriver'] = 'mysql';
+$db['dev']['dbprefix'] = '';
+$db['dev']['pconnect'] = TRUE;
+$db['dev']['db_debug'] = TRUE;
+$db['dev']['cache_on'] = FALSE;
+$db['dev']['cachedir'] = '';
+$db['dev']['char_set'] = 'utf8';
+$db['dev']['dbcollat'] = 'utf8_general_ci';
+$db['dev']['swap_pre'] = '';
+$db['dev']['autoinit'] = TRUE;
+$db['dev']['stricton'] = FALSE;
 $config['database'] = $db;
 /* End of file database.php */
 /* Location: ./application/config/database.php */
