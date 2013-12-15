@@ -5,15 +5,12 @@ class Home extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->load->model('user_model');
+		$this->load->model('system_message_model');
 	}
 
 	public function index()
 	{
-		$this->load->helper('url');
-
-		$this->load->view('include/header');
-		$this->load->view('include/navigation');
-		$this->load->view('home');
-		$this->load->view('include/footer');
+		$this->view_wrapper('home');
 	}
 }

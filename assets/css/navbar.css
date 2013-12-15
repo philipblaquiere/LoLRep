@@ -6,3 +6,12 @@ body {
 .navbar {
   margin-bottom: 20px;
 }
+
+.sign_in_mini {
+	padding: 15px;
+	padding-bottom: 0px;
+	width: 250px;
+}
+.sign_in_mini button{
+	width: 74px;
+}

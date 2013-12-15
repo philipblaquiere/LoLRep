@@ -1,6 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-require_once('crud_model.php');
-class User_Model extends Crud_Model {
+class User_Model extends CI_Model {
   /**
   *Table columns:
   *UserId int
@@ -22,6 +21,7 @@ class User_Model extends Crud_Model {
 
   public function __construct() {
     parent::__construct();
+    $this->db1 = $this->load->database('default', TRUE);
   }
 
   /**
@@ -47,14 +47,25 @@ class User_Model extends Crud_Model {
     return $salt;
   }
 
+  public function generate_user_validation_key()
+  { 
+    $max_key_length = 16;
+    $domain = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+    $index_limit = strlen($domain) - 1;
+
+    $key = '';
+    for ($i = 0; $i < $max_key_length; $i++) {
+      $key .= $domain[rand(0, $index_limit)];
+    }
+    return $key;
+  }
   /**
    * Authenticate user's login credentials
    */
-  public function get_by_email($email) {
-    $sql = "SELECT * FROM {$this->table} WHERE email = :email";
-    $bindings = array(':email' => $email);
-    $result = $this->database_layer->query($sql, $bindings);
-    return $result->fetchObject();
+  public function get_uid_by_email($email) {
+    $sql = "SELECT UserId FROM {$this->table} WHERE email = '$email' LIMIT 1";
+    $query = $this->db1->query($sql);
+    return $query->result_array();
   }
 
   public function validate_password($email, $password) {
@@ -62,14 +73,27 @@ class User_Model extends Crud_Model {
     return $user->password === $this->_password_hash($password, $user->salt);
   }
 
-  public function save($user){
-    unset($user->register_time);
-    return parent::save($user);
+  public function create($user){
+    $password = $user->password;
+    $salt = $user->salt;
+    $email = $user->email;
+    $fname = $user->fname;
+    $lname = $user->lname;
+    $regionid = $user->regionid;
+    $provincestateid = $user->provincestateid;
+    $countryid = $user->countryid;
+    $sql = "INSERT INTO users (password, salt, email, firstname, lastname, regionid, provincestateid, countryid) 
+        VALUES ('" . $password . "', '" . $salt . "', '" . $email . "', '" . $fname . "', '" . $lname . "', '" . $regionid . "', '" . $provincestateid . "', '" . $countryid . "')";
+    $query = $this->db1->query($sql);
+    $newuser = $this->get_uid_by_email($email);
+    return $newuser['UserId'];
   }
+
 
   public function log_login($uid){
     $sql = "UPDATE {$this->table} SET last_login_time = current_timestamp WHERE {$this->pkey} = :uid";
     $bindings = array(':uid' => $uid);
     $result = $this->database_layer->query($sql, $bindings);
   }
+
 }

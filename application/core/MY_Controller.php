@@ -29,13 +29,6 @@ class MY_Controller extends CI_Controller  {
     $data['is_admin_user'] = $this->is_admin_user();
     $this->load->view('include/header', $data);
 
-    $data['conferences'] = $this->conference_model->get_all();
-    $data['current_conference'] = array();
-    $data['current_events'] = array();
-    if ($current_conference = $this->get_current_conference()) {
-      $data['current_conference'] = $this->conference_model->get($current_conference);
-      $data['current_events'] = $this->event_model->get_by_conference($current_conference);
-    }
     if ($data['is_logged_in']){
       $data['user'] = $this->user_model->get($this->get_current_user());
     }
@@ -78,17 +71,8 @@ class MY_Controller extends CI_Controller  {
     $_SESSION['uid'] = $uid;
   }
 
-  protected function set_current_conference($cid) {
-    $_SESSION['cid'] = $cid;
-  }
-
-  protected function get_current_conference() {
-    return isset($_SESSION['cid']) ? $_SESSION['cid'] : 0;
-  }
-
   protected function destroy_session() {
     unset($_SESSION['uid']);
-    unset($_SESSION['cid']);
     unset($_SESSION['last_login_time']);
   }
 
@@ -99,7 +83,7 @@ class MY_Controller extends CI_Controller  {
   protected function require_login() {
     if (!$this->is_logged_in()) {
       $this->system_message_model->set_message('Please login to access this page.', MESSAGE_WARNING);
-      redirect('user/login', 'location');
+      redirect('user/sign_in', 'location');
       die();
     }
   }
@@ -125,37 +109,4 @@ class MY_Controller extends CI_Controller  {
       $this->destroy_session();
     }
   }
-
-  /**
-   * Verifies the user is admin OR a member of the program chair.
-   */
-  protected function is_program_chair($eid) {
-    if ($uid = $this->get_current_user()) {
-      return $this->is_admin_user() || in_array(2, $this->user_position_model->get_roles($eid, $uid)); // Program Chair
-    }
-    return FALSE;
-  }
-
-  protected function require_program_chair($eid) {
-    if (!$this->is_program_committee($eid)) {
-      show_error('Access denied: you must be logged in as a program chair to view this content.', 403);
-    }
-  }
-
-  /**
-   * Verifies the user is admin OR program chair OR a member of the program committee.
-   */
-  protected function is_program_committee($eid) {
-    if ($uid = $this->get_current_user()) {
-      return $this->is_program_chair($eid) || in_array(3, $this->user_position_model->get_roles($eid, $uid)); // Program Chair
-    }
-    return FALSE;
-  }
-
-  protected function require_program_committee($eid) {
-    if (!$this->is_program_committee($eid)) {
-      show_error('Access denied: you must be logged in as a program committee member to view this content.', 403);
-    }
-  }
-
 }

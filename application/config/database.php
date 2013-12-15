@@ -78,6 +78,11 @@ $db['dev']['dbcollat'] = 'utf8_general_ci';
 $db['dev']['swap_pre'] = '';
 $db['dev']['autoinit'] = TRUE;
 $db['dev']['stricton'] = FALSE;
+
+# Custom database layer info - config structure compatible with default layer
+# Load with $this->config->load('database');
+# Fetch with $this->config->item('database');
+
 $config['database'] = $db;
 /* End of file database.php */
 /* Location: ./application/config/database.php */

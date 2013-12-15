@@ -67,6 +67,18 @@ $autoload['libraries'] = array();
 $autoload['helper'] = array();
 
 
+
+/*
+| -------------------------------------------------------------------
+|  Auto-load Database
+| -------------------------------------------------------------------
+| Prototype:
+|
+|	$autoload['database'] = array('url', 'file');
+*/
+$autoload['database'] = array();
+
+
 /*
 | -------------------------------------------------------------------
 |  Auto-load Config files

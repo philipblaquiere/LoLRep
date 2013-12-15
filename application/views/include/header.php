@@ -18,8 +18,8 @@
 
 
   <link href="<?php echo base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" />
-  <link href="<?php echo base_url('assets/css/marketingcss') ?>" rel="stylesheet" />
-  <link href="<?php echo base_url('assets/css/navbarcss') ?>" rel="stylesheet" />
+  <link href="<?php echo base_url('assets/css/marketing.css') ?>" rel="stylesheet" />
+  <link href="<?php echo base_url('assets/css/navbar.css') ?>" rel="stylesheet" />
 
 </head>
 
