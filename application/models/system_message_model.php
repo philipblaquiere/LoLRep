@@ -8,10 +8,10 @@
  * use with controllers like MY_SessionController which load the PHP session
  * upon construction.
  */
-
-define('MESSAGE_NOTICE', 'notice');
-define('MESSAGE_WARNING', 'warning');
-define('MESSAGE_ERROR', 'error');
+define('MESSAGE_SUCCESS', 'alert-success');
+define('MESSAGE_INFO', 'alert-info');
+define('MESSAGE_WARNING', 'alert-warning');
+define('MESSAGE_ERROR', 'alert-danger');
 
 class System_Message_Model extends CI_Model {
   public function __construct() {
@@ -27,10 +27,10 @@ class System_Message_Model extends CI_Model {
    * @param $message
    *   The message to be displayed to the user.
    * @param $level
-   *   The severity level of the message, possible values are MESSAGE_NOTICE,
+   *   The severity level of the message, possible values are MESSAGE_INFO,
    *   MESSAGE_WARNING or MESSAGE_ERROR.
    */
-  public function set_message($message, $level = MESSAGE_NOTICE) {
+  public function set_message($message, $level = MESSAGE_INFO) {
     $_SESSION['system_messages'][$level][] = $message;
   }
 

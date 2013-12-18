@@ -6,17 +6,17 @@
 <!-- Header -->
 
 <!-- Sign In Content -->
-<form class="form-horizontal" role="form">
+<?php echo form_open('user/sign_in', array('class' => 'form-horizontal', 'id' => 'signinform')); ?>
   <div class="form-group">
-    <label for="inputEmail1" class="col-sm-2 control-label">Email</label>
+    <?php echo form_label('Email', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <input type="email" class="form-control" id="inputEmail1" placeholder="Email">
+      <?php echo form_input(array('name' => 'email', 'class' => 'form-control', 'placeholder' => 'Email')); ?>
     </div>
   </div>
   <div class="form-group">
-    <label for="inputPassword1" class="col-sm-2 control-label">Password</label>
+    <?php echo form_label('Password', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <input type="password" class="form-control" id="inputPassword1" placeholder="Password">
+       <?php echo form_password(array('name' => 'password', 'class' => 'form-control', 'placeholder' => 'Password')); ?>
     </div>
   </div>
   <div class="form-group">
@@ -37,8 +37,8 @@
   </div>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Sign In</button>
+      <?php echo form_submit('submit', 'Sign In', "class='btn btn-default'"); ?>
     </div>
   </div>
-</form>
+<?php echo form_close(); ?>
 <!-- Sign In Content -->

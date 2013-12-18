@@ -26,11 +26,12 @@ class MY_Controller extends CI_Controller  {
       $data['system_messages'] = $this->system_message_model->get_messages();
     }
     $data['is_logged_in'] = $this->is_logged_in();
-    $data['is_admin_user'] = $this->is_admin_user();
+    //$data['is_admin_user'] = $this->is_admin_user();
     $this->load->view('include/header', $data);
 
-    if ($data['is_logged_in']){
-      $data['user'] = $this->user_model->get($this->get_current_user());
+    if (!isset($_SESSION['user']) && $data['is_logged_in']){
+      $this->set_current_user($data['is_logged_in']);
+      $data['user'] = $_SESSION['user'];
     }
 
     $this->load->view('include/navigation', $data);
@@ -61,7 +62,7 @@ class MY_Controller extends CI_Controller  {
   }
 
   /**
-   * Convinience function to get the student ID of the currently logged in user.
+   * Convinience function to get the ID of the currently logged in user.
    */
   protected function get_current_user() {
     return isset($_SESSION['uid']) ? $_SESSION['uid'] : 0;
@@ -69,10 +70,12 @@ class MY_Controller extends CI_Controller  {
 
   protected function set_current_user($uid) {
     $_SESSION['uid'] = $uid;
+    $_SESSION['user'] = $this->user_model->get_by_uid($uid);
   }
 
   protected function destroy_session() {
     unset($_SESSION['uid']);
+    unset($_SESSION['user']);
     unset($_SESSION['last_login_time']);
   }
 

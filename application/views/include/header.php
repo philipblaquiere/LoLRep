@@ -8,7 +8,7 @@
   <meta name="author" content="">
   <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
-  <title>LoLRep</title>
+  <title>Juicy</title>
 
   <!-- Bootstrap core CSS -->
   <!--  <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -20,6 +20,7 @@
   <link href="<?php echo base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/marketing.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/navbar.css') ?>" rel="stylesheet" />
+  <link href="<?php echo base_url('assets/css/custom.css') ?>" rel="stylesheet" />
 
 </head>
 

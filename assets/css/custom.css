@@ -1,0 +1,64 @@
+/**
+ * All your custom CSS should go into this file
+ */
+
+body {
+   padding-top: 15px;
+}
+
+#system-messages {
+  background-color: #fff;
+}
+#system-messages ul {
+  padding: 0px;
+}
+#system-messages li {
+  display: block;
+  list-style: none;
+  padding: 0.5em;
+}
+#system-messages .error {
+  border: 1px solid #ff0000;
+  background: rgba(255,0,0,0.3);
+}
+#system-messages .warning {
+  border: 1px solid #ffff00;
+  background: rgba(255,255,0,0.4);
+}
+#system-messages .notice {
+  border: 1px solid #00ff00;
+  background: rgba(0,255,0,0.2);
+}
+
+#splash_image{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 10px;
+}
+
+#splash_message{
+  text-align: center;
+}
+
+.search .glyphicon {
+  top: 0px;
+}
+
+.footer {
+  margin: 7em 0 1em 0;
+  padding: 1em 0 1em 0;
+  border-top: 1px solid #ccc;
+  text-align: center;
+}
+
+.user-autocomplete.form-inline .search-username {
+  width: 200px;
+}
+.user-autocomplete.form-inline .display-username {
+  width: 320px;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}

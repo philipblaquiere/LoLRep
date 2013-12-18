@@ -47,7 +47,7 @@ class User_Model extends CI_Model {
     return $salt;
   }
 
-  public function generate_user_validation_key()
+  public function _generate_user_validation_key()
   { 
     $max_key_length = 16;
     $domain = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
@@ -59,20 +59,33 @@ class User_Model extends CI_Model {
     }
     return $key;
   }
-  /**
-   * Authenticate user's login credentials
-   */
+
+  public function get_by_uid($uid)
+  {
+    $sql = "SELECT * FROM {$this->table} WHERE UserId = '$uid' LIMIT 1";
+    $result = $this->db1->query($sql);
+    return $result->row_array();
+  }
+  public function get_by_email($email) {
+    $sql = "SELECT * FROM {$this->table} WHERE email = '$email' LIMIT 1";
+    $result = $this->db1->query($sql);
+    return $result->row_array();
+  }
   public function get_uid_by_email($email) {
     $sql = "SELECT UserId FROM {$this->table} WHERE email = '$email' LIMIT 1";
     $query = $this->db1->query($sql);
-    return $query->result_array();
+    return $query->row_array();
   }
 
-  public function validate_password($email, $password) {
-    $user = $this->get_by_email($email);
-    return $user->password === $this->_password_hash($password, $user->salt);
+  public function validate_password($user,$password) {
+    if(!$password || !$user['email'])
+      return false;
+    return $user['password'] === $this->_password_hash($password, $user['salt']);
   }
 
+  /*
+  * Returns key to be appended to url in email for user account validation
+  */
   public function create($user){
     $password = $user->password;
     $salt = $user->salt;
@@ -83,17 +96,48 @@ class User_Model extends CI_Model {
     $provincestateid = $user->provincestateid;
     $countryid = $user->countryid;
     $sql = "INSERT INTO users (password, salt, email, firstname, lastname, regionid, provincestateid, countryid) 
-        VALUES ('" . $password . "', '" . $salt . "', '" . $email . "', '" . $fname . "', '" . $lname . "', '" . $regionid . "', '" . $provincestateid . "', '" . $countryid . "')";
+            VALUES ('" . $password . "', '" . $salt . "', '" . $email . "', '" . $fname . "', '" . $lname . "', '" . $regionid . "', '" . $provincestateid . "', '" . $countryid . "')";
     $query = $this->db1->query($sql);
-    $newuser = $this->get_uid_by_email($email);
-    return $newuser['UserId'];
+    $newuser = array();
+    $uid = $this->get_uid_by_email($email);
+    $newuser['uid'] = $uid['UserId'];
+    $newuser['email'] = $email;
+    $newuser['key'] =  $this->_pend_valdiation($newuser);
+    
+    return $newuser;
   }
 
+  public function validate_user($key, $uid) {
+    $sql = "SELECT * FROM pendingaccounts WHERE uid = '$uid' and validationkey = '$key' LIMIT 1";
+    $query = $this->db1->query($sql);
+    if($query==true)
+    {
+      //user is validated, update user in table 'users'
+      $sql ="UPDATE users SET validated = 1 WHERE UserId = '$uid'";
+      $this->db1->query($sql);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /*
+  * Creats a validation key for user and adds it to pending accounts.
+  */
+  public function _pend_valdiation($newuser) {
+    $key = $this->_generate_user_validation_key();
+    $sql = "INSERT INTO pendingaccounts (uid, email, validationkey) 
+            VALUES ('". $newuser['uid'] ."', '". $newuser['email'] ."', '". $key ."')";
+    $this->db1->query($sql);
+    return $key;
+  }
 
   public function log_login($uid){
-    $sql = "UPDATE {$this->table} SET last_login_time = current_timestamp WHERE {$this->pkey} = :uid";
-    $bindings = array(':uid' => $uid);
-    $result = $this->database_layer->query($sql, $bindings);
+    $sql = "UPDATE {$this->table} SET last_login_time = current_timestamp WHERE UserId = '$uid'";
+    $result = $this->db1->query($sql);
   }
+
 
 }
