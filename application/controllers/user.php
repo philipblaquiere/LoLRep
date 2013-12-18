@@ -69,9 +69,9 @@ class User extends MY_Controller{
     $this->load->helper(array('form', 'url'));
     $this->load->library('form_validation');
 
-    $this->form_validation->set_rules('fname', 'First Name', 'required');
-    $this->form_validation->set_rules('lname', 'Last Name', 'required');
-    $this->form_validation->set_rules('email', 'Email', 'required');
+    $this->form_validation->set_rules('fname', 'First Name', 'trim|required|xss_clean');
+    $this->form_validation->set_rules('lname', 'Last Name', 'trim|required|xss_clean');
+    $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
     $this->form_validation->set_rules('password1', 'Password1', 'required');
     $this->form_validation->set_rules('password2', 'Password2', 'required');
     $this->form_validation->set_rules('countryid', 'Country', 'required');
