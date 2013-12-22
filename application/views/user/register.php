@@ -8,18 +8,21 @@
 <!-- Register Content -->
 <?php echo form_open('user/registration_submit', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
   <div class="form-group">
+    <?php echo form_error('fname'); ?>
     <?php echo form_label('First Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <?php echo form_input(array('name' => 'fname', 'class' => 'form-control', 'placeholder' => 'First name')); ?>
     </div>
   </div>
   <div class="form-group">
+    <?php echo form_error('lname'); ?>
     <?php echo form_label('Last Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <?php echo form_input(array('name' => 'lname', 'class' => 'form-control', 'placeholder' => 'Last name')); ?>
     </div>
   </div>
   <div class="form-group">
+    <?php echo form_error('email'); ?>
     <?php echo form_label('Email', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <?php echo form_input(array('name' => 'email', 'class' => 'form-control', 'placeholder' => 'Email (also your username)')); ?>
@@ -47,6 +50,7 @@
     </div>
   </div>
   <div class="form-group">
+    <?php echo form_error('provincestateid'); ?>
     <?php echo form_label('Province/State', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <select class="form-control" name="provincestateid">
@@ -70,5 +74,4 @@
     </div>
   </div>
   <?php echo form_close(); ?>
-</form>
 <!-- Register Content -->
