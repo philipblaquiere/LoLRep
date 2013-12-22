@@ -12,8 +12,18 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Link</a></li>
-          <li><a href="<?php echo "index.php?/select_esport"?>">Select ESport</a></li>
+          <?php if ($is_logged_in): ?>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['firstname']?><b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="<?php echo site_url('user/select_esport')?>">Add ESport</a></li>
+                  <li><a href="#">My Profile</a></li>
+                  <li><a href="#">My Teams</a></li>
+                  <li><a href="#">My ESports</a></li>
+                </ul>
+            </li>
+            <li class="active"><a href="#">Link</a></li>
+          <?php else: ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<b class="caret"></b></a>
             <ul class="dropdown-menu">
@@ -26,6 +36,7 @@
               <li><a href="#">One more separated link</a></li>
             </ul>
           </li>
+          <?php endif; ?>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li class="divider-vertical"></li>

@@ -139,5 +139,12 @@ class User_Model extends CI_Model {
     $result = $this->db1->query($sql);
   }
 
+  public function registered_summoner($summonername) {
+    $sql = "SELECT SummonerName FROM summoners WHERE SummonerName = '$summonername' LIMIT 1";
+    $result = $this->db1->query($sql);
+    return $result->row_array();
+
+  }
+
 
 }

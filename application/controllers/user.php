@@ -10,6 +10,7 @@ class User extends MY_Controller{
     $this->load->model('system_message_model');
     $this->load->model('country_model');
     $this->load->model('ip_log_model');
+    $this->load->model('esport_model');
   }
 
   public function home()
@@ -50,7 +51,7 @@ class User extends MY_Controller{
   }
 
   public function registration_submit() {
-    //$this->require_not_login();
+    $this->require_not_login();
 
     $ip = $this->input->ip_address();
 
@@ -86,7 +87,11 @@ class User extends MY_Controller{
       $this->system_message_model->set_message('Passwords do not match. Please try again.', MESSAGE_ERROR);
       redirect('user/register', 'location');
     }
-
+    elseif($this->user_model->get_by_email($user->email))
+    {
+      $this->system_message_model->set_message('That email is already registered with our website, choose another one.', MESSAGE_ERROR);
+      redirect('user/register', 'location');
+    }
     /*elseif($this->user_model->get_by_email($user->email) != FALSE){
       $this->system_message_model->set_message('Registration failed. Email address is already registered. Please choose another address.', MESSAGE_ERROR);
       redirect('user/register', 'location');
@@ -122,13 +127,11 @@ class User extends MY_Controller{
       redirect('user/pending_validation', 'location');
     }
   }
-  public function pending_validation()
-  {
+  public function pending_validation() {
      $this->view_wrapper('user/pending_validation');
   }
 
-  public function validate_user($key, $uid)
-  {
+  public function validate_user($key, $uid) {
     if($this->user_model->validate_user($key, $uid))
     {
       //user validation succeeded, proceed with asking user to sign in to continue
@@ -141,8 +144,7 @@ class User extends MY_Controller{
     }
   }
 
-  public function sign_in()
-  {
+  public function sign_in() {
     $this->require_not_login();
 
     //get sign in form data
@@ -195,6 +197,52 @@ class User extends MY_Controller{
     $this->system_message_model->set_message('Sign out successful', MESSAGE_INFO);
     redirect('home', 'location');
   }
+
+  public function select_esport() {
+    $this->require_login();
+    $esports = $this->esport_model->get_all_esports();
+    $data['esports'] = $esports;
+    $this->view_wrapper('user/select_esport',$data);
+  }
+  public function register_LoL() {
+    $this->require_login();
+    $this->view_wrapper('user/register_LoL');
+  }
+
+  public function authenticate_summoner() {
+    $summonerinput = $this->input->post('summonername');
+
+    if(!summonerinput) {
+      //user didn't enter anything, show eror message and reload.
+      $this->system_message_model->set_message('You must enter a summoner name to validate.', MESSAGE_ERROR);
+      redirect('user/register_LoL', 'location');
+    }
+    else {
+      //check if summoner exists already
+      $summoner = $this->user_model->registered_summoner($summonerinput);
+
+      $this->load->helper(array('form', 'url'));
+      $this->load->library('form_validation');
+
+      $this->form_validation->set_rules('summonername', 'Summoner Name', 'trim|required|xss_clean');
+      if(!$summoner) {
+        //summoner doesn't exist in db yet. Continue verification
+        if(!$_SESSION['runepagekey'])
+          $_SESSION['runepagekey'] = $this->generate_summoner_runepage_key();
+
+      }
+      else {
+        //summoner already existing return error
+      }
+    }
+    
+  }
+  public function generate_summoner_runepage_key() {
+    return $this->user_model->_generate_user_validation_key();
+  }
+  public function summoner_registration_submit() {
+    //todo
+  }
 /*
   
 
@@ -223,9 +271,6 @@ class User extends MY_Controller{
   }
 
   public function password_retrieval_submit() {
-
-  }
-  public function register_lol() {
 
   }*/
 }
