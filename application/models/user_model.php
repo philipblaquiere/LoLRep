@@ -47,6 +47,18 @@ class User_Model extends CI_Model {
     return $salt;
   }
 
+  public function generate_rune_page_key()
+  {
+    $max_key_length = 8;
+    $domain = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjklmnpqrstuvwxyz123456789';
+    $index_limit = strlen($domain) - 1;
+
+    $key = '';
+    for ($i = 0; $i < $max_key_length; $i++) {
+      $key .= $domain[rand(0, $index_limit)];
+    }
+    return $key;
+  }
   public function _generate_user_validation_key()
   { 
     $max_key_length = 16;
@@ -139,12 +151,6 @@ class User_Model extends CI_Model {
     $result = $this->db1->query($sql);
   }
 
-  public function registered_summoner($summonername) {
-    $sql = "SELECT SummonerName FROM summoners WHERE SummonerName = '$summonername' LIMIT 1";
-    $result = $this->db1->query($sql);
-    return $result->row_array();
-
-  }
 
 
 }

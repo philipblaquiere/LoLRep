@@ -209,37 +209,8 @@ class User extends MY_Controller{
     $this->view_wrapper('user/register_LoL');
   }
 
-  public function authenticate_summoner() {
-    $summonerinput = $this->input->post('summonername');
-
-    if(!summonerinput) {
-      //user didn't enter anything, show eror message and reload.
-      $this->system_message_model->set_message('You must enter a summoner name to validate.', MESSAGE_ERROR);
-      redirect('user/register_LoL', 'location');
-    }
-    else {
-      //check if summoner exists already
-      $summoner = $this->user_model->registered_summoner($summonerinput);
-
-      $this->load->helper(array('form', 'url'));
-      $this->load->library('form_validation');
-
-      $this->form_validation->set_rules('summonername', 'Summoner Name', 'trim|required|xss_clean');
-      if(!$summoner) {
-        //summoner doesn't exist in db yet. Continue verification
-        if(!$_SESSION['runepagekey'])
-          $_SESSION['runepagekey'] = $this->generate_summoner_runepage_key();
-
-      }
-      else {
-        //summoner already existing return error
-      }
-    }
-    
-  }
-  public function generate_summoner_runepage_key() {
-    return $this->user_model->_generate_user_validation_key();
-  }
+  
+  
   public function summoner_registration_submit() {
     //todo
   }

@@ -62,3 +62,7 @@ body {
 .table > tbody > tr > td {
   vertical-align: middle;
 }
+
+.padded_10 {
+  padding: 10px;
+}
