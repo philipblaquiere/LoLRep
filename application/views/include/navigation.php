@@ -18,7 +18,8 @@
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo site_url('user/select_esport')?>">Add ESport</a></li>
                   <li><a href="#">My Profile</a></li>
-                  <li><a href="#">My Teams</a></li>
+                  <li><a href="<?php echo site_url('user/create_team')?>">Create Teams</a></li>
+                  <li><a href="<?php echo site_url('user/teams')?>">My Teams</a></li>
                   <li><a href="#">My ESports</a></li>
                 </ul>
             </li>

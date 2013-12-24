@@ -1,0 +1,1 @@
+<span class="label label-danger"><?php echo $errormessage ?></span>

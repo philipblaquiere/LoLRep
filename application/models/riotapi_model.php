@@ -5,7 +5,7 @@ class Riotapi_model extends CI_Model  {
 	const API_URL_1_1 = 'http://prod.api.pvp.net/api/lol/{region}/v1.1/';
 	const API_URL_1_2 = 'http://prod.api.pvp.net/api/lol/{region}/v1.2/';
 	const API_URL_2_1 = 'http://prod.api.pvp.net/api/lol/{region}/v2.2/';
-	const API_KEY = 'API_KEY_HERE';
+	const API_KEY = 'ee9af537-a4f1-4a7a-9e7c-7ca19e4aa7a3';
 	const RATE_LIMIT_MINUTES = 500;
 	const RATE_LIMIT_SECONDS = 10;
 	const CACHE_LIFETIME_MINUTES = 60;
@@ -13,8 +13,7 @@ class Riotapi_model extends CI_Model  {
 	private $REGION;
 	
 	public function __construct()
-	{
-		$this->REGION = "na";		
+	{		
 	}
 
 	public function getChampion(){
@@ -55,6 +54,7 @@ class Riotapi_model extends CI_Model  {
 
 	public function getSummoner($id,$option=null){
 		$call = 'summoner/' . $id;
+		$this->REGION = 'na';
 		switch ($option) {
 			case 'masteries':
 				$call .= '/masteries';
@@ -78,8 +78,8 @@ class Riotapi_model extends CI_Model  {
 	}
 
 
-	public function getSummonerByName($name){
-
+	public function getSummonerByName($region, $name){
+		$this->REGION = 'na';
 
 		//sanitize name a bit - this will break weird characters
 		$name = preg_replace("/[^a-zA-Z0-9 ]+/", "", $name);
@@ -108,48 +108,23 @@ class Riotapi_model extends CI_Model  {
 
 		//format the full URL
 		$url = $this->format_url($call);
-
-		//caching
-		if(self::CACHE_ENABLED){
-			$cacheFile = 'cache/' . md5($url);
-
-		    if (file_exists($cacheFile)) {
-		        $fh = fopen($cacheFile, 'r');
-		        $cacheTime = trim(fgets($fh));
-
-		        // if data was cached recently, return cached data
-		        if ($cacheTime > strtotime('-'. CACHE_LIFETIME_MINUTES . ' minutes')) {
-		            return fread($fh,filesize($cacheFile));
-		        }
-
-		        // else delete cache file
-		        fclose($fh);
-		        unlink($cacheFile);
-		    }
-		}
-
+		$result=array();
 		//call the API and return the result
-		$ch = curl_init();
+		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$result = curl_exec($ch);
 		curl_close($ch);
-		
-		if(self::CACHE_ENABLED){
-			//create cache file
-		    $fh = fopen($cacheFile, 'w');
-		    fwrite($fh, time() . "\n");
-		    fwrite($fh, $result);
-		    fclose($fh);
-		}
+		$values = json_decode($result,TRUE);
 
-		return $result;	
+		return $values;	
 
 	}
 
 	//creates a full URL you can query on the API
-	private function format_url($call){
+	private function format_url($call) {
 		return str_replace('{region}', $this->REGION, $call) . '?api_key=' . self::API_KEY;
 	}
+
 }
 
 

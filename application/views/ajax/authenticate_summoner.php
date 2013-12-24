@@ -9,18 +9,18 @@
   <li>Select your first Rune Page</li>
   <li>Temporarily rename it by copy pasting the code below (rename by selecting the current name)</li>
   <li>Press save to lock in your changes</li>
-  <li>Come back here and click "Verify Account"</li>
+  <li>Wait 5-10 seconds and click "Check Rune Page"</li>
+  <li>Click "Register" to complete</li>
 </ol>
 <h3> Verification Code :</h3>
-<?php echo form_open('user/summoner_registration_submit', array('class' => 'form-horizontal padded_10', 'id' => 'summoner_registration_submit')); ?>
-  <div class="form-group">
-    <div class="col-sm-12 well text-center ">
-        <h2><strong><?php echo $runepagekey ?></strong></h2>
-    </div>
+
+<div class="col-sm-12 well text-center">
+    <h2><strong><?php echo $runepagekey ?></strong></h2>
+</div>
+<div class="col-sm-offset-2 col-sm-10">
+  <?php echo form_open('',array('class' => 'form-horizontal padded_10', 'id' => 'rune_page_verification')); ?>
+    <input type="submit" name="submit" value="Check Rune Page" id="rune_page_verification_button" class="btn btn-default pull-right">
+  </form>
+  <div class="pull-right padded_10" id="rune_page_verification_result">
   </div>
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <?php echo form_submit('submit', 'Verify Account', "class='btn btn-default pull-right'"); ?>
-    </div>
-  </div>
-<?php echo form_close(); ?>
+</div>

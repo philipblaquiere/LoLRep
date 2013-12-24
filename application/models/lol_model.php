@@ -39,20 +39,22 @@ class Lol_model extends CI_Model {
 
 
 	public function create_summoner($uid, $summoner) {
-		$sql = "INSERT UserId FROM usersummoners WHERE SummonerId = '$summonerid' LIMIT 1";
-		$SummonerId = $summoner->summonerId;
-	    $SummonerName = $summoner->summonerName;
-	    $ProfileIconId = $summoner->profileIconId;
-	    $RevisionDate = $summoner->revisionDate;
-	    $SummonerLevel = $summoner->summonerLevel;
+
+		$SummonerId = $summoner['id'];
+	    $SummonerName = $summoner['name'];
+	    $ProfileIconId = $summoner['profileIconId'];
+	    $RevisionDate = $summoner['revisionDate'];
+	    $SummonerLevel = $summoner['summonerLevel'];
+
+	    $sql = "INSERT INTO summoners (SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel) 
+	            VALUES ('" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "')";
+		$result = $this->db1->query($sql);
 
 		$sql = "INSERT INTO usersummoners (UserId, SummonerId) 
 	            VALUES ('" . $uid . "', '" . $SummonerId . "')";
 	    $result = $this->db1->query($sql);
 
-	    $sql = "INSERT INTO summoners (SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel) 
-	            VALUES ('" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "')";
-		$result = $this->db1->query($sql);
 		return;
 	}
+	
 }
