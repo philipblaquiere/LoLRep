@@ -19,7 +19,7 @@
 </div>
 <div class="col-sm-offset-2 col-sm-10">
   <?php echo form_open('',array('class' => 'form-horizontal padded_10', 'id' => 'rune_page_verification')); ?>
-    <input type="submit" name="submit" value="Check Rune Page" id="rune_page_verification_button" class="btn btn-default pull-right">
+    <input type="submit" name="submit" data-loading-text="Verifying..." value="Check Rune Page" id="rune_page_verification_button" class="btn btn-default pull-right">
   </form>
   <div class="pull-right padded_10" id="rune_page_verification_result">
   </div>

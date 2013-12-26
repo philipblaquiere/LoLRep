@@ -1,7 +1,7 @@
 <!-- Header -->
 <div class="page-header">
   <h1>Create a Team</h1>
-  <h4>Complete the information below to register an official team</h4>
+  <h4>Complete the information below to register an official team. To remain active, an official team must have the minimum amount of players to participate in a league.</h4>
 </div>
 <!-- Header -->
           

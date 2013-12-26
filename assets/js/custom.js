@@ -33,7 +33,6 @@
     $(document).on('submit','#rune_page_verification',function(event) {
         /* Stop form from submitting normally */
         event.preventDefault();
-        console.log( 'clicked', $( this ).text() );
 
         /* Clear any previous error message*/
         $("#rune_page_verification_result").html('');

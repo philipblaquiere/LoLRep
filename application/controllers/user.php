@@ -59,7 +59,7 @@ class User extends MY_Controller{
 
     $user->fname = $this->input->post('fname');
     $user->lname = $this->input->post('lname');
-    $user->email = $this->input->post('email');
+    $user->email = strtolower($this->input->post('email'));
     $plain_password = $this->input->post('password1');
     $plain_password2 = $this->input->post('password2');
     $user->countryid = $this->input->post('countryid');
