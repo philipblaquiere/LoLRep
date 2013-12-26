@@ -1,13 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-require_once('crud_model.php');
-class Country_Model extends Crud_Model {
+class Country_Model {
   /**
    * countryid int
    * country varchar
    */
 
   public function __construct() {
-    parent::__construct();
+   
   }
 
   public function get_supported_countries()
