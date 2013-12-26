@@ -25,7 +25,7 @@ class Riotapi_model extends CI_Model  {
 		return $this->request($call);
 	}
 
-	public function getGame($id){
+	public function getRecentGames($id){
 		$call = 'game/by-summoner/' . $id . '/recent';
 
 		//add API URL to the call
@@ -124,10 +124,4 @@ class Riotapi_model extends CI_Model  {
 	private function format_url($call) {
 		return str_replace('{region}', $this->REGION, $call) . '?api_key=' . self::API_KEY;
 	}
-
 }
-
-
-
-
-?>
