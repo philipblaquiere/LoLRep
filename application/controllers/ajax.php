@@ -6,7 +6,6 @@ class Ajax extends MY_Controller {
 	    parent::__construct();
 	    $this->load->model('user_model');
 	    $this->load->model('lol_model');
-	    $this->load->model('lolapi_model');
 	    $this->load->model('riotapi_model');
 	    $this->load->model('system_message_model');
 	}
@@ -29,7 +28,6 @@ class Ajax extends MY_Controller {
 			//check riot servers to see if summoner actually exists.
 			$riotsummoner = $this->riotapi_model->getSummonerByName($region, $summonerinput);
 			//contains Array ( [id] => 29208894 [name] => seejimmyrun [profileIconId] => 576 [summonerLevel] => 30 [revisionDate] => 1387724620000 )
-
 			if(!$riotsummoner['id']) {
 				$data['errormessage'] = "The specified summoner was not found in the specified region";
 				$this->load->view('messages/rune_page_verification_fail', $data);
