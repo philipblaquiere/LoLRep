@@ -43,13 +43,14 @@ class Team_model extends CI_Model {
     return $result->row_array();
   }
 
+
   public function get_teams_by_captainid($uid, $esportid) {
     $sql = "SELECT * FROM teams WHERE captainid = '$uid' AND esportid = '$esportid'";
     $result = $this->db1->query($sql);
     return $result->row_array();
   }
 
- /* public function get_teams_by_playerid($pid,$esportid) {
+  public function get_teams_by_esport($uid,$esportid) {
 
     switch ($esportid) {
       case 1:
@@ -60,5 +61,12 @@ class Team_model extends CI_Model {
           break;
       case 2:
           break;
-  }*/
+        }
+  }
+   public function get_all_teams_by_uid($uid) {
+
+    $sql = "SELECT * FROM teams t INNER JOIN teams_lol l ON t.teamid = l.teamid WHERE l.summonerid = '$pid'";
+    $result = $this->db1->query($sql);
+    return $result->result_array();
+  }
 }
