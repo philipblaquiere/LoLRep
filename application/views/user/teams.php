@@ -4,4 +4,3 @@
   <h4>Quick information about teams you are currently part of.</h4>
 </div>
 <!-- Header -->
-

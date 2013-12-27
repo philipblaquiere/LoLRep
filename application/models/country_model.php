@@ -6,7 +6,6 @@ class Country_Model {
    */
 
   public function __construct() {
-   
   }
 
   public function get_supported_countries()
