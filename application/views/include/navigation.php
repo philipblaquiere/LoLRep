@@ -60,7 +60,6 @@
                   </div>
                 </div>
                 <a href="<?php echo site_url('sign_in/forgot_password'); ?>">Forgot Password?</a>
-                <div class="fb-login-button" data-max-rows="1" data-show-faces="false"></div>
                 <div class="form-group">
                   <div class="col-sm-5 pull-right">
                     <?php echo form_submit('submit', 'Sign In', "class='btn btn-default btn-sm pull-left'"); ?>
