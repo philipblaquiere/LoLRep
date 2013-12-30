@@ -12,11 +12,11 @@ class Ajax extends MY_Controller {
 
 	public function authenticate_summoner($region, $summonerinput) {
 
-	    if(!$summonerinput) {
+	    if($summonerinput== "-") {
 	      //user didn't enter anything, show eror message and reload.
-	      $this->system_message_model->set_message('You must enter a summoner name to validate.', MESSAGE_ERROR);
-	      redirect('add_esport/register_LoL', 'location');
-	      return;
+		    $data['errormessage'] = "You must enter a summoner name to validate.";
+			$this->load->view('messages/rune_page_verification_fail', $data);
+			return;
 	    }
 	    else if($region == "Region%20") {
 	    	$data['errormessage'] = "You must select a region";

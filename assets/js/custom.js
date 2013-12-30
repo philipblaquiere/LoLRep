@@ -10,6 +10,8 @@
 
         /* Get some values from elements on the page: */
        var summonername = document.getElementById("summonername").value;
+       if(summonername == "")
+        summonername = "-";
        var region = document.getElementById("region").firstChild.data;
         
         /* Send the data using post and put the results in a div */
@@ -69,7 +71,7 @@ $(".region-list li a").click(function(event) {
 function reloadLoLRegister(message) {
     alert("in reload");
     $.ajax({
-        url: 'add_esport/register_LoL',
+        url: '/LoLRep/add_esport/register_LoL',
         type: "post",
         data: {},
         success: function(data){
