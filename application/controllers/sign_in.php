@@ -15,6 +15,10 @@ class Sign_in extends MY_Controller{
     $this->load->model('team_model');
   }
 
+  public function index() {
+    $this->sign_in();
+  }
+
   public function login() {
     if ($this->is_logged_in()) {
       redirect('home', 'location');
@@ -53,7 +57,7 @@ class Sign_in extends MY_Controller{
         $this->system_message_model->set_message('Hey! This account was never validated. Check your emails for an email we sent you!', MESSAGE_INFO);
         $this->view_wrapper('user/sign_in');
       }
-      else if($this->user_model->validate_password($user,$password) {
+      else if($this->user_model->validate_password($user,$password)) {
         //uservalidated, proced with login
         $this->set_current_user($user['UserId']);
 
