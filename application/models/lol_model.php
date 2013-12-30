@@ -50,8 +50,8 @@ class Lol_model extends CI_Model {
 	            VALUES ('" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "')";
 		$result = $this->db1->query($sql);
 
-		$sql = "INSERT INTO usersummoners (UserId, SummonerId) 
-	            VALUES ('" . $uid . "', '" . $SummonerId . "')";
+		$sql = "INSERT INTO user_esport (UserId, esportid) 
+	            VALUES ('" . $uid . "', '1')";
 	    $result = $this->db1->query($sql);
 
 		return;

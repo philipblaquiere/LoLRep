@@ -23,4 +23,11 @@ class Esport_model extends CI_Model {
     $result = $this->db1->query($sql);
     return $result->result_array();
   }
+
+  public function get_all_registered_esports($uid) {
+
+      $sql = "SELECT e.esportid AS esportid, e.name AS name FROM esports e INNER JOIN user_esport u ON e.esportid = u.esportid WHERE u.UserId = '$uid'";
+      $result = $this->db1->query($sql);
+      return $result->result_array();
+  }
 }

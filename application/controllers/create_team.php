@@ -16,12 +16,21 @@ class Create_team extends MY_Controller{
 
     public function index() {
         $this->require_login();
-        $esports = $this->esport_model->get_all_esports();
+        //Retrieve all esports registered by user.
+        $esports = $this->esport_model->get_all_registered_esports($_SESSION['user']['UserId']);
+
+        if(!$esports) {
+            $data['esports'] = $this->esport_model->get_all_esports();
+            $this->system_message_model->set_message("Add an Esport to your account before creating a team!"  , MESSAGE_ERROR);
+            $this->view_wrapper('user/add_esport',$data);
+            return;
+        }
+
         $data['esports'] = $esports;
 
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('esportid', 'ESport', 'required|callback_user_registered');
+        $this->form_validation->set_rules('esportid', 'ESport', 'required|callback_has_team');
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
 
         if($this->form_validation->run() == FALSE) {
@@ -38,7 +47,7 @@ class Create_team extends MY_Controller{
                 $captain['gameid'] = $this->lol_model->get_summonerid_from_uid($captain['UserId']);
             }
             $this->team_model->create_team($team,$captain);
-            $this->system_message_model->set_message($team['name'] . ' has been created, add people to your team' , MESSAGE_ERROR);
+            $this->system_message_model->set_message($team['name'] . ' has been created, add people to your team' , MESSAGE_INFO);
             
             redirect('home', 'location');
         }
@@ -56,27 +65,17 @@ class Create_team extends MY_Controller{
         }
     }
 
-    public function user_registered() {
-        $user = $_SESSION['user'];
-        $esportid = $this->input->post('esportid');
-
-        switch ($esportid) {
-            case '1':
-                //Check if user is registered for League of Legends
-                $summonername = $this->lol_model->get_summonername_from_uid($user['UserId']);
-                if(!$summonername) {
-                    $this->form_validation->set_message('user_registered','Your are not registered for that Esport');
-                    $this->system_message_model->set_message("Add an Esport to your account before creating a team!"  , MESSAGE_ERROR);
-                    return false; 
-                }
-                else {
-                    return true;
-                }
-                break;
-                        
-            default:
-                # code...
-                break;
+    public function has_team() {
+        $teams = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
+        foreach ($teams as $team) {
+            if($team['esportid'] == $this->input->post('esportid')) {
+                $this->system_message_model->set_message("You can be registered to one team per Esport at a time. You're currently part of team : " . $team['name'] , MESSAGE_ERROR);
+                $this->form_validation->set_message('has_team','You can be registered to a single team per Registered Esport.');
+                return false;
+            }
+            else {
+                return true;
+            }
         }
     }
 }

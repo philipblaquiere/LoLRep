@@ -88,8 +88,8 @@ class Register extends MY_Controller{
       }
       else {
         return true;
-      }
-    }
+      
+}    }
 
     public function validate_user($key, $uid) {
       if($this->user_model->validate_user($key, $uid))
