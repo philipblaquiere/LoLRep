@@ -6,7 +6,8 @@
 <!-- Header -->
 
 <!-- Sign In Content -->
-<?php echo form_open('user/sign_in', array('class' => 'form-horizontal', 'id' => 'signinform')); ?>
+<?php echo validation_errors(); ?>
+<?php echo form_open('sign_in', array('class' => 'form-horizontal', 'id' => 'signinform')); ?>
   <div class="form-group">
     <?php echo form_label('Email', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
@@ -31,7 +32,7 @@
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <label>
-        <h4><small>No account? Register <a href="<?php echo "index.php?/RegisterNew"?>">here</a></small></h4>
+        <h4><small>No account? Register <a href="<?php echo site_url('register')?>">here</a></small></h4>
       </label>
     </div>
   </div>
