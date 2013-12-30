@@ -14,7 +14,7 @@
         
         /* Send the data using post and put the results in a div */
         $.ajax({
-            url: 'ajax/authenticate_summoner/'+ region +'/'+ summonername,
+            url: '/LoLRep/ajax/authenticate_summoner/'+ region +'/'+ summonername,
             type: "post",
             data: summonername,
             success: function(data){
@@ -39,7 +39,7 @@
 
         /* Send the data using post and put the results in a div */
         $.ajax({
-            url: 'ajax/rune_page_verification',
+            url: '/LoLRep/ajax/rune_page_verification',
             type: "post",
             data: {},
             success: function(data){
@@ -69,7 +69,7 @@ $(".region-list li a").click(function(event) {
 function reloadLoLRegister(message) {
     alert("in reload");
     $.ajax({
-        url: 'user/register_LoL',
+        url: 'add_esport/register_LoL',
         type: "post",
         data: {},
         success: function(data){

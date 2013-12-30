@@ -15,7 +15,7 @@ class Ajax extends MY_Controller {
 	    if(!$summonerinput) {
 	      //user didn't enter anything, show eror message and reload.
 	      $this->system_message_model->set_message('You must enter a summoner name to validate.', MESSAGE_ERROR);
-	      redirect('user/register_LoL', 'location');
+	      redirect('add_esport/register_LoL', 'location');
 	      return;
 	    }
 	    else if($region == "Region%20") {
