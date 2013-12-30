@@ -25,17 +25,15 @@ class Register extends MY_Controller{
       //}
       $this->require_not_login();
 
-    
-
       //Validation on input (requires that all fields exist)
       //$this->load->helper(array('form', 'url'));
       $this->load->library('form_validation');
 
       $this->form_validation->set_rules('fname', 'First Name', 'trim|required|xss_clean');
       $this->form_validation->set_rules('lname', 'Last Name', 'trim|required|xss_clean');
-      $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_unique_email');
-      $this->form_validation->set_rules('password1', 'Password1', 'required|callback_password_match');
-      $this->form_validation->set_rules('password2', 'Password2', 'required');
+      $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email');
+      $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
+      $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
       $this->form_validation->set_rules('countryid', 'Country', 'required');
       $this->form_validation->set_rules('provincestateid', 'Province/State', 'required');
       $this->form_validation->set_rules('regionid', 'Region', 'required');
@@ -45,28 +43,23 @@ class Register extends MY_Controller{
       } 
 
       else{
-          $ip = $this->input->ip_address();
+        $ip = $this->input->ip_address();
 
-        $user->fname = $this->input->post('fname');
-        $user->lname = $this->input->post('lname');
-        $user->email = strtolower($this->input->post('email'));
-        $plain_password = $this->input->post('password1');
-        $plain_password2 = $this->input->post('password2');
-        $user->countryid = $this->input->post('countryid');
-        $user->provincestateid = $this->input->post('provincestateid');
-        $user->regionid = $this->input->post('regionid');
-        $user->salt = $this->user_model->_generate_salt();
-        $user->password = $this->user_model->_password_hash($plain_password, $user->salt);
+        $user = $this->input->post();
+        $user['salt'] = $this->user_model->_generate_salt();
+        $user['password'] = $this->user_model->_password_hash($user['password1'], $user['salt']);
         //Save user object and get key to send to user email.
         $newuser = $this->user_model->create($user);
 
-        $email = "Hello, click this link to valide your account: http://" . site_url() . "user/validate_user/". $newuser['key'] . "/" . $newuser['uid'];
+        /*
+        $email = "Hello, click this link to valide your account: " . site_url("register/validate_user/". $newuser['key'] . "/" . $newuser['uid']);
 
         $this->load->helper('email');
-        send_email($email);
+        send_email($email);*/
 
         $this->system_message_model->set_message('We sent you a confirmation email, follow the link to complete your registration.', MESSAGE_INFO);
-        redirect('user/pending_validation', 'location');
+
+        redirect('user/pending_validation', 'refresh');
       }
 
       $data = array(
@@ -98,6 +91,18 @@ class Register extends MY_Controller{
       }
       else {
         return true;
+      }
+    }
+
+    public function validate_user($key, $uid) {
+      if($this->user_model->validate_user($key, $uid))
+      {
+        //user validation succeeded, proceed with asking user to sign in to continue
+        $this->view_wrapper('user/user_validated');
+      }
+      else
+      {
+        //user validation failed
       }
     }
 }

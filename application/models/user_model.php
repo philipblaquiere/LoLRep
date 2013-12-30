@@ -99,21 +99,15 @@ class User_Model extends CI_Model {
   * Returns key to be appended to url in email for user account validation
   */
   public function create($user){
-    $password = $user->password;
-    $salt = $user->salt;
-    $email = $user->email;
-    $fname = $user->fname;
-    $lname = $user->lname;
-    $regionid = $user->regionid;
-    $provincestateid = $user->provincestateid;
-    $countryid = $user->countryid;
     $sql = "INSERT INTO users (password, salt, email, firstname, lastname, regionid, provincestateid, countryid) 
-            VALUES ('" . $password . "', '" . $salt . "', '" . $email . "', '" . $fname . "', '" . $lname . "', '" . $regionid . "', '" . $provincestateid . "', '" . $countryid . "')";
+            VALUES ('" . $user['password'] . "', '" . $user['salt'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['regionid'] . "', '" . $user['provincestateid'] . "', '" . $user['countryid'] . "')";
+    
     $query = $this->db1->query($sql);
+
     $newuser = array();
-    $uid = $this->get_uid_by_email($email);
+    $uid = $this->get_uid_by_email($user['email']);
     $newuser['uid'] = $uid['UserId'];
-    $newuser['email'] = $email;
+    $newuser['email'] = $user['email'];
     $newuser['key'] =  $this->_pend_valdiation($newuser);
     
     return $newuser;
