@@ -6,7 +6,7 @@
 <!-- Header -->
           
 <!-- Register Content -->
-<?php echo form_open('user/registration_submit', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
+<?php echo form_open('register', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
   <div class="form-group">
     <?php echo form_error('fname'); ?>
     <?php echo form_label('First Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
