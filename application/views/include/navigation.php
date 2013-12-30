@@ -44,7 +44,7 @@
           <?php if ($is_logged_in): ?>
           <li><a href="<?php echo site_url('user/sign_out'); ?>">Sign out</a></li>
           <?php else: ?>
-          <li><a href="<?php echo site_url('user/register'); ?>">Register</a></li>
+          <li><a href="<?php echo site_url('register'); ?>">Register</a></li>
           <li class="dropdown">
             <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In<strong class="caret"></strong></a>
             <div class="dropdown-menu sign_in_mini">
