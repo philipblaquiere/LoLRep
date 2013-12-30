@@ -8,18 +8,18 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="<?php echo "index.php?/home"?>">Juicy</a>
+        <a class="navbar-brand" href="<?php echo site_url('home'); ?>">Juicy</a>
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <?php if ($is_logged_in): ?>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['firstname']?><b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['firstname']; ?><b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo site_url('user/select_esport')?>">Add ESport</a></li>
+                  <li><a href="<?php echo site_url('user/select_esport'); ?>">Add ESport</a></li>
                   <li><a href="#">My Profile</a></li>
-                  <li><a href="<?php echo site_url('user/create_team')?>">Create Teams</a></li>
-                  <li><a href="<?php echo site_url('user/teams')?>">My Teams</a></li>
+                  <li><a href="<?php echo site_url('user/create_team'); ?>">Create Teams</a></li>
+                  <li><a href="<?php echo site_url('user/teams'); ?>">My Teams</a></li>
                   <li><a href="#">My ESports</a></li>
                 </ul>
             </li>
@@ -28,7 +28,7 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="<?php echo "index.php?/sign_in"?>">Select ESport</a></li>
+              <li><a href="<?php echo site_url('sign_in'); ?>">Select ESport</a></li>
               <li><a href="#">Another action</a></li>
               <li><a href="#">Something else here</a></li>
               <li class="divider"></li>
