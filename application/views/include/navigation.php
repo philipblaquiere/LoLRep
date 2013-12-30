@@ -28,7 +28,7 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="<?php echo site_url('sign_in'); ?>">Select ESport</a></li>
+              <li><a href="<?php echo site_url('user/sign_in'); ?>">Select ESport</a></li>
               <li><a href="#">Another action</a></li>
               <li><a href="#">Something else here</a></li>
               <li class="divider"></li>
