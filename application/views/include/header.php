@@ -21,8 +21,16 @@
   <link href="<?php echo base_url('assets/css/marketing.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/navbar.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/custom.css') ?>" rel="stylesheet" />
-
+  <!--<link href="<?php echo base_url('assets/css/fbscript.css') ?>" rel="stylesheet" />-->
 </head>
 
 <body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=262715737217961";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
   
