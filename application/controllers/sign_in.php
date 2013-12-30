@@ -24,51 +24,50 @@ class Sign_in extends MY_Controller{
   }
 
   public function sign_in() {
+
     $this->require_not_login();
 
-    //get sign in form data
-    $email = $this->input->post('email');
-    $password = $this->input->post('password');
 
-    $user = $this->user_model->get_by_email($email);
-    
-    if (!$user){
-      $this->system_message_model->set_message('Uh oh...There appears to be an error in your email or password', MESSAGE_ERROR);
-      $this->view_wrapper('user/sign_in');
-    }
-    else if ($this->user_model->validate_password($user,$password)) {
-      if($user['validated'] == 0) {
+    $this->load->library('form_validation');
+
+    $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean');
+    $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean');
+
+    if($this->form_validation->run() == FALSE){
+        $this->view_wrapper('user/sign_in');
+    } 
+    else {
+      //get sign in form data
+      $email = $this->input->post('email');
+      $password = $this->input->post('password');
+
+      $user = $this->user_model->get_by_email($email);
+
+      if(!$user) {
+        $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
+        $this->view_wrapper('user/sign_in');
+      }
+      
+      else if($user['validated'] == 0) {
         //user did not validate themselves, prompt them to resend the validation email.
         $this->system_message_model->set_message('Hey! This account was never validated. Check your emails for an email we sent you!', MESSAGE_INFO);
         $this->view_wrapper('user/sign_in');
       }
-      else {
+      else if($this->user_model->validate_password($user,$password) {
+        //uservalidated, proced with login
         $this->set_current_user($user['UserId']);
 
         $this->user_model->log_login($user['UserId']);
         $this->system_message_model->set_message('Welcome, ' . $user['firstname'], MESSAGE_INFO);
-        redirect('home', 'location');
-        //$this->view_wrapper('home');
-        //
-        //last sign in logic goes here.
-        //if(!$user->last_login_time) {
-        //  $this->system_message_model->set_message('Welcome, ' . $user->fname . 'First time login', MESSAGE_INFO);
-        //  $this->view_wrapper('home');
-        //}
-        //else {
-        //  $_SESSION['last_login_time'] = $user->last_login_time;
-        //  $this->system_message_model->set_message('Welcome, ' . $user->fname . '.', MESSAGE_INFO);
-        //  $this->view_wrapper('home');
-        //}
+        redirect('home', 'refresh');
+      }
+      else {
+        $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
+        $this->view_wrapper('user/sign_in');
       }
     }
-    else {
-      //user authentication failed, redirect to login
-      $this->system_message_model->set_message('Uh oh...There appears to be an error in your email or password', MESSAGE_ERROR);
-      $this->view_wrapper('user/sign_in');
-    }
   }
-  
+
   public function sign_out() {
     $this->require_login();
     $this->destroy_session();
