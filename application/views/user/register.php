@@ -11,7 +11,7 @@
   <div class="form-group">
     <?php echo form_label('First Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_input(array('name' => 'fname', 'class' => 'form-control', 'placeholder' => 'First name', 'value' => set_value('fname')); ?>
+      <?php echo form_input(array('name' => 'fname', 'class' => 'form-control', 'placeholder' => 'First name', 'value' => set_value('fname'))); ?>
     </div>
   </div>
   <div class="form-group">

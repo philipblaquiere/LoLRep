@@ -14,10 +14,6 @@ class Register extends MY_Controller{
         $this->load->model('lol_model');
         $this->load->model('team_model');
     }
-
-    public function registration_submit() {
-        
-    }
     
     public function index() {
       //$this->require_not_login();
@@ -29,18 +25,7 @@ class Register extends MY_Controller{
       //}
       $this->require_not_login();
 
-      $ip = $this->input->ip_address();
-
-      $user->fname = $this->input->post('fname');
-      $user->lname = $this->input->post('lname');
-      $user->email = strtolower($this->input->post('email'));
-      $plain_password = $this->input->post('password1');
-      $plain_password2 = $this->input->post('password2');
-      $user->countryid = $this->input->post('countryid');
-      $user->provincestateid = $this->input->post('provincestateid');
-      $user->regionid = $this->input->post('regionid');
-      $user->salt = $this->user_model->_generate_salt();
-      $user->password = $this->user_model->_password_hash($plain_password, $user->salt);
+    
 
       //Validation on input (requires that all fields exist)
       //$this->load->helper(array('form', 'url'));
@@ -56,11 +41,22 @@ class Register extends MY_Controller{
       $this->form_validation->set_rules('regionid', 'Region', 'required');
 
       if($this->form_validation->run() == FALSE){
-        redirect('user/register', 'location');
+        $this->view_wrapper('user/register');
       } 
 
       else{
+          $ip = $this->input->ip_address();
 
+        $user->fname = $this->input->post('fname');
+        $user->lname = $this->input->post('lname');
+        $user->email = strtolower($this->input->post('email'));
+        $plain_password = $this->input->post('password1');
+        $plain_password2 = $this->input->post('password2');
+        $user->countryid = $this->input->post('countryid');
+        $user->provincestateid = $this->input->post('provincestateid');
+        $user->regionid = $this->input->post('regionid');
+        $user->salt = $this->user_model->_generate_salt();
+        $user->password = $this->user_model->_password_hash($plain_password, $user->salt);
         //Save user object and get key to send to user email.
         $newuser = $this->user_model->create($user);
 
@@ -78,7 +74,7 @@ class Register extends MY_Controller{
         //'supported_countries' => $country_options,
       );
 
-      $this->view_wrapper('user/register', $data);
+      //$this->view_wrapper('user/register', $data);
     }
 
     public function password_match($pw1) {
