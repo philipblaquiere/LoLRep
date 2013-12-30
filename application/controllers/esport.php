@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Register_game extends MY_Controller{
+class Esport extends MY_Controller{
 	/**
 	 * Constructor: initialize required libraries.
 	 */

@@ -7,7 +7,7 @@
 <!-- Select Game List -->
 <div class="list-group">
   <?php foreach($esports as $esport):?>
-    <a href="<?php echo site_url('user/register_' . $esport['abbrv'])?>" class="list-group-item">
+    <a href="<?php echo site_url('add_esport/register_' . $esport['abbrv'])?>" class="list-group-item">
       <div class="row ">
           <div class="col-md-7">
               <h1 class="list-group-item-text"><?php echo $esport['name']?></h1>

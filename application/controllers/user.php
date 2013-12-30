@@ -25,7 +25,7 @@ class User extends MY_Controller{
 	public function index(){
     $this->register();
 	}
-  
+
   public function pending_validation() {
      $this->view_wrapper('user/pending_validation');
   }
@@ -40,13 +40,6 @@ class User extends MY_Controller{
     {
       //user validation failed
     }
-  }
-
-  public function select_esport() {
-    $this->require_login();
-    $esports = $this->esport_model->get_all_esports();
-    $data['esports'] = $esports;
-    $this->view_wrapper('user/select_esport',$data);
   }
 
   public function create_summoner() {
@@ -64,10 +57,6 @@ class User extends MY_Controller{
       $this->view_wrapper('home');
     }
   }
-
-  
-
-  
 
 /*
   
