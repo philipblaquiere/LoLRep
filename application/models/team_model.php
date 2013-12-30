@@ -21,9 +21,21 @@ class Team_model extends CI_Model {
   public function create_team($team,$captain)
   {
     $sql = "INSERT INTO teams (name, esportid, captainid, countryid, stateid, regionid) 
-            VALUES ('". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
+          VALUES ('". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
     $this->db1->query($sql);
-    return;
+
+    switch ($team['esportid']) {
+      case '1':
+          //League of Legends
+          $sql = "INSERT INTO teams_lol (teamid, summonerid)
+                  VALUES (LAST_INSERT_ID() , '" . $captain['gameid']['SummonerId'] . "')";
+          $this->db1->query($sql);
+          return;
+          break;
+      case 2:
+          break;
+        }
+    
   }
   public function get_team_by_id($teamid) {
     $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";
@@ -55,7 +67,7 @@ class Team_model extends CI_Model {
     switch ($esportid) {
       case 1:
         //ESport - League of Legends
-        $sql = "SELECT * FROM teams t INNER JOIN teams_lol l ON t.teamid = l.teamid WHERE l.summonerid = '$pid'";
+        $sql = "SELECT * FROM teams t INNER JOIN teams_lol l ON t.teamid = l.teamid";
         $result = $this->db1->query($sql);
         return $result->result_array();
           break;
@@ -65,7 +77,9 @@ class Team_model extends CI_Model {
   }
    public function get_all_teams_by_uid($uid) {
 
-    $sql = "SELECT * FROM teams t INNER JOIN teams_lol l ON t.teamid = l.teamid WHERE l.summonerid = '$pid'";
+    $sql = "SELECT * FROM teams t
+            INNER JOIN teams_lol l ON t.teamid = l.teamid 
+            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
     $result = $this->db1->query($sql);
     return $result->result_array();
   }

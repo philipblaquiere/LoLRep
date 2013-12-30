@@ -6,7 +6,8 @@
 <!-- Header -->
           
 <!-- Create Team Content -->
-<?php echo form_open('user/create_team_submit', array('class' => 'form-horizontal', 'id' => 'createTeamForm')); ?>
+<?php echo validation_errors(); ?>
+<?php echo form_open('create_team', array('class' => 'form-horizontal', 'id' => 'createTeamForm')); ?>
   <div class="form-group">
     <?php echo form_label('ESport', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">

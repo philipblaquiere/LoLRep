@@ -14,25 +14,25 @@ class Lol_model extends CI_Model {
 	}
 
 	public function get_summonername_from_uid($uid) {
-		$sql = "SELECT s.SummonerName as SummonerName FROM summoners s INNER JOIN usersummoners u ON  s.SummonerId = u.SummonerId WHERE u.UserId = '$uid' LIMIT 1";
+		$sql = "SELECT SummonerName FROM summoners WHERE UserId = '$uid' LIMIT 1";
 		$result = $this->db1->query($sql);
 	    return $result->row_array();
 	}
 
 	public function get_uid_from_summonername($summonername) {
-		$sql = "SELECT u.UserId as UserId FROM usersummoners u INNER JOIN summoners s ON  u.SummonerId = s.SummonerId WHERE s.SummonerName = '$summonername' LIMIT 1";
+		$sql = "";
 		$result = $this->db1->query($sql);
 	    return $result->row_array();
 	}
 
 	public function get_summonerid_from_uid($uid) {
-		$sql = "SELECT SummonerId FROM usersummoners WHERE UserId = '$uid' LIMIT 1";
+		$sql = "SELECT SummonerId FROM summoners WHERE UserId = '$uid' LIMIT 1";
 		$result = $this->db1->query($sql);
 	    return $result->row_array();
 	}
 
 	public function get_uid_from_summonerid($summonerid) {
-		$sql = "SELECT UserId FROM usersummoners WHERE SummonerId = '$summonerid' LIMIT 1";
+		$sql = "SELECT UserId FROM summoners WHERE SummonerId = '$summonerid' LIMIT 1";
 		$result = $this->db1->query($sql);
 	    return $result->row_array();
 	}

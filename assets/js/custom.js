@@ -16,7 +16,7 @@
         
         /* Send the data using post and put the results in a div */
         $.ajax({
-            url: '/LoLRep/ajax/authenticate_summoner/'+ region +'/'+ summonername,
+            url: '/LoLRep/ajax/authenticate_summoner/'+ region +'/'+ summonername.trim(),
             type: "post",
             data: summonername,
             success: function(data){
