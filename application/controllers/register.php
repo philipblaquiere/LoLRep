@@ -119,10 +119,10 @@ class Register extends MY_Controller{
     }
 
     public function unique_email($email) {
-      $email = strtolower($this->input->post('email'));
+      $email = strtolower($email);
       $user = $this->user_model->get_by_email($email);
       if($user) {
-        $this->system_message_model->set_message('That email is already registered with our website, choose another one.', MESSAGE_ERROR);
+        $this->form_validation->set_message('unique_email', 'That email is already registered with our website, choose another one.');
         return false;
       }
       else {
