@@ -57,37 +57,17 @@ class Register extends MY_Controller{
 
       if($this->form_validation->run() == FALSE){
         redirect('user/register', 'location');
-      }
-      /*elseif($this->user_model->get_by_email($user->email) != FALSE){
-        $this->system_message_model->set_message('Registration failed. Email address is already registered. Please choose another address.', MESSAGE_ERROR);
-        redirect('user/register', 'location');
-      }
-      elseif($this->ip_log_model->get_by_ip($ip)) {
-        $this->system_message_model->set_message("Your registration has failed. Your IP address {$ip} has already registered an account in the past " . IP_TTL . " seconds. Please wait and try again soon.", MESSAGE_ERROR);
-        redirect('user/register', 'location');
-      }*/
+      } 
+
       else{
 
         //Save user object and get key to send to user email.
         $newuser = $this->user_model->create($user);
-        //Log IP
-        //$this->ip_log_model->log_ip($ip);
-
-        //Automatically grant 'user' role
-        //$role = $this->user_roles_model->factory();
-        //$role->uid = $user->uid;
-        //$role->rid = 1;
-        //$this->user_roles_model->save($role);
 
         $email = "Hello, click this link to valide your account: http://" . site_url() . "user/validate_user/". $newuser['key'] . "/" . $newuser['uid'];
 
-        //if(EMAIL_FLAG){
-          $this->load->helper('email');
-          send_email($email);
-        //}
-        //else{
-        //  $_SESSION['email'] = $email;
-        //}
+        $this->load->helper('email');
+        send_email($email);
 
         $this->system_message_model->set_message('We sent you a confirmation email, follow the link to complete your registration.', MESSAGE_INFO);
         redirect('user/pending_validation', 'location');
