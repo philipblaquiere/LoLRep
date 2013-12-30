@@ -25,10 +25,7 @@ class User extends MY_Controller{
 	public function index(){
     $this->register();
 	}
-
   
-
- 
   public function pending_validation() {
      $this->view_wrapper('user/pending_validation');
   }
@@ -67,6 +64,8 @@ class User extends MY_Controller{
       $this->view_wrapper('home');
     }
   }
+
+  
 
   
 

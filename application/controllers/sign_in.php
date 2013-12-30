@@ -80,4 +80,8 @@ class Sign_in extends MY_Controller{
     redirect('home', 'location');
   }
 
+  public function forgot_password() {
+    //todo
+  }
+
 }
