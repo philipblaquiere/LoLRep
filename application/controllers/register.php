@@ -56,12 +56,11 @@ class Register extends MY_Controller{
       $this->form_validation->set_rules('regionid', 'Region', 'required');
 
       if($this->form_validation->run() == FALSE){
-        $this->system_message_model->set_message('Registration failed. Please retry and ensure you fill all boxes properly. If error persists, please contact site administrator.', MESSAGE_ERROR);
         redirect('user/register', 'location');
       }
       elseif($this->user_model->get_by_email($user->email))
       {
-        $this->system_message_model->set_message('That email is already registered with our website, choose another one.', MESSAGE_ERROR);
+        
         redirect('user/register', 'location');
       }
       /*elseif($this->user_model->get_by_email($user->email) != FALSE){
@@ -107,7 +106,7 @@ class Register extends MY_Controller{
       $this->view_wrapper('user/register', $data);
     }
 
-    public function password_match($pw1){
+    public function password_match($pw1) {
       $pw2 = $this->input->post('password2');
 
       if($pw2 != $pw1){
@@ -115,6 +114,18 @@ class Register extends MY_Controller{
         return false;
       }
       else{
+        return true;
+      }
+    }
+
+    public function unique_email($email) {
+      $email = strtolower($this->input->post('email'));
+      $user = $this->user_model->get_by_email($email);
+      if($user) {
+        $this->system_message_model->set_message('That email is already registered with our website, choose another one.', MESSAGE_ERROR);
+        return false;
+      }
+      else {
         return true;
       }
     }
