@@ -58,19 +58,6 @@ class Register extends MY_Controller{
       if($this->form_validation->run() == FALSE){
         redirect('user/register', 'location');
       }
-      elseif($this->user_model->get_by_email($user->email))
-      {
-        
-        redirect('user/register', 'location');
-      }
-      /*elseif($this->user_model->get_by_email($user->email) != FALSE){
-        $this->system_message_model->set_message('Registration failed. Email address is already registered. Please choose another address.', MESSAGE_ERROR);
-        redirect('user/register', 'location');
-      }
-      elseif($this->ip_log_model->get_by_ip($ip)) {
-        $this->system_message_model->set_message("Your registration has failed. Your IP address {$ip} has already registered an account in the past " . IP_TTL . " seconds. Please wait and try again soon.", MESSAGE_ERROR);
-        redirect('user/register', 'location');
-      }*/
       else{
 
         //Save user object and get key to send to user email.
