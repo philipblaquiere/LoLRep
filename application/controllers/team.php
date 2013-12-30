@@ -15,8 +15,8 @@ class Team extends MY_Controller{
         $this->load->model('team_model');
     }
     public function teams() {
-    $this->require_login();
-    $this->view_wrapper('user/teams');
+        $this->require_login();
+        $this->view_wrapper('user/teams');
     }
 
     public function create_team() {
@@ -70,7 +70,7 @@ class Team extends MY_Controller{
         }
     }
 
-  public function join_team() {
-    $this->require_login();
-  }
+    public function join_team() {
+        $this->require_login();
+    }
 }

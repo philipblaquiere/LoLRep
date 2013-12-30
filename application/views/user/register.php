@@ -6,26 +6,24 @@
 <!-- Header -->
           
 <!-- Register Content -->
+<?php echo validation_errors(); ?>
 <?php echo form_open('register', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
   <div class="form-group">
-    <?php echo form_error('fname'); ?>
     <?php echo form_label('First Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_input(array('name' => 'fname', 'class' => 'form-control', 'placeholder' => 'First name')); ?>
+      <?php echo form_input(array('name' => 'fname', 'class' => 'form-control', 'placeholder' => 'First name', 'value' => set_value('fname')); ?>
     </div>
   </div>
   <div class="form-group">
-    <?php echo form_error('lname'); ?>
     <?php echo form_label('Last Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_input(array('name' => 'lname', 'class' => 'form-control', 'placeholder' => 'Last name')); ?>
+      <?php echo form_input(array('name' => 'lname', 'class' => 'form-control', 'placeholder' => 'Last name' , 'value' => set_value('lname'))); ?>
     </div>
   </div>
   <div class="form-group">
-    <?php echo form_error('email'); ?>
     <?php echo form_label('Email', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_input(array('name' => 'email', 'class' => 'form-control', 'placeholder' => 'Email (also your username)')); ?>
+      <?php echo form_input(array('name' => 'email', 'class' => 'form-control', 'placeholder' => 'Email (also your username)', 'value' => set_value('email'))); ?>
     </div>
   </div>
   <div class="form-group">
@@ -44,18 +42,17 @@
     <?php echo form_label('Country', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <select class="form-control" name="countryid">
-        <option>Select Country</option>
-        <option>1</option>
+        <option <?php echo set_select('countryid', 'error', TRUE); ?>>Select Country</option>
+        <option value="1" <?php echo set_select('regionid', '1'); ?>>1</option>
       </select>
     </div>
   </div>
   <div class="form-group">
-    <?php echo form_error('provincestateid'); ?>
     <?php echo form_label('Province/State', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <select class="form-control" name="provincestateid">
-        <option>Select Province/State</option>
-        <option>68</option>
+        <option <?php echo set_select('provincestateid', 'error', TRUE); ?> >Select Province/State</option>
+        <option value="68" <?php echo set_select('provincestateid', '68'); ?>>68</option>
       </select>
     </div>
   </div>
@@ -63,8 +60,8 @@
     <?php echo form_label('Region', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <select class="form-control" name="regionid">
-          <option>Select Region</option>
-          <option>6</option>
+          <option <?php echo set_select('regionid', 'error', TRUE); ?>>Select Region</option>
+          <option value="6" <?php echo set_select('regionid', '6'); ?>>6</option>
       </select>
     </div>
   </div>

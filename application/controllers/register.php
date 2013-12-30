@@ -58,11 +58,6 @@ class Register extends MY_Controller{
       if($this->form_validation->run() == FALSE){
         redirect('user/register', 'location');
       }
-      elseif($this->user_model->get_by_email($user->email))
-      {
-        
-        redirect('user/register', 'location');
-      }
       /*elseif($this->user_model->get_by_email($user->email) != FALSE){
         $this->system_message_model->set_message('Registration failed. Email address is already registered. Please choose another address.', MESSAGE_ERROR);
         redirect('user/register', 'location');
