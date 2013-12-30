@@ -57,12 +57,8 @@ class Register extends MY_Controller{
 
       if($this->form_validation->run() == FALSE){
         redirect('user/register', 'location');
-<<<<<<< HEAD
       } 
 
-=======
-      }
->>>>>>> 17f533b03b22a6de1babf6e84e5f79da9680f510
       else{
 
         //Save user object and get key to send to user email.
