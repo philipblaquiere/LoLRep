@@ -43,7 +43,7 @@ class Register extends MY_Controller{
       $user->password = $this->user_model->_password_hash($plain_password, $user->salt);
 
       //Validation on input (requires that all fields exist)
-      $this->load->helper(array('form', 'url'));
+      //$this->load->helper(array('form', 'url'));
       $this->load->library('form_validation');
 
       $this->form_validation->set_rules('fname', 'First Name', 'trim|required|xss_clean');
