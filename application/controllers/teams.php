@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Team extends MY_Controller{
+class Teams extends MY_Controller{
 	/**
 	 * Constructor: initialize required libraries.
 	 */
@@ -13,9 +13,10 @@ class Team extends MY_Controller{
         $this->load->model('esport_model');
         $this->load->model('team_model');
     }
-    public function teams() {
+    public function index() {
         $this->require_login();
-        $this->view_wrapper('user/teams');
+        $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
+        $this->view_wrapper('user/teams', $data);
     }
 
     public function join_team() {

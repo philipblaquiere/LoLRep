@@ -37,7 +37,7 @@ class Team_model extends CI_Model {
         }
     
   }
-  public function get_team_by_id($teamid) {
+  public function get_teams_by_teamid($teamid) {
     $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";
     $result = $this->db1->query($sql);
     return $result->row_array();
@@ -76,7 +76,25 @@ class Team_model extends CI_Model {
         }
   }
    public function get_all_teams_by_uid($uid) {
-
+    /*returns 
+      teamid
+      name
+      esportid
+      created
+      captainid
+      countryid
+      stateid
+      regionid
+      teamid
+      summonerid
+      joined_date
+      UserId
+      SummonerId
+      SummonerName
+      ProfileIconId
+      RevisionDate
+      SummonerLevel
+      created*/
     $sql = "SELECT * FROM teams t
             INNER JOIN teams_lol l ON t.teamid = l.teamid 
             INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
