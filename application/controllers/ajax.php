@@ -83,4 +83,8 @@ class Ajax extends MY_Controller {
   			$this->load->view('messages/rune_page_verification_fail', $data);
   		}
   	}
+
+  	public function summoner_team_invite($summonername, $teamid) {
+
+  	}
 }

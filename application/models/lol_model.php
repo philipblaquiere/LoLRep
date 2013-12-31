@@ -19,8 +19,8 @@ class Lol_model extends CI_Model {
 	    return $result->row_array();
 	}
 
-	public function get_uid_from_summonername($summonername) {
-		$sql = "";
+	public function get_summonerid_from_summonername($summonername) {
+		$sql = "SELECT SummonerId FROM summoners WHERE SummonerName = '$summonername' LIMIT 1";
 		$result = $this->db1->query($sql);
 	    return $result->row_array();
 	}

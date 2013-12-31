@@ -1,4 +1,4 @@
-//jQuery(document).ready(function(){
+
     //ajax call for summoner validation process.
     $('#lolSummonerRegistrationForm').submit(function(event) {
     	/* Stop form from submitting normally */
@@ -27,11 +27,7 @@
             }
         });
     });
-//});
 
-//ajax call for summoner rune page validation process.
-//jQuery(document).ready(function(){
- //   alert("in trouble function");
     $(document).on('submit','#rune_page_verification',function(event) {
         /* Stop form from submitting normally */
         event.preventDefault();
@@ -59,7 +55,6 @@
             }
         });
     });
-//});
 
 //used to set value from left text input dropdown
 $(".region-list li a").click(function(event) {

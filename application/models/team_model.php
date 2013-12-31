@@ -37,7 +37,7 @@ class Team_model extends CI_Model {
         }
     
   }
-  public function get_teams_by_teamid($teamid) {
+  public function get_team_by_teamid($teamid) {
     $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";
     $result = $this->db1->query($sql);
     return $result->row_array();
@@ -75,6 +75,13 @@ class Team_model extends CI_Model {
           break;
         }
   }
+   public function get_team_id_by_summonername($summonername) {
+        $sql = "SELECT t.teamid as teamid FROM teams t
+            INNER JOIN teams_lol l ON t.teamid = l.teamid 
+            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.SummonerName = '$summonername' LIMIT 1";
+        $result = $this->db1->query($sql);
+        return $result->row_array();
+   }
    public function get_all_teams_by_uid($uid) {
     /*returns 
       teamid
@@ -100,5 +107,11 @@ class Team_model extends CI_Model {
             INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
     $result = $this->db1->query($sql);
     return $result->result_array();
+  }
+
+  public function invite_summoner($invitation) {
+    $sql = "INSERT INTO team_invite_lol (teamid, summonerid, message) 
+            VALUES ('". $invitation['teamid'] ."', '". $invitation['summonerid']['SummonerId'] ."', '". $invitation['message'] ."')";
+    $this->db1->query($sql);
   }
 }

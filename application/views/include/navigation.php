@@ -1,6 +1,6 @@
-<div class="container">
-    <!-- Static navbar -->
-    <div class="navbar navbar-default" role="navigation">
+  <!-- Static navbar -->
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
           <span class="sr-only">Toggle navigation</span>
@@ -17,7 +17,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['firstname']; ?><b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add ESport</a></li>
-                  <li><a href="#">My Profile</a></li>
+                  <li><a href="<?php echo site_url('home/profile'); ?>">My Profile</a></li>
                   <li><a href="<?php echo site_url('create_team'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('teams'); ?>">My Teams</a></li>
                   <li><a href="#">My ESports</a></li>
@@ -72,5 +72,7 @@
           <li><a href="#">About</a></li>
         </ul>
       </div>
-    </div><!-- Static navbar -->
+    </div>
+  </nav><!-- Static nav -->
+<div class="container">
 <!-- Content -->

@@ -2,9 +2,7 @@
  * All your custom CSS should go into this file
  */
 
-body {
-   padding-top: 15px;
-}
+body { padding-top: 71px; }
 
 #system-messages {
   background-color: #fff;
