@@ -13,6 +13,7 @@ class Teams extends MY_Controller{
         $this->load->model('esport_model');
         $this->load->model('team_model');
         $this->load->model('lol_model');
+        $this->load->model('trade_lol_model');
     }
     public function index() {
         $this->require_login();
@@ -66,6 +67,7 @@ class Teams extends MY_Controller{
     }
 
     public function summoner_registered($summonerlist) {
+        //for callback
         //for summonernamestrim
         $summonerlist = trim($summonerlist,",");
         $summonernames = explode(",", $summonerlist);
@@ -91,8 +93,9 @@ class Teams extends MY_Controller{
             return true;
         }
     }
+
     public function summoner_inteam($summonerlist) {
-        //for callback
+        //for callback, verifies summoner(s) are part of existing team
         $summonerlist = trim($summonerlist,",");
         $summonernames = explode(",", $summonerlist);
         $invalidnames = array();

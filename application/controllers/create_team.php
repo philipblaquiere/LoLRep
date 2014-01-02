@@ -27,7 +27,6 @@ class Create_team extends MY_Controller{
         }
 
         $data['esports'] = $esports;
-
         $this->load->library('form_validation');
 
         $this->form_validation->set_rules('esportid', 'ESport', 'required|callback_has_team');
@@ -67,6 +66,7 @@ class Create_team extends MY_Controller{
 
     public function has_team() {
         $teams = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
+
         foreach ($teams as $team) {
             if($team['esportid'] == $this->input->post('esportid')) {
                 $this->system_message_model->set_message("You can be registered to one team per Esport at a time. You're currently part of team : " . $team['name'] , MESSAGE_ERROR);

@@ -17,7 +17,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['firstname']; ?><b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add ESport</a></li>
-                  <li><a href="<?php echo site_url('home/profile'); ?>">My Profile</a></li>
+                  <li><a href="<?php echo site_url('profile'); ?>">My Profile</a></li>
                   <li><a href="<?php echo site_url('create_team'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('teams'); ?>">My Teams</a></li>
                   <li><a href="#">My ESports</a></li>

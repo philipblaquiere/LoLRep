@@ -34,8 +34,11 @@
 		              			</a>
 		              			<?php if($_SESSION['user']['UserId'] == $team['captainid']) { 
 		              			//user is captain, show captain settings?>
-		              			<a href="<?php echo site_url('teams/invite/' .  $team['teamid'])  ?>" type="button" class="btn btn-default" role="button">
+		              			<a href="<?php echo site_url('teams/invite/' .  $team['teamid']) ?>" type="button" class="btn btn-default" role="button">
 		              				<span class="glyphicon glyphicon-plus"></span>
+		              			</a>
+		              			<a href="<?php echo site_url('trade/trade_lol') ?>" type="button" class="btn btn-default" role="button">
+		              				<span class="glyphicon glyphicon-transfer"></span>
 		              			</a>
 		              			<?php } ?>
 		              		</div>

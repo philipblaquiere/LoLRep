@@ -56,8 +56,8 @@ class Team_model extends CI_Model {
   }
 
 
-  public function get_teams_by_captainid($uid, $esportid) {
-    $sql = "SELECT * FROM teams WHERE captainid = '$uid' AND esportid = '$esportid'";
+  public function get_team_by_captainid($uid, $esportid) {
+    $sql = "SELECT * FROM teams WHERE captainid = '$uid' AND esportid = '$esportid' LIMIT 1";
     $result = $this->db1->query($sql);
     return $result->row_array();
   }
@@ -105,6 +105,14 @@ class Team_model extends CI_Model {
     $sql = "SELECT * FROM teams t
             INNER JOIN teams_lol l ON t.teamid = l.teamid 
             INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
+    $result = $this->db1->query($sql);
+    return $result->result_array();
+  }
+
+  public function get_team_lol($teamid) {
+    $sql = "SELECT * FROM summoners s
+            INNER JOIN teams_lol t ON t.teamid = '$teamid'
+            WHERE t.summonerid = s.SummonerId";
     $result = $this->db1->query($sql);
     return $result->result_array();
   }

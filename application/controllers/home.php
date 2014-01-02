@@ -13,7 +13,4 @@ class Home extends MY_Controller {
 	{
 		$this->view_wrapper('home');
 	}
-	public function profile() {
-		$this->view_wrapper('profile');
-	}
 }
