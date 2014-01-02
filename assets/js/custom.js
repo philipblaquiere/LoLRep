@@ -56,6 +56,32 @@
         });
     });
 
+$('#lolteamsearchform').submit(function(event) {
+        /* Stop form from submitting normally */
+        event.preventDefault();
+
+        /* Clear rune page div*/
+        $("#team_lol_search_result").html('');
+
+        /* Get some values from elements on the page: */
+       var teamname = document.getElementById("teamname").value;
+       if(teamname == "")
+        teamname = "-";
+        
+        /* Send the data using post and put the results in a div */
+        $.ajax({
+            url: '/LoLRep/ajax/find_team_lol/' + teamname.trim(),
+            type: "post",
+            data: teamname,
+            success: function(data){
+                $("#team_lol_search_result").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#team_lol_search_result").html(summonername + " error " + textStatus + " " + errorThrown );
+            }
+        });
+    });
+
 //used to set value from left text input dropdown
 $(".region-list li a").click(function(event) {
     event.preventDefault();

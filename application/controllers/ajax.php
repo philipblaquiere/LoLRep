@@ -5,6 +5,7 @@ class Ajax extends MY_Controller {
 	public function __construct(){
 	    parent::__construct();
 	    $this->load->model('user_model');
+	    $this->load->model('team_model');
 	    $this->load->model('lol_model');
 	    $this->load->model('riotapi_model');
 	    $this->load->model('system_message_model');
@@ -84,7 +85,26 @@ class Ajax extends MY_Controller {
   		}
   	}
 
-  	public function summoner_team_invite($summonername, $teamid) {
-
+  	public function find_team_lol($teamname) {
+  		$esportid = 1; // LoL Esport id
+  		$teamname = trim(urldecode($teamname));
+  		$data['team_lol_result'] = $this->team_model->get_team_lol_byname($teamname);
+  		if(!$data['team_lol_result']) {
+  			//user was registered during verification phase (highly unlikely), display error
+      		$data['errormessage'] = "Team couldn't be found, make sure the spelling is correct (including caps).";
+			$this->load->view('messages/rune_page_verification_fail', $data);
+  		}
+  		else {
+  			$team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'],$esportid);
+  			if($team['name'] == $teamname) {
+  				//user trying to trade with own team, deny him.
+	      		$data['errormessage'] = "Nice try. You can't trade with your own team.";
+				$this->load->view('messages/rune_page_verification_fail', $data);
+  			}
+  			else {
+  				$this->load->view('ajax/team_lol_search_result',$data);
+  			}
+  			
+  		}
   	}
 }

@@ -109,6 +109,14 @@ class Team_model extends CI_Model {
     return $result->result_array();
   }
 
+  public function get_team_lol_byname($teamname) {
+    $sql = "SELECT s.UserId as UserId, s.SummonerId as SummonerId, s.SummonerName as SummonerName FROM summoners s
+            INNER JOIN teams t ON t.name = '$teamname' 
+            INNER JOIN teams_lol l ON l.teamid = t.teamid
+            WHERE l.summonerid = s.SummonerId";
+    $result = $this->db1->query($sql);
+    return $result->result_array();
+  }
   public function get_team_lol($teamid) {
     $sql = "SELECT * FROM summoners s
             INNER JOIN teams_lol t ON t.teamid = '$teamid'
