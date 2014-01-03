@@ -55,7 +55,6 @@ class Team_model extends CI_Model {
     return $result->row_array();
   }
 
-
   public function get_team_by_captainid($uid, $esportid) {
     $sql = "SELECT * FROM teams WHERE captainid = '$uid' AND esportid = '$esportid' LIMIT 1";
     $result = $this->db1->query($sql);
@@ -129,5 +128,38 @@ class Team_model extends CI_Model {
     $sql = "INSERT INTO team_invite_lol (teamid, summonerid, message) 
             VALUES ('". $invitation['teamid'] ."', '". $invitation['summonerid']['SummonerId'] ."', '". $invitation['message'] ."')";
     $this->db1->query($sql);
+  }
+  public function get_lol_invites_by_uid($uid) {
+    /*teamid
+    summonerid
+    message
+    invite_date
+    status
+    teamid
+    name
+    esportid
+    created
+    captainid
+    countryid
+    stateid
+    regionid
+    UserId
+    SummonerId
+    SummonerName
+    ProfileIconId
+    RevisionDate
+    SummonerLevel
+    created*/
+    $sql = "SELECT * FROM team_invite_lol i 
+            INNER JOIN teams t ON t.teamid = i.teamid
+            INNER JOIN summoners s ON s.UserId = '$uid'
+            WHERE s.SummonerId = i.summonerid";
+    $result = $this->db1->query($sql);
+    return $result->result_array();
+  }
+
+  public function mark_invites_read($uid) {
+    $sql = "UPDATE team_invite_lol ";
+    $result = $this->db1->query($sql);
   }
 }

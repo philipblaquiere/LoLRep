@@ -5,3 +5,4 @@
     </label>
   <?php } ?>
 </div>
+<a href="#" class="button">Request Trade</a>

@@ -18,6 +18,7 @@ class Teams extends MY_Controller{
     public function index() {
         $this->require_login();
         $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
+        $data['invites'] = $this->team_model->get_lol_invites_by_uid($_SESSION['user']['UserId']);
         $this->view_wrapper('user/teams', $data);
     }
 
