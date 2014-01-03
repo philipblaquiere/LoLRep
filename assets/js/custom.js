@@ -107,5 +107,5 @@ function switchButtonToRegister(){
     button.setAttribute('value','Register');
     form = document.getElementById('rune_page_verification');
     form.setAttribute('id','create_summoner');
-    form.setAttribute('action','index.php?/user/create_summoner');
+    form.setAttribute('action', 'create_summoner');
 }

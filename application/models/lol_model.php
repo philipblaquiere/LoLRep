@@ -46,8 +46,8 @@ class Lol_model extends CI_Model {
 	    $RevisionDate = $summoner['revisionDate'];
 	    $SummonerLevel = $summoner['summonerLevel'];
 
-	    $sql = "INSERT INTO summoners (SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel) 
-	            VALUES ('" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "')";
+	    $sql = "INSERT INTO summoners (UserId, SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel) 
+	            VALUES ('" . $uid . "','" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "')";
 		$result = $this->db1->query($sql);
 
 		$sql = "INSERT INTO user_esport (UserId, esportid) 

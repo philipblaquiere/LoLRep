@@ -14,11 +14,15 @@ class Teams extends MY_Controller{
         $this->load->model('team_model');
         $this->load->model('lol_model');
         $this->load->model('trade_lol_model');
+        $this->load->model('team_invite_model');
     }
     public function index() {
         $this->require_login();
         $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
-        $data['invites'] = $this->team_model->get_lol_invites_by_uid($_SESSION['user']['UserId']);
+        $data['invites'] = $this->team_invite_model->get_lol_invites_by_uid($_SESSION['user']['UserId']);
+        if($data['invites']) {
+            $this->team_invite_model->mark_invites_read($_SESSION['user']['UserId']);
+        }
         $this->view_wrapper('user/teams', $data);
     }
 
@@ -55,7 +59,7 @@ class Teams extends MY_Controller{
                 $invitation['teamid'] = $team['teamid'];
                 $invitation['message'] = $invitations['invite_message'];
                 
-                $this->team_model->invite_summoner($invitation);
+                $this->team_invite_model->invite_summoner($invitation);
             }
             if(count($summonernames) == 1) {
                 $this->system_message_model->set_message(join(', ', $summonernames)  . " has been invited to " . $team['name']  , MESSAGE_INFO);
