@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class User_Model extends CI_Model {
+class User_Model extends MY_Model {
   /**
   *Table columns:
   *UserId int
@@ -99,8 +99,9 @@ class User_Model extends CI_Model {
   * Returns key to be appended to url in email for user account validation
   */
   public function create($user){
-    $sql = "INSERT INTO users (password, salt, email, firstname, lastname, regionid, provincestateid, countryid) 
-            VALUES ('" . $user['password'] . "', '" . $user['salt'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['regionid'] . "', '" . $user['provincestateid'] . "', '" . $user['countryid'] . "')";
+    $uniqueid = $this->generate_unique_key();
+    $sql = "INSERT INTO users (UserId, password, salt, email, firstname, lastname, regionid, provincestateid, countryid) 
+            VALUES ('" . $uniqueid . "', '" . $user['password'] . "', '" . $user['salt'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['regionid'] . "', '" . $user['provincestateid'] . "', '" . $user['countryid'] . "')";
     
     $query = $this->db1->query($sql);
 

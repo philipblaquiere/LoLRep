@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Team_model extends CI_Model {
+class Team_model extends MY_Model {
   /**
   *Table columns:
   *esportid int
@@ -20,15 +20,16 @@ class Team_model extends CI_Model {
 
   public function create_team($team,$captain)
   {
-    $sql = "INSERT INTO teams (name, esportid, captainid, countryid, stateid, regionid) 
-          VALUES ('". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
+    $uniqueid = $this->generate_unique_key();
+    $sql = "INSERT INTO teams (teamid,name, esportid, captainid, countryid, stateid, regionid) 
+          VALUES ('". $uniqueid ."','". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $_SESSION['user']['UserId'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
     $this->db1->query($sql);
 
     switch ($team['esportid']) {
       case '1':
           //League of Legends
           $sql = "INSERT INTO teams_lol (teamid, summonerid)
-                  VALUES (LAST_INSERT_ID() , '" . $captain['gameid']['SummonerId'] . "')";
+                  VALUES ('". $uniqueid ."' , '" . $captain['gameid']['SummonerId'] . "')";
           $this->db1->query($sql);
           return;
           break;
@@ -39,6 +40,12 @@ class Team_model extends CI_Model {
   }
   public function get_team_by_teamid($teamid) {
     $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";
+    $result = $this->db1->query($sql);
+    return $result->row_array();
+  }
+
+  public function get_teamname_by_teamid($teamid) {
+    $sql = "SELECT name FROM teams WHERE teamid = '$teamid' LIMIT 1";
     $result = $this->db1->query($sql);
     return $result->row_array();
   }
@@ -74,13 +81,23 @@ class Team_model extends CI_Model {
           break;
         }
   }
-   public function get_team_id_by_summonername($summonername) {
-        $sql = "SELECT t.teamid as teamid FROM teams t
+
+  public function get_team_id_by_summonername($summonername) {
+    $sql = "SELECT t.teamid as teamid FROM teams t
+        INNER JOIN teams_lol l ON t.teamid = l.teamid 
+        INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.SummonerName = '$summonername' LIMIT 1";
+    $result = $this->db1->query($sql);
+    return $result->row_array();
+  }
+
+  public function get_lol_teamname_by_uid($uid) {
+    $sql = "SELECT t.name as name FROM teams t
             INNER JOIN teams_lol l ON t.teamid = l.teamid 
-            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.SummonerName = '$summonername' LIMIT 1";
-        $result = $this->db1->query($sql);
-        return $result->row_array();
-   }
+            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
+    $result = $this->db1->query($sql);
+    return $result->result_array();
+  }
+
    public function get_all_teams_by_uid($uid) {
     /*returns 
       teamid
@@ -119,9 +136,27 @@ class Team_model extends CI_Model {
   public function get_team_lol($teamid) {
     $sql = "SELECT * FROM summoners s
             INNER JOIN teams_lol t ON t.teamid = '$teamid'
-            WHERE t.summonerid = s.SummonerId";
+            WHERE t.summonerid = s.SummonerId AND t.status = 'active'";
     $result = $this->db1->query($sql);
     return $result->result_array();
   }
+
+  public function add_summoner($teamid, $summonerid) {
+    $sql = "INSERT INTO teams_lol (teamid, summonerid)
+            VALUES ('" . $teamid . "', '" . $summonerid . "')";
+    $this->db1->query($sql);
+  }
+
+  /*
+  * Removes summoner from the team
+  * which he/she is active
+  */
+  public function remove_summoner($summonerid) {
+    $sql = "UPDATE team_lol
+              SET status='leave', leave_date = now()
+              WHERE summonerid = '$summonerid' AND status = 'active'";
+    $this->db1->query($sql);
+  }
+
 }
 

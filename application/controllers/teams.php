@@ -19,7 +19,7 @@ class Teams extends MY_Controller{
     public function index() {
         $this->require_login();
         $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
-        $data['invites'] = $this->team_invite_model->get_lol_invites_by_uid($_SESSION['user']['UserId']);
+        $data['invites'] = $this->team_invite_model->get_lol_new_invites_by_uid($_SESSION['user']['UserId']);
         if($data['invites']) {
             $this->team_invite_model->mark_invites_read($_SESSION['user']['UserId']);
         }

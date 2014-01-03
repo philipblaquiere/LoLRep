@@ -46,7 +46,6 @@ class Sign_in extends MY_Controller{
       $password = $this->input->post('password');
 
       $user = $this->user_model->get_by_email($email);
-
       if(!$user) {
         $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
         $this->view_wrapper('user/sign_in');
@@ -58,8 +57,8 @@ class Sign_in extends MY_Controller{
         $this->view_wrapper('user/sign_in');
       }
       else if($this->user_model->validate_password($user,$password)) {
-        //uservalidated, proced with login
-        $this->set_current_user($user['UserId']);
+        //user validated, proced with login
+        $this->set_current_user($user);
 
         $this->user_model->log_login($user['UserId']);
         $this->system_message_model->set_message('Welcome, ' . $user['firstname'], MESSAGE_INFO);

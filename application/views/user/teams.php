@@ -16,13 +16,13 @@
 		        <div class="col-md-5 ">
 		        	<div class="btn-toolbar " role="toolbar">
 	              		<div class="btn-group">
-	              			<a href="#" type="button" class="btn btn-default" role="button">
+	              			<a href="<?php echo site_url('invite/accept_invite/' . $invite['inviteid'] . '/' . $invite['esportid'])?>" type="button" class="btn btn-default" role="button">
 	              				<span class="glyphicon glyphicon-ok"></span>
 	              			</a>
-	              			<a href="#" type="button" class="btn btn-default" role="button">
+	              			<a href="<?php echo site_url('invite/decline_invite/' . $invite['inviteid'] . '/' . $invite['esportid'])?>" type="button" class="btn btn-default" role="button">
 	              				<span class="glyphicon glyphicon-remove"></span>
 	              			</a>
-	              			<a href="#" type="button" class="btn btn-default" role="button">
+	              			<a href="<?php echo site_url('invite/accept_invite/' . $invite['inviteid'] . '/' . $invite['esportid'])?>" type="button" class="btn btn-default" role="button">
 	              				<span class="glyphicon glyphicon-pencil"></span>
 	              			</a>
 	              		</div>

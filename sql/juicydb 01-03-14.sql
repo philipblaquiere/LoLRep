@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 30, 2013 at 06:52 PM
+-- Generation Time: Jan 03, 2014 at 06:55 PM
 -- Server version: 5.5.24-log
 -- PHP Version: 5.3.13
 
@@ -87,10 +87,10 @@ INSERT INTO `esports` (`esportid`, `name`, `abbrv`, `type`, `description`, `imag
 --
 
 CREATE TABLE IF NOT EXISTS `games` (
-  `gameid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `gameid` varchar(36) NOT NULL,
   `esportid` int(10) unsigned NOT NULL,
-  `teamaid` int(11) unsigned NOT NULL,
-  `teambid` int(11) unsigned NOT NULL,
+  `teamaid` varchar(36) NOT NULL,
+  `teambid` varchar(36) NOT NULL,
   `date` datetime NOT NULL,
   `winnerid` int(10) unsigned NOT NULL,
   PRIMARY KEY (`gameid`),
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `games` (
   KEY `esportid` (`esportid`),
   KEY `teamaid` (`teamaid`),
   KEY `teambid` (`teambid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -141,7 +141,7 @@ INSERT INTO `locationsupport` (`countryid`, `provincestateid`, `regionid`) VALUE
 --
 
 CREATE TABLE IF NOT EXISTS `pendingaccounts` (
-  `uid` int(10) unsigned NOT NULL,
+  `uid` varchar(36) NOT NULL,
   `email` varchar(64) NOT NULL,
   `validationkey` varchar(32) NOT NULL,
   PRIMARY KEY (`uid`),
@@ -153,11 +153,9 @@ CREATE TABLE IF NOT EXISTS `pendingaccounts` (
 --
 
 INSERT INTO `pendingaccounts` (`uid`, `email`, `validationkey`) VALUES
-(23, 'Email@Test.Com', 'FVGYZmMDv6NbQf8f'),
-(24, 'hebert.vincent@hotmail.ca', 'wo8fKHgXZBHasPrQ'),
-(21, 'john@doe.com', 'VB1GOOnnvNpWfqRu'),
-(22, 'p@p.com', 'ITJOlT6HAS7VxVYu'),
-(20, 'philipblaquiere@me.com', 'eG0ALq4Q0GPh0l4y');
+('1b1ea6f8-e4f8-55fe-b7a0-0a0558fc4499', 'p@p.com', 'N9gWfX6waPNN1i9X'),
+('75dc3008-3a9d-56a5-b708-d3b84487f3da', 'philipblaquiere@gmail.com', 'jbrU2dtyXs9wekhb'),
+('7512b30f-2f1b-587d-85f9-aa36fc0c680e', 'philipblaquiere@me.com', 'QGobuP0x4j1AxREB');
 
 -- --------------------------------------------------------
 
@@ -288,11 +286,51 @@ INSERT INTO `state` (`provincestateid`, `name`, `abbreviation`, `countryid`) VAL
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `statistics_lol`
+--
+
+CREATE TABLE IF NOT EXISTS `statistics_lol` (
+  `gameid` varchar(36) NOT NULL,
+  `gametype` varchar(16) NOT NULL,
+  `summonerid` int(11) NOT NULL,
+  `spell1` smallint(5) unsigned NOT NULL,
+  `teamid` smallint(5) unsigned NOT NULL,
+  `level` smallint(5) unsigned NOT NULL,
+  `gold_earned` int(10) unsigned NOT NULL,
+  `num_deaths` smallint(5) unsigned NOT NULL,
+  `minions_killed` smallint(5) unsigned NOT NULL,
+  `champions_killed` smallint(5) unsigned NOT NULL,
+  `total_damage_dealt` int(10) unsigned NOT NULL,
+  `total_damage_taken` int(10) unsigned NOT NULL,
+  `double_kills` smallint(5) unsigned NOT NULL,
+  `triple_kills` smallint(5) unsigned NOT NULL,
+  `quadra_kills` smallint(5) unsigned NOT NULL,
+  `penta_kills` smallint(5) unsigned NOT NULL,
+  `lose` smallint(5) unsigned NOT NULL,
+  `item0` int(10) unsigned NOT NULL,
+  `item1` int(10) unsigned NOT NULL,
+  `item2` int(10) unsigned NOT NULL,
+  `item3` int(10) unsigned NOT NULL,
+  `item4` int(10) unsigned NOT NULL,
+  `item5` int(10) unsigned NOT NULL,
+  `ward_placed` smallint(5) unsigned NOT NULL,
+  `assists` smallint(5) unsigned NOT NULL,
+  `spell2` int(10) unsigned NOT NULL,
+  `championid` int(10) unsigned NOT NULL,
+  `createdate` int(10) unsigned NOT NULL,
+  `gamemode` varchar(16) NOT NULL,
+  PRIMARY KEY (`gameid`),
+  KEY `summonerid` (`summonerid`,`spell1`,`teamid`,`item0`,`item1`,`item2`,`item3`,`item4`,`item5`,`spell2`,`championid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `summoners`
 --
 
 CREATE TABLE IF NOT EXISTS `summoners` (
-  `UserId` int(10) unsigned NOT NULL,
+  `UserId` varchar(36) NOT NULL,
   `SummonerId` int(11) unsigned NOT NULL,
   `SummonerName` varchar(16) NOT NULL,
   `ProfileIconId` int(10) unsigned NOT NULL,
@@ -309,8 +347,9 @@ CREATE TABLE IF NOT EXISTS `summoners` (
 --
 
 INSERT INTO `summoners` (`UserId`, `SummonerId`, `SummonerName`, `ProfileIconId`, `RevisionDate`, `SummonerLevel`, `created`) VALUES
-(1, 29208894, 'seejimmyrun', 579, 4294967295, 30, '2013-12-23 19:30:21'),
-(20, 32274301, 'runjimmysee', 31, 4294967295, 16, '2013-12-23 23:45:01');
+('75dc3008-3a9d-56a5-b708-d3b84487f3da', 29208894, 'seejimmyrun', 589, 4294967295, 30, '2014-01-03 17:54:45'),
+('7512b30f-2f1b-587d-85f9-aa36fc0c680e', 32274301, 'runjimmysee', 31, 4294967295, 16, '2014-01-03 18:03:08'),
+('1b1ea6f8-e4f8-55fe-b7a0-0a0558fc4499', 49000727, 'Voracik', 23, 4294967295, 5, '2014-01-03 18:06:31');
 
 -- --------------------------------------------------------
 
@@ -319,29 +358,26 @@ INSERT INTO `summoners` (`UserId`, `SummonerId`, `SummonerName`, `ProfileIconId`
 --
 
 CREATE TABLE IF NOT EXISTS `teams` (
-  `teamid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `teamid` varchar(36) NOT NULL,
   `name` varchar(32) NOT NULL,
   `esportid` int(10) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `captainid` int(10) unsigned NOT NULL,
-  `countryid` int(10) unsigned NOT NULL,
-  `stateid` int(10) unsigned NOT NULL,
-  `regionid` int(10) unsigned NOT NULL,
+  `captainid` varchar(36) NOT NULL,
+  `countryid` int(11) NOT NULL,
+  `stateid` int(11) NOT NULL,
+  `regionid` int(11) NOT NULL,
   PRIMARY KEY (`teamid`),
-  UNIQUE KEY `name` (`name`),
-  KEY `leaderid` (`captainid`,`countryid`,`stateid`,`regionid`),
-  KEY `esportid` (`esportid`),
-  KEY `name_2` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+  UNIQUE KEY `teamid` (`teamid`,`name`),
+  KEY `captainid` (`captainid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `teams`
 --
 
 INSERT INTO `teams` (`teamid`, `name`, `esportid`, `created`, `captainid`, `countryid`, `stateid`, `regionid`) VALUES
-(2, 'test', 1, '2013-12-24 03:46:25', 22, 1, 68, 6),
-(3, 'test2', 1, '2013-12-24 03:46:49', 22, 1, 68, 6),
-(12, 'summoneridtest2', 1, '2013-12-30 18:05:34', 1, 1, 68, 6);
+('889f98e0-929b-5287-9df4-5fcf97fab286', 'Big Green', 1, '2014-01-03 18:42:46', '7512b30f-2f1b-587d-85f9-aa36fc0c680e', 7512, 68, 6),
+('9429107c-68ee-5df2-bb91-2c3ecaba5c0b', 'Montreal Boys', 1, '2014-01-03 18:18:48', '75dc3008-3a9d-56a5-b708-d3b84487f3da', 75, 68, 6);
 
 -- --------------------------------------------------------
 
@@ -350,19 +386,22 @@ INSERT INTO `teams` (`teamid`, `name`, `esportid`, `created`, `captainid`, `coun
 --
 
 CREATE TABLE IF NOT EXISTS `teams_lol` (
-  `teamid` int(10) unsigned NOT NULL,
+  `teamid` varchar(36) NOT NULL,
   `summonerid` int(10) unsigned DEFAULT NULL,
   `joined_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`teamid`),
-  KEY `summonerid` (`summonerid`)
+  `status` varchar(16) NOT NULL DEFAULT 'active',
+  `leave_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  KEY `summonerid` (`summonerid`),
+  KEY `teamid` (`teamid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `teams_lol`
 --
 
-INSERT INTO `teams_lol` (`teamid`, `summonerid`, `joined_date`) VALUES
-(12, 29208894, '2013-12-30 18:05:34');
+INSERT INTO `teams_lol` (`teamid`, `summonerid`, `joined_date`, `status`, `leave_date`) VALUES
+('9429107c-68ee-5df2-bb91-2c3ecaba5c0b', 29208894, '2014-01-03 18:18:48', 'active', '0000-00-00 00:00:00'),
+('889f98e0-929b-5287-9df4-5fcf97fab286', 32274301, '2014-01-03 18:42:46', 'active', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -371,13 +410,23 @@ INSERT INTO `teams_lol` (`teamid`, `summonerid`, `joined_date`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `team_invite_lol` (
-  `teamid` int(10) unsigned NOT NULL,
+  `inviteid` varchar(36) NOT NULL,
+  `teamid` varchar(36) NOT NULL,
   `summonerid` int(10) unsigned NOT NULL,
   `message` varchar(140) NOT NULL,
   `invite_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY `teamid` (`teamid`,`summonerid`),
-  KEY `summonerid` (`summonerid`)
+  `status` varchar(8) NOT NULL DEFAULT 'new',
+  PRIMARY KEY (`inviteid`),
+  KEY `teamid` (`teamid`,`summonerid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `team_invite_lol`
+--
+
+INSERT INTO `team_invite_lol` (`inviteid`, `teamid`, `summonerid`, `message`, `invite_date`, `status`) VALUES
+('1a31f2e2-1d40-5dd5-a0f4-d61332cbe44a', '889f98e0-929b-5287-9df4-5fcf97fab286', 49000727, 'test', '2014-01-03 18:47:01', 'accepted'),
+('518528f6-bc94-5637-b1d7-438a9b538b42', '9429107c-68ee-5df2-bb91-2c3ecaba5c0b', 49000727, 'test', '2014-01-03 18:53:24', 'declined');
 
 -- --------------------------------------------------------
 
@@ -386,11 +435,28 @@ CREATE TABLE IF NOT EXISTS `team_invite_lol` (
 --
 
 CREATE TABLE IF NOT EXISTS `team_old_names` (
-  `teamid` int(10) unsigned NOT NULL,
-  `name` int(11) NOT NULL,
+  `teamid` varchar(36) NOT NULL,
+  `name` varchar(32) NOT NULL,
   `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `teamid` (`teamid`),
   KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trades_lol`
+--
+
+CREATE TABLE IF NOT EXISTS `trades_lol` (
+  `teamaid` varchar(36) NOT NULL,
+  `summoneraid` int(10) unsigned NOT NULL,
+  `teambid` varchar(36) NOT NULL,
+  `summonerbid` int(10) unsigned NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(16) NOT NULL DEFAULT 'pending',
+  KEY `teamaid` (`teamaid`,`summoneraid`,`teambid`,`summonerbid`),
+  KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -400,7 +466,7 @@ CREATE TABLE IF NOT EXISTS `team_old_names` (
 --
 
 CREATE TABLE IF NOT EXISTS `users` (
-  `UserId` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `UserId` varchar(36) NOT NULL,
   `password` varchar(64) NOT NULL,
   `salt` varchar(32) NOT NULL,
   `email` varchar(64) NOT NULL,
@@ -412,28 +478,44 @@ CREATE TABLE IF NOT EXISTS `users` (
   `registertime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `last_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `validated` tinyint(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`UserId`),
   UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `UserId` (`UserId`),
   KEY `cityid` (`regionid`,`provincestateid`,`countryid`),
   KEY `provincestateid` (`provincestateid`),
   KEY `countryid` (`countryid`),
   KEY `countryid_2` (`countryid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=25 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`UserId`, `password`, `salt`, `email`, `firstname`, `lastname`, `regionid`, `provincestateid`, `countryid`, `registertime`, `last_login_time`, `validated`) VALUES
-(1, 'dbece9200b7f05d9b8b08475a2fb50ed9f8b6a20', '45TX+7', 'philipblaquiere@gmail.com', 'Philip', 'Blaquiere', 6, 68, 1, '2013-12-30 18:49:42', '2013-12-30 18:49:42', 1),
-(4, 'ca9afdc04043d6017bc36f65d44c8cd411b881d1', 'm5nhiv', 'test@test.com', 'Test', 'Test', 6, 68, 1, '2013-12-15 19:32:16', '0000-00-00 00:00:00', 0),
-(5, '5174024ef2d8c06890fa6f0c9de7692fc8cc805e', 'n6fkaC', 'test@test1.com', 'Test', 'Test', 6, 68, 1, '2013-12-15 19:33:16', '0000-00-00 00:00:00', 0),
-(6, 'f711431496ba13a7f8cdbc374adb6dd6216f7065', 'QuDeEq', 'test3@test3.com', 'test', 'test', 6, 68, 1, '2013-12-15 19:34:28', '0000-00-00 00:00:00', 0),
-(20, 'cc847d314b11ed1529978a4097e2757293d676e7', '4RX2RY', 'philipblaquiere@me.com', 'Philip', 'Blaquiere', 6, 68, 1, '2013-12-18 05:12:56', '2013-12-18 05:00:00', 0),
-(21, '4da65974c0cc1def39fc07fe5ec5c5ad10f28780', 'JP~bk9', 'john@doe.com', 'John', 'Doe', 6, 68, 1, '2013-12-18 21:22:16', '2013-12-18 21:22:16', 1),
-(22, 'a907c7ef55500a09c29ec1249a8355bfcec385bb', '*uy3%a', 'p@p.com', 'Philip', 'Blaquiere', 6, 68, 1, '2013-12-30 18:13:13', '2013-12-30 18:13:13', 1),
-(23, 'cfbf6939df59f6a4f9f3857b42e5dc57a58cfb1d', '3!Qgq+', 'Email@Test.Com', 'Email', 'Test', 6, 68, 1, '2013-12-24 14:38:38', '0000-00-00 00:00:00', 0),
-(24, 'fb4335ea76a6729728eb016e36e769aaadc30996', 'rmqY+7', 'hebert.vincent@hotmail.ca', 'Vincent', 'Hebert', 6, 68, 1, '2013-12-25 20:54:21', '0000-00-00 00:00:00', 0);
+('1b1ea6f8-e4f8-55fe-b7a0-0a0558fc4499', '27cb51fd5f840f47e6694d24445a0561d0350c9b', 'OMa)Ye', 'p@p.com', 'Philip', 'B', 6, 68, 1, '2014-01-03 18:53:35', '2014-01-03 18:53:35', 1),
+('75dc3008-3a9d-56a5-b708-d3b84487f3da', 'b04513bfb74fbf367b887aa6620228d56521b246', 'jUnbQT', 'philipblaquiere@gmail.com', 'Philip', 'Blaquiere', 6, 68, 1, '2014-01-03 18:51:56', '2014-01-03 18:51:56', 1),
+('7512b30f-2f1b-587d-85f9-aa36fc0c680e', '68f6eeddb11c7cd200a9160e9ddba87f8c1c0660', 'sZLpb~', 'philipblaquiere@me.com', 'Philip', 'Blaquiere', 6, 68, 1, '2014-01-03 18:46:44', '2014-01-03 18:46:44', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_esport`
+--
+
+CREATE TABLE IF NOT EXISTS `user_esport` (
+  `UserId` varchar(36) NOT NULL,
+  `esportid` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`UserId`),
+  KEY `esportid` (`esportid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_esport`
+--
+
+INSERT INTO `user_esport` (`UserId`, `esportid`) VALUES
+('1b1ea6f8-e4f8-55fe-b7a0-0a0558fc4499', 1),
+('7512b30f-2f1b-587d-85f9-aa36fc0c680e', 1),
+('75dc3008-3a9d-56a5-b708-d3b84487f3da', 1);
 
 -- --------------------------------------------------------
 
@@ -442,7 +524,7 @@ INSERT INTO `users` (`UserId`, `password`, `salt`, `email`, `firstname`, `lastna
 --
 
 CREATE TABLE IF NOT EXISTS `user_roles` (
-  `uid` int(10) unsigned NOT NULL,
+  `uid` varchar(36) NOT NULL,
   `rid` smallint(5) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`uid`),
   KEY `rid` (`rid`)
@@ -453,15 +535,6 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
 --
 
 --
--- Constraints for table `games`
---
-ALTER TABLE `games`
-  ADD CONSTRAINT `games_ibfk_1` FOREIGN KEY (`esportid`) REFERENCES `esports` (`esportid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `games_ibfk_2` FOREIGN KEY (`winnerid`) REFERENCES `teams` (`teamid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `games_ibfk_3` FOREIGN KEY (`teamaid`) REFERENCES `teams` (`teamid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `games_ibfk_4` FOREIGN KEY (`teambid`) REFERENCES `teams` (`teamid`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `locationsupport`
 --
 ALTER TABLE `locationsupport`
@@ -470,41 +543,10 @@ ALTER TABLE `locationsupport`
   ADD CONSTRAINT `locationsupport_ibfk_3` FOREIGN KEY (`regionid`) REFERENCES `region` (`regionid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `pendingaccounts`
---
-ALTER TABLE `pendingaccounts`
-  ADD CONSTRAINT `pendingaccounts_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `users` (`UserId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `region`
 --
 ALTER TABLE `region`
   ADD CONSTRAINT `region_ibfk_1` FOREIGN KEY (`provincestateid`) REFERENCES `state` (`provincestateid`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `summoners`
---
-ALTER TABLE `summoners`
-  ADD CONSTRAINT `summoners_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`UserId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `teams`
---
-ALTER TABLE `teams`
-  ADD CONSTRAINT `teams_ibfk_1` FOREIGN KEY (`esportid`) REFERENCES `esports` (`esportid`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `team_invite_lol`
---
-ALTER TABLE `team_invite_lol`
-  ADD CONSTRAINT `team_invite_lol_ibfk_2` FOREIGN KEY (`teamid`) REFERENCES `teams` (`teamid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `team_invite_lol_ibfk_3` FOREIGN KEY (`summonerid`) REFERENCES `summoners` (`SummonerId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `team_old_names`
---
-ALTER TABLE `team_old_names`
-  ADD CONSTRAINT `team_old_names_ibfk_1` FOREIGN KEY (`teamid`) REFERENCES `teams` (`teamid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `users`
@@ -513,12 +555,6 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`regionid`) REFERENCES `region` (`regionid`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`provincestateid`) REFERENCES `state` (`provincestateid`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `users_ibfk_3` FOREIGN KEY (`countryid`) REFERENCES `countries` (`cid`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `user_roles`
---
-ALTER TABLE `user_roles`
-  ADD CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `users` (`UserId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

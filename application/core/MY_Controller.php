@@ -68,9 +68,9 @@ class MY_Controller extends CI_Controller  {
     return isset($_SESSION['uid']) ? $_SESSION['uid'] : 0;
   }
 
-  protected function set_current_user($uid) {
-    $_SESSION['uid'] = $uid;
-    $_SESSION['user'] = $this->user_model->get_by_uid($uid);
+  protected function set_current_user($user) {
+    $_SESSION['uid'] = $user['UserId'];
+    $_SESSION['user'] = $user;
   }
 
   protected function destroy_session() {
