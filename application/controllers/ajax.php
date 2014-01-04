@@ -35,10 +35,17 @@ class Ajax extends MY_Controller {
 				return;
 			}
 			else {
+				//check to see if summoner is banned
+				$banned_summoner = $this->banned_model->get_bysummonername($summonerinput);
+				if($banned_summoner) {
+					$data['errormessage'] = "The specified summoner has been banned from our website";
+					$this->load->view('messages/rune_page_verification_fail', $data);
+					return;
+				}
 				//summoner exists, check if summoner exists already in our db
 				$summoner = $this->lol_model->registered_summoner($summonerinput);
 
-				if(!$summoner) {
+				else if(!$summoner) {
 					//summoner doesn't exist in db yet. Generate a Rune Page Key
 					$_SESSION['runepagekey'] = $this->user_model->generate_rune_page_key();
 					$data['runepagekey'] = $_SESSION['runepagekey'];

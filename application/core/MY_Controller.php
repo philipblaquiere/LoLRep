@@ -71,12 +71,13 @@ class MY_Controller extends CI_Controller  {
   protected function set_current_user($user) {
     $_SESSION['uid'] = $user['UserId'];
     $_SESSION['user'] = $user;
+    $_SESSION['last_login'] = $user['last_login_time'];
   }
 
   protected function destroy_session() {
     unset($_SESSION['uid']);
     unset($_SESSION['user']);
-    unset($_SESSION['last_login_time']);
+    unset($_SESSION['last_login']);
   }
 
   /**

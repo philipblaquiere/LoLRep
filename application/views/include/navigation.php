@@ -38,6 +38,7 @@
             </ul>
           </li>
           <?php endif; ?>
+          <li><a href="<?php echo site_url('admin') ?>">Admin</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li class="divider-vertical"></li>

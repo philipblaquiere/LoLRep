@@ -13,6 +13,7 @@ class Sign_in extends MY_Controller{
     $this->load->model('esport_model');
     $this->load->model('lol_model');
     $this->load->model('team_model');
+    $this->load->model('banned_model');
   }
 
   public function index() {
@@ -28,9 +29,7 @@ class Sign_in extends MY_Controller{
   }
 
   public function sign_in() {
-
     $this->require_not_login();
-
 
     $this->load->library('form_validation');
 
@@ -50,13 +49,20 @@ class Sign_in extends MY_Controller{
         $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
         $this->view_wrapper('user/sign_in');
       }
-      
+
       else if($user['validated'] == 0) {
         //user did not validate themselves, prompt them to resend the validation email.
         $this->system_message_model->set_message('Hey! This account was never validated. Check your emails for an email we sent you!', MESSAGE_INFO);
         $this->view_wrapper('user/sign_in');
       }
       else if($this->user_model->validate_password($user,$password)) {
+        $banned_user = $this->banned_model->get_byemail($user['email']);
+
+        if($banned_user) {
+          $this->system_message_model->set_message('You have been banned from our website. Reason : ' . $banned_user['reason'], MESSAGE_INFO);
+          $this->view_wrapper('user/sign_in');
+          return;
+        }
         //user validated, proced with login
         $this->set_current_user($user);
 

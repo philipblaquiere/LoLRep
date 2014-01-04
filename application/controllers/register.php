@@ -10,6 +10,7 @@ class Register extends MY_Controller{
         $this->load->model('system_message_model');
         $this->load->model('country_model');
         $this->load->model('ip_log_model');
+        $this->load->model('banned_model');
     }
     
     public function index() {
@@ -28,7 +29,7 @@ class Register extends MY_Controller{
 
       $this->form_validation->set_rules('fname', 'First Name', 'trim|required|xss_clean');
       $this->form_validation->set_rules('lname', 'Last Name', 'trim|required|xss_clean');
-      $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email');
+      $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email|callback_is_banned');
       $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
       $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
       $this->form_validation->set_rules('countryid', 'Country', 'required');
@@ -88,8 +89,8 @@ class Register extends MY_Controller{
       }
       else {
         return true;
-      
-}    }
+      }
+    }
 
     public function validate_user($key, $uid) {
       if($this->user_model->validate_user($key, $uid))
@@ -100,6 +101,18 @@ class Register extends MY_Controller{
       else
       {
         //user validation failed
+      }
+    }
+    public function is_banned($email) {
+      $banned_user = $this->banned_model->get($email);
+      if($banned_user) {
+        //user with that email has been banned
+        $this->system_message_model->set_message('This email has been banned from our website.', MESSAGE_ERROR);
+        $this->form_validation->set_message('not_banned', 'This email has been banned from our website.');
+        return false;
+      }
+      else {
+        return true;
       }
     }
 }

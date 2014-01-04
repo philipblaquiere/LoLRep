@@ -56,5 +56,18 @@ class Lol_model extends CI_Model {
 
 		return;
 	}
+
+	public function update_lol_champions($champions) {
+        $sql = "DELETE FROM champions_lol";
+        //clear db table
+        $this->db1->query($sql);
+
+        $sql = "INSERT INTO champions_lol (championid,rankedPlayEnabled, name, active, freeToPlay) VALUES ";
+        foreach ($champions['champions'] as $champion) {
+            $sql .= "('" . $champion['id'] . "','" . $champion['rankedPlayEnabled'] . "','" . $champion['name'] . "','" . $champion['active'] . "','" . $champion['freeToPlay'] . "'),";
+        }
+        $this->db1->query(trim($sql, ","));
+
+	}
 	
 }

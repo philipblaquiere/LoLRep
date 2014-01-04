@@ -14,14 +14,14 @@ class Riotapi_model extends CI_Model  {
 	
 	public function __construct()
 	{		
+		$this->REGION = 'na';
 	}
 
-	public function getChampion(){
+	public function getChampions(){
 		$call = 'champion';
-
+		$this->REGION = 'na';
 		//add API URL to the call
 		$call = self::API_URL_1_1 . $call;
-
 		return $this->request($call);
 	}
 

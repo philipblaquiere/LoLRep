@@ -22,9 +22,6 @@
 	              			<a href="<?php echo site_url('invite/decline_invite/' . $invite['inviteid'] . '/' . $invite['esportid'])?>" type="button" class="btn btn-default" role="button">
 	              				<span class="glyphicon glyphicon-remove"></span>
 	              			</a>
-	              			<a href="<?php echo site_url('invite/accept_invite/' . $invite['inviteid'] . '/' . $invite['esportid'])?>" type="button" class="btn btn-default" role="button">
-	              				<span class="glyphicon glyphicon-pencil"></span>
-	              			</a>
 	              		</div>
 		            </div>
 		        </div>
