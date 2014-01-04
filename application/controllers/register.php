@@ -104,7 +104,7 @@ class Register extends MY_Controller{
       }
     }
     public function is_banned($email) {
-      $banned_user = $this->banned_model->get($email);
+      $banned_user = $this->banned_model->get_byemail($email);
       if($banned_user) {
         //user with that email has been banned
         $this->system_message_model->set_message('This email has been banned from our website.', MESSAGE_ERROR);
