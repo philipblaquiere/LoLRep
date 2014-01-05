@@ -16,5 +16,6 @@
     <li ><a href="#">Leagues</a></li>
   </ul>
   <div id="profilecontent">
+    Test content
   </div>
 </div>

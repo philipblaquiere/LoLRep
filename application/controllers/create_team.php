@@ -29,10 +29,11 @@ class Create_team extends MY_Controller{
         $data['esports'] = $esports;
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('esportid', 'ESport', 'required|callback_has_team');
-        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
+        $this->form_validation->set_rules('esportid', 'ESport', 'required');
+        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
 
         if($this->form_validation->run() == FALSE) {
+            $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
             $this->view_wrapper('user/create_team', $data);
         }
         else {
@@ -55,7 +56,6 @@ class Create_team extends MY_Controller{
     public function unique_teamname($teamname) {
         $existing_team = $this->team_model->get_team_by_name($teamname, $this->input->post('esportid'));
         if($existing_team) {
-            $this->system_message_model->set_message("A team with an identical name already exists."  , MESSAGE_ERROR);
             $this->form_validation->set_message('unique_teamname','A team with an identical name already exists.');
             return false;
         }
@@ -69,8 +69,7 @@ class Create_team extends MY_Controller{
 
         foreach ($teams as $team) {
             if($team['esportid'] == $this->input->post('esportid')) {
-                $this->system_message_model->set_message("You can be registered to one team per Esport at a time. You're currently part of team : " . $team['name'] , MESSAGE_ERROR);
-                $this->form_validation->set_message('has_team','You can be registered to a single team per Registered Esport.');
+                $this->form_validation->set_message('has_team',"You can be registered to one team per Esport at a time. You're currently part of team : " . $team['name']);
                 return false;
             }
             else {

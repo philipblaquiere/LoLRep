@@ -94,9 +94,9 @@ class Register extends MY_Controller{
 
     public function validate_user($key, $uid) {
       if($this->user_model->validate_user($key, $uid))
-      {
-        //user validation succeeded, proceed with asking user to sign in to continue
-        $this->view_wrapper('user/user_validated');
+              //user validation succeeded, proceed with asking user to sign in to continue
+        $this->view_wrapper('user/user_validated');{
+
       }
       else
       {

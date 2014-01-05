@@ -9,6 +9,7 @@ class Ajax extends MY_Controller {
 	    $this->load->model('lol_model');
 	    $this->load->model('riotapi_model');
 	    $this->load->model('system_message_model');
+	    $this->load->model('banned_model');
 	}
 
 	public function authenticate_summoner($region, $summonerinput) {
@@ -37,14 +38,13 @@ class Ajax extends MY_Controller {
 			else {
 				//check to see if summoner is banned
 				$banned_summoner = $this->banned_model->get_bysummonername($summonerinput);
+				//summoner exists, check if summoner exists already in our db
+				$summoner = $this->lol_model->registered_summoner($summonerinput);
 				if($banned_summoner) {
 					$data['errormessage'] = "The specified summoner has been banned from our website";
 					$this->load->view('messages/rune_page_verification_fail', $data);
 					return;
 				}
-				//summoner exists, check if summoner exists already in our db
-				$summoner = $this->lol_model->registered_summoner($summonerinput);
-
 				else if(!$summoner) {
 					//summoner doesn't exist in db yet. Generate a Rune Page Key
 					$_SESSION['runepagekey'] = $this->user_model->generate_rune_page_key();

@@ -10,6 +10,7 @@ class Add_esport extends MY_Controller{
         $this->load->model('system_message_model');
         $this->load->model('esport_model');
         $this->load->model('lol_model');
+        $this->load->model('riotapi_model');
     }
     public function index() {
         $this->require_login();
@@ -39,8 +40,11 @@ class Add_esport extends MY_Controller{
           redirect('user/register_LoL', 'location');
         }
         else {
-          //valid summoner, create summoner and redirect to home page.
+           //valid summoner, create summoner and redirect to home page.
+          $_SESSION['summoner']['summonerrank'] = $this->riotapi_model->getLeague($_SESSION['summoner']['id']);
+          
           $this->lol_model->create_summoner($_SESSION['uid'], $_SESSION['summoner']);
+          $this->esport_model->register_user_lol($_SESSION['uid']);
           $this->system_message_model->set_message($_SESSION['summoner']['name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
           unset($_SESSION['summoner']);
           $this->view_wrapper('home');

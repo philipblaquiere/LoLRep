@@ -36,9 +36,9 @@ class Riotapi_model extends CI_Model  {
 
 	public function getLeague($id){
 		$call = 'league/by-summoner/' . $id;
-
+		$this->REGION = 'na';
 		//add API URL to the call
-		$call = self::API_URL_2_2 . $call;
+		$call = self::API_URL_2_1 . $call;
 
 		return $this->request($call);
 	}

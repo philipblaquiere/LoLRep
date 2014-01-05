@@ -45,14 +45,21 @@ class Lol_model extends CI_Model {
 	    $ProfileIconId = $summoner['profileIconId'];
 	    $RevisionDate = $summoner['revisionDate'];
 	    $SummonerLevel = $summoner['summonerLevel'];
-
-	    $sql = "INSERT INTO summoners (UserId, SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel) 
-	            VALUES ('" . $uid . "','" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "')";
+	    $summonertier = $summoner['summonerrank'][$SummonerId]['tier'];
+	    if($summonertier) {
+		    foreach ($summoner['summonerrank'][$SummonerId]['entries'] as $entry) {
+		     	if($entry['playerOrTeamId'] == $SummonerId)
+		     		$summonerrank = $entry['rank'];
+		    }
+	    } 
+	   else {
+	    	$summonerrank = "unranked";
+	    	$summonertier = "unranked";
+	    }
+	    	
+	    $sql = "INSERT INTO summoners (UserId, SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel, rank, tier) 
+	            VALUES ('" . $uid . "','" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "', '" . $summonertier . "', '" . $summonerrank . "')";
 		$result = $this->db1->query($sql);
-
-		$sql = "INSERT INTO user_esport (UserId, esportid) 
-	            VALUES ('" . $uid . "', '1')";
-	    $result = $this->db1->query($sql);
 
 		return;
 	}
