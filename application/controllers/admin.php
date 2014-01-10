@@ -53,4 +53,8 @@ class Admin extends MY_Controller{
     public function ban_summoner($user,$reason) {
         $this->banned_model->ban_summoner($user,$reason);
     }
+
+    public function create_season() {
+        $this->load->library('form_validation');
+    }
 }

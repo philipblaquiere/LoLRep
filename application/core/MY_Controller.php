@@ -72,12 +72,15 @@ class MY_Controller extends CI_Controller  {
     $_SESSION['uid'] = $user['UserId'];
     $_SESSION['user'] = $user;
     $_SESSION['last_login'] = $user['last_login_time'];
+    $seasonid = $this->season_model->get_current_seasonid();
+    $_SESSION['seasonid'] = $seasonid['seasonid'];
   }
 
   protected function destroy_session() {
     unset($_SESSION['uid']);
     unset($_SESSION['user']);
     unset($_SESSION['last_login']);
+    unset($_SESSION['seasonid']);
   }
 
   /**

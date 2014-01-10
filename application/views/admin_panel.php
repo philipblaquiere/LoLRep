@@ -25,4 +25,13 @@
 		</td>
 		<td><button type="submit">Ban</button><?php echo form_close(); ?><td>
 	</tr>
+	<tr>
+		<td>Create a Season</td>
+		<td><?php echo form_open('admin/create_season', array('class' => 'form-horizontal')); ?>
+				<input name="name" type="text" value="" placeholder="Season Name"/>
+				<input name="startdate" type="text" value="" placeholder="Start Date"/>
+				<input name="enddate" type="text" value="" placeholder="End Date"/>
+		</td>
+		<td><button type="submit">Create Season</button><?php echo form_close(); ?><td>
+	</tr>
 </table>
