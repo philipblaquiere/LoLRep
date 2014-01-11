@@ -33,7 +33,7 @@ class Create_team extends MY_Controller{
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
 
         if($this->form_validation->run() == FALSE) {
-            $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
+            //$this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
             $this->view_wrapper('user/create_team', $data);
         }
         else {

@@ -20,7 +20,9 @@
   <link href="<?php echo base_url('assets/css/bootstrap.min.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/marketing.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/navbar.css') ?>" rel="stylesheet" />
+  <link href="<?php echo base_url('assets/css/datepicker.css') ?>" rel="stylesheet" />
   <link href="<?php echo base_url('assets/css/custom.css') ?>" rel="stylesheet" />
+  <link href="<?php echo base_url('assets/css/bootstrap-timepicker.css') ?>" rel="stylesheet" />
   <!--<link href="<?php echo base_url('assets/css/fbscript.css') ?>" rel="stylesheet" />-->
 </head>
 

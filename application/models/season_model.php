@@ -17,7 +17,7 @@ class Season_model extends MY_Model {
 
   	public function get_season_by_seasonid($sid) {
 	  	$sql = "SELECT * FROM seasons
-	  			WHERE seasonid = '$sid' 
+	  			WHERE seasonid = '$sid'
 	  			LIMIT 1";
 	  	$result = $this->db1->query($sql);
 		return $result->row_array();
@@ -33,7 +33,15 @@ class Season_model extends MY_Model {
 
   	public function get_current_seasonid() {
   		$sql = "SELECT seasonid as seasonid FROM seasons
-	  			WHERE status = 'active' 
+	  			WHERE status = 'active'
+	  			LIMIT 1";
+	  	$result = $this->db1->query($sql);
+		return $result->row_array();
+  	}
+
+  	public function get_new_season() {
+  		$sql = "SELECT * FROM seasons
+	  			WHERE status = 'new'
 	  			LIMIT 1";
 	  	$result = $this->db1->query($sql);
 		return $result->row_array();
@@ -49,8 +57,13 @@ class Season_model extends MY_Model {
 
   	public function create_season($season) {
   		$uniqueid = $this->generate_unique_key();
-  		$sql = "INSERT INTO seasons (seasonid, startdate, enddate, name)
-  				VALUES ('" . $uniqueid . "', '" . $season['startdate'] . "', '" . $season['enddate'] . "', '" . $season['name'] . "')";
+  		$sql = "INSERT INTO seasons (seasonid, registration_start,registration_end, startdate, enddate, name)
+  				VALUES ('" . $uniqueid . "','" . $season['registration_start'] . "','" . $season['registration_end'] . "', '" . $season['startdate'] . "', '" . $season['enddate'] . "', '" . $season['name'] . "')";
+  		$this->db1->query($sql);
+  	}
+
+  	public function open_season($seasonid) {
+  		$sql = "UPDATE seasons SET status = 'open' WHERE seasonid = '$seasonid'";
   		$this->db1->query($sql);
   	}
 }

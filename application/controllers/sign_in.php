@@ -14,6 +14,7 @@ class Sign_in extends MY_Controller{
     $this->load->model('lol_model');
     $this->load->model('team_model');
     $this->load->model('banned_model');
+    $this->load->model('season_model');
   }
 
   public function index() {

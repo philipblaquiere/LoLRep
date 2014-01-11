@@ -27,7 +27,7 @@
             }
         });
     });
-
+    
     $(document).on('submit','#rune_page_verification',function(event) {
         /* Stop form from submitting normally */
         event.preventDefault();
@@ -87,6 +87,74 @@ $(".region-list li a").click(function(event) {
     event.preventDefault();
     var selText = $(this).text();
     $(this).parents('.input-group-btn').find('.dropdown-toggle').html(selText + '  <span class="caret"></span> ');
+});
+
+$("#ddlViewBy :selected").val()
+$('.datepicker').datepicker();
+$('#mondaytimepicker').timepicker();
+$('#tuesdaytimepicker').timepicker();
+$('#wednesdaytimepicker').timepicker();
+$('#thursdaytimepicker').timepicker();
+$('#fridaytimepicker').timepicker();
+$('#saturdaytimepicker').timepicker();
+$('#sundaytimepicker').timepicker();
+
+
+$("#mondaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("mondaytime").className = "show";
+    }
+    else {
+        document.getElementById("mondaytime").className = "hidden";
+    }
+});
+$("#tuesdaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("tuesdaytime").className = "show";
+    }
+    else {
+        document.getElementById("tuesdaytime").className = "hidden";
+    }
+});
+$("#wednesdaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("wednesdaytime").className = "show";
+    }
+    else {
+        document.getElementById("wednesdaytime").className = "hidden";
+    }
+});
+$("#thursdaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("thursdaytime").className = "show";
+    }
+    else {
+        document.getElementById("thursdaytime").className = "hidden";
+    }
+});
+$("#fridaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("fridaytime").className = "show";
+    }
+    else {
+        document.getElementById("fridaytime").className = "hidden";
+    }
+});
+$("#saturdaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("saturdaytime").className = "show";
+    }
+    else {
+        document.getElementById("saturdaytime").className = "hidden";
+    }
+});
+$("#sundaycheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("sundaytime").className = "show";
+    }
+    else {
+        document.getElementById("sundaytime").className = "hidden";
+    }
 });
 
 function reloadLoLRegister(message) {

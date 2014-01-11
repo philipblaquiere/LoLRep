@@ -28,10 +28,21 @@
 	<tr>
 		<td>Create a Season</td>
 		<td><?php echo form_open('admin/create_season', array('class' => 'form-horizontal')); ?>
-				<input name="name" type="text" value="" placeholder="Season Name"/>
-				<input name="startdate" type="text" value="" placeholder="Start Date"/>
-				<input name="enddate" type="text" value="" placeholder="End Date"/>
+				<input name="name" type="text" placeholder="Season Name"/>
+				<input name="registration_start" type="text"  class="datepicker" placeholder="Registration Begins" />
+				<input name="enddate" type="text" class="datepicker" placeholder="End Date"/>
 		</td>
 		<td><button type="submit">Create Season</button><?php echo form_close(); ?><td>
+	</tr>
+	<tr>
+		<td>"Open" a Season</td>
+		<td><?php echo form_open('admin/open_season', array('class' => 'form-horizontal')); ?>
+			<select id="seasonid" class="form-control">
+		        <?php foreach($new_seasons as $new_season):?>
+		          <option value="<?php echo $new_season['seasonid']?>"><?php echo " Name : " .$new_season['name'] . " Starts : " . $new_season['startdate'] . " Ends : " .$new_season['enddate'] ?></option>
+		        <?php endforeach; ?>
+	    	</select>
+		</td>
+		<td><button type="submit">Open Season</button><?php echo form_close(); ?><td>
 	</tr>
 </table>

@@ -19,7 +19,7 @@
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add ESport</a></li>
                   <li><a href="<?php echo site_url('profile'); ?>">My Profile</a></li>
                   <li><a href="<?php echo site_url('create_team'); ?>">Create Team</a></li>
-                  <li><a href="<?php echo site_url('teams'); ?>">My Teams</a></li>
+                  <li><a href="<?php echo site_url('create_league'); ?>">Create League</a></li>
                   <li><a href="#">My ESports</a></li>
                 </ul>
             </li>

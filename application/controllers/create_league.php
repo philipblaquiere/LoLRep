@@ -20,7 +20,7 @@ class Create_league extends MY_Controller{
 
     public function index() {
         $this->require_login();
-
+        $season = $this->season_model->get_new_season();
         $esports = $this->esport_model->get_all_registered_esports($_SESSION['user']['UserId']);
 
         if(!$esports) {
@@ -29,7 +29,7 @@ class Create_league extends MY_Controller{
             $this->view_wrapper('user/add_esport',$data);
             return;
         }
-
+        $data['season'] = $season;
         $data['esports'] = $esports;
         //Validation on input (requires that all fields exist)
         $this->load->library('form_validation');
