@@ -16,7 +16,7 @@ class Trade extends MY_Controller{
         $this->load->model('trade_lol_model');
     }
 
-    public function trade_lol() {
+    public function lol() {
         $this->require_login();
         $esport = 1; //league of legends id
         $team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'], $esport);

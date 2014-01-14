@@ -157,6 +157,22 @@ $("#sundaycheckbox").change(function() {
     }
 });
 
+
+//--------
+//Logic for private/invite only league
+$("#inviteonlyleaguecheckbox").change(function() {
+    if(!this.checked) {
+        document.getElementById("privateleaguecheckbox").checked = false;
+    }
+});
+
+$("#privateleaguecheckbox").change(function() {
+    if(this.checked) {
+        document.getElementById("inviteonlyleaguecheckbox").checked = true;
+    }
+});
+//---------
+
 function reloadLoLRegister(message) {
     alert("in reload");
     $.ajax({

@@ -100,8 +100,8 @@ class User_Model extends MY_Model {
   */
   public function create($user){
     $uniqueid = $this->generate_unique_key();
-    $sql = "INSERT INTO users (UserId, password, salt, email, firstname, lastname, regionid, provincestateid, countryid) 
-            VALUES ('" . $uniqueid . "', '" . $user['password'] . "', '" . $user['salt'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['regionid'] . "', '" . $user['provincestateid'] . "', '" . $user['countryid'] . "')";
+    $sql = "INSERT INTO users (UserId, password, salt, email, firstname, lastname, regionid, provincestateid, countryid, timezone) 
+            VALUES ('" . $uniqueid . "', '" . $user['password'] . "', '" . $user['salt'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['regionid'] . "', '" . $user['provincestateid'] . "', '" . $user['countryid'] . "', '" . $user['timezone'] . "')";
     
     $query = $this->db1->query($sql);
 

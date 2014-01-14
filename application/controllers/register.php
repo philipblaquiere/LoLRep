@@ -32,6 +32,7 @@ class Register extends MY_Controller{
       $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email|callback_is_banned');
       $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
       $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
+      $this->form_validation->set_rules('timezone', 'Time Zone', 'required');
       $this->form_validation->set_rules('countryid', 'Country', 'required');
       $this->form_validation->set_rules('provincestateid', 'Province/State', 'required');
       $this->form_validation->set_rules('regionid', 'Region', 'required');
@@ -93,10 +94,9 @@ class Register extends MY_Controller{
     }
 
     public function validate_user($key, $uid) {
-      if($this->user_model->validate_user($key, $uid))
-              //user validation succeeded, proceed with asking user to sign in to continue
-        $this->view_wrapper('user/user_validated');{
-
+      if($this->user_model->validate_user($key, $uid)) {
+        //user validation succeeded, proceed with asking user to sign in to continue
+        $this->view_wrapper('user/user_validated');
       }
       else
       {

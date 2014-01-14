@@ -1,6 +1,6 @@
 <!-- Header -->
 <div class="page-header">
-  <h1>Create League</h1>
+  <h1>Custom League</h1>
   <h4>Fill out the information below to create a league!</h4>
 </div>
 <!-- Header -->
@@ -66,7 +66,17 @@
     <?php echo form_label('Invite-Only', 'name', array('class' => 'col-sm-2 control-label')); ?>
       <div class="col-sm-10">
         <label class="checkbox-inline">
-          <input type="checkbox" value="makeprivate">
+          <input type="checkbox" id="inviteonlyleaguecheckbox" value="inviteonly">
+          <div id="inviteonlycheckboxhelper"><small>Teams that have been invited by the League owner can join.</small></div>
+        </label>
+      </div>
+  </div>
+  <div class="form-group">
+    <?php echo form_label('Private League', 'name', array('class' => 'col-sm-2 control-label')); ?>
+      <div class="col-sm-10">
+        <label class="checkbox-inline">
+          <input type="checkbox" id="privateleaguecheckbox" value="private">
+          <div id="privateleaguecheckboxhelper"><small>Invited teams can join and see information about the league.</small></div>
         </label>
       </div>
   </div>

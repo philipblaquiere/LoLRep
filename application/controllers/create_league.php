@@ -31,9 +31,9 @@ class Create_league extends MY_Controller{
         }
         $data['season'] = $season;
         $data['esports'] = $esports;
+        print_r($_SESSION['user']['registertime']);
         //Validation on input (requires that all fields exist)
         $this->load->library('form_validation');
-
         $this->form_validation->set_rules('leaguename', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename');
         $this->form_validation->set_rules('ESport', 'ESport', 'trim|required');
         
@@ -49,7 +49,7 @@ class Create_league extends MY_Controller{
                 $this->system_message_model->set_message('The League has been created.', MESSAGE_INFO);
 
             redirect('home', 'refresh');
-      }
+        }
     }
 
     public function unique_leaguename($leaguename)
