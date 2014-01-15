@@ -61,19 +61,19 @@ class Admin extends MY_Controller{
         $registration_start = $this->input->post('registration_start');
         $enddate = $this->input->post('enddate');
         
-        $season['registration_start'] = strtotime($registration_start);
+        $season['registration_start'] = $this->get_default_epoch($registration_start);
         $registration_start = date ("Y-m-d H:i:s", strtotime($registration_start));
         $registration_end = new DateTime($registration_start);
         $registration_end->modify('+7 day');
         $registration_end->modify('-1 second');
         $startdate = new DateTime($registration_start);
         $startdate->modify('+1 week');
-        $season['registration_end'] = strtotime($registration_end->format('Y-m-d H:i:s'));
-        $season['startdate'] = strtotime($startdate->format('Y-m-d H:i:s'));
+        $season['registration_end'] = $this->get_default_epoch($registration_end->format('Y-m-d H:i:s'));
+        $season['startdate'] = $this->get_default_epoch($startdate->format('Y-m-d H:i:s'));
         $modified_end = new DateTime($enddate);
         $modified_end->modify('+1 day');
         $modified_end->modify('-1 second');
-        $season['enddate'] = strtotime($modified_end->format('Y-m-d H:i:s'));
+        $season['enddate'] = $this->get_default_epoch($modified_end->format('Y-m-d H:i:s'));
         $season['name'] = $name;
         $this->season_model->create_season($season);
         $this->system_message_model->set_message("Season " . $season['name'] . " has been created!" , MESSAGE_INFO);

@@ -6,6 +6,9 @@
  * in.
  */
 class MY_Controller extends CI_Controller  {
+
+  private $TIMEZONE_DEFAULT = "UTC";
+
   public function __construct() {
     parent::__construct();
     session_start();
@@ -118,4 +121,28 @@ class MY_Controller extends CI_Controller  {
       $this->destroy_session();
     }
   }
+
+  protected function get_local_date($epoch,$format='F j, Y') {
+    $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
+    if($_SESSION['user']) {
+      $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
+    }
+    return $date->format($format);
+  }
+  protected function get_local_datetime($epoch,$format='F j, Y H:i:s') {
+    $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
+    if($_SESSION['user']) {
+      $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
+    }
+    return $date->format($format);
+  }
+
+  protected function get_default_epoch($date) {
+    date_default_timezone_set($_SESSION['user']['timezone']);
+    $epoch = strtotime($date);
+    $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['timezone']));
+    $defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
+    return $defdate->getTimestamp();;
+  }
+
 }

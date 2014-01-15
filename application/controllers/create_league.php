@@ -30,8 +30,12 @@ class Create_league extends MY_Controller{
             return;
         }
         $data['season'] = $season;
+        $data['season']['registration_start'] = $this->get_local_date($data['season']['registration_start']);
+        $data['season']['registration_end'] = $this->get_local_datetime($data['season']['registration_end']);
+        $data['season']['startdate'] = $this->get_local_date($data['season']['startdate']);
+        $data['season']['enddate'] = $this->get_local_datetime($data['season']['enddate']);
         $data['esports'] = $esports;
-        print_r($_SESSION['user']['registertime']);
+        
         //Validation on input (requires that all fields exist)
         $this->load->library('form_validation');
         $this->form_validation->set_rules('leaguename', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename');

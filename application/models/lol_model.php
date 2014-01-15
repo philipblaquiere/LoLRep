@@ -37,6 +37,9 @@ class Lol_model extends CI_Model {
 	    return $result->row_array();
 	}
 
+	public function update_summoner_ranking($summoner) {
+		
+	}
 
 	public function create_summoner($uid, $summoner) {
 

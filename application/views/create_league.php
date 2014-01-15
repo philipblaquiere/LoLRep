@@ -17,19 +17,19 @@
   <div class="form-group">
     <?php echo form_label('Registration Period', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <p class="form-control-static"><?php echo date("F j, Y",strtotime($season['registration_start']))?> - <?php echo date("F j, Y",strtotime($season['registration_end']))?></p>
+      <p class="form-control-static">From <?php echo $season['registration_start']?> to <?php echo $season['registration_end'] ?></p>
     </div>
   </div>
    <div class="form-group">
     <?php echo form_label('Starts', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <p class="form-control-static"><?php echo date("F j, Y",strtotime($season['startdate']))?></p>
+      <p class="form-control-static"><?php echo $season['startdate'] ?></p>
     </div>
   </div>
    <div class="form-group">
     <?php echo form_label('Ends', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <p class="form-control-static"><?php echo date("F j, Y",strtotime($season['enddate']))?></p>
+      <p class="form-control-static"><?php echo $season['enddate'] ?></p>
     </div>
   </div>
   <div class="form-group">
@@ -67,7 +67,7 @@
       <div class="col-sm-10">
         <label class="checkbox-inline">
           <input type="checkbox" id="inviteonlyleaguecheckbox" value="inviteonly">
-          <div id="inviteonlycheckboxhelper"><small>Teams that have been invited by the League owner can join.</small></div>
+          <div id="inviteonlycheckboxhelper"><small>Only teams that have been invited by the League owner can join.</small></div>
         </label>
       </div>
   </div>
@@ -76,7 +76,7 @@
       <div class="col-sm-10">
         <label class="checkbox-inline">
           <input type="checkbox" id="privateleaguecheckbox" value="private">
-          <div id="privateleaguecheckboxhelper"><small>Invited teams can join and see information about the league.</small></div>
+          <div id="privateleaguecheckboxhelper"><small>Only invited teams that have joined can see information about the league.</small></div>
         </label>
       </div>
   </div>
