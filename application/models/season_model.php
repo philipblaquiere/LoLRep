@@ -57,8 +57,8 @@ class Season_model extends MY_Model {
 
   	public function create_season($season) {
   		$uniqueid = $this->generate_unique_key();
-  		$sql = "INSERT INTO seasons (seasonid, registration_start,registration_end, startdate, enddate, name)
-  				VALUES ('" . $uniqueid . "','" . $season['registration_start'] . "','" . $season['registration_end'] . "', '" . $season['startdate'] . "', '" . $season['enddate'] . "', '" . $season['name'] . "')";
+  		$sql = "INSERT INTO seasons (seasonid, owner_UserId, registration_start,registration_end, startdate, enddate, name)
+  				VALUES ('" . $uniqueid . "', '" . $season['UserId'] . "', '" . $season['registration_start'] . "', '" . $season['registration_end'] . "', '" . $season['startdate'] . "', '" . $season['enddate'] . "', '" . $season['name'] . "')";
   		$this->db1->query($sql);
   	}
 

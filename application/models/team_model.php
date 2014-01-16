@@ -21,8 +21,8 @@ class Team_model extends MY_Model {
   public function create_team($team,$captain)
   {
     $uniqueid = $this->generate_unique_key();
-    $sql = "INSERT INTO teams (teamid,name, esportid, captainid, countryid, stateid, regionid) 
-          VALUES ('". $uniqueid ."','". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $_SESSION['user']['UserId'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
+    $sql = "INSERT INTO teams (teamid,name, esportid, captainid, min_players, countryid, stateid, regionid) 
+          VALUES ('". $uniqueid ."','". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
     $this->db1->query($sql);
 
     switch ($team['esportid']) {
@@ -36,7 +36,6 @@ class Team_model extends MY_Model {
       case 2:
           break;
         }
-    
   }
   public function get_team_by_teamid($teamid) {
     $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";

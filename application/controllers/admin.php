@@ -75,6 +75,7 @@ class Admin extends MY_Controller{
         $modified_end->modify('-1 second');
         $season['enddate'] = $this->get_default_epoch($modified_end->format('Y-m-d H:i:s'));
         $season['name'] = $name;
+        $season['UserId'] = $_SESSION['user']['UserId'];
         $this->season_model->create_season($season);
         $this->system_message_model->set_message("Season " . $season['name'] . " has been created!" , MESSAGE_INFO);
         $this->view_wrapper('admin_panel');

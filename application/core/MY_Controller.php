@@ -122,14 +122,21 @@ class MY_Controller extends CI_Controller  {
     }
   }
 
-  protected function get_local_date($epoch,$format='F j, Y') {
+  /*
+  *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 
+  */
+  protected function get_local_date($epoch, $format = 'F j, Y') {
     $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
       $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
     }
     return $date->format($format);
   }
-  protected function get_local_datetime($epoch,$format='F j, Y H:i:s') {
+
+  /*
+  *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
+  */
+  protected function get_local_datetime($epoch, $format='F j, Y H:i:s') {
     $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
       $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
@@ -142,6 +149,7 @@ class MY_Controller extends CI_Controller  {
     $epoch = strtotime($date);
     $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['timezone']));
     $defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
+    date_default_timezone_set($this->TIMEZONE_DEFAULT);
     return $defdate->getTimestamp();;
   }
 

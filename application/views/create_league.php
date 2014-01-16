@@ -5,7 +5,7 @@
 </div>
 <!-- Header -->
           
-<!-- Register Content -->
+<!-- Create League Content -->
 <?php echo validation_errors(); ?>
 <?php echo form_open('create_league', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
   <div class="form-group">
@@ -23,26 +23,13 @@
    <div class="form-group">
     <?php echo form_label('Starts', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <p class="form-control-static"><?php echo $season['startdate'] ?></p>
+      <p class="form-control-static"><?php echo $season['startdate'] ?> at midnight</p>
     </div>
   </div>
    <div class="form-group">
     <?php echo form_label('Ends', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
       <p class="form-control-static"><?php echo $season['enddate'] ?></p>
-    </div>
-  </div>
-  <div class="form-group">
-    <?php echo form_label('Type', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10"> 
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-primary">
-          <input type="radio" name="type" id="singlematch">Single Match
-        </label>
-        <label class="btn btn-primary">
-          <input type="radio" name="type" id="bestofthree">Best-of-three
-        </label>
-      </div>
     </div>
   </div>
   <div class="form-group">
@@ -56,26 +43,47 @@
     </div>
   </div>
   <div class="form-group">
-    <?php echo form_label('League Name', 'leaguename', array('class' => 'col-sm-2 control-label')); ?>
+    <?php echo form_label('League Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_input(array('name' => 'leaguename', 'class' => 'form-control', 'placeholder' => 'League Name', 'value' => set_value('leaguename'))); ?>
+      <?php echo form_input(array('name' => 'name', 'class' => 'form-control', 'placeholder' => 'League Name', 'value' => set_value('leaguename'))); ?>
       <span class="help-block">Attract teams to your league by coming up with a descriptive name.</span>
     </div>
   </div>
   <div class="form-group">
-    <?php echo form_label('Invite-Only', 'name', array('class' => 'col-sm-2 control-label')); ?>
+    <?php echo form_label('Maximum # of Teams', 'label', array('class' => 'col-sm-2 control-label')); ?>
+      <div class="col-sm-10">
+        <select class="form-control" name="max_teams">
+          <?php
+            for ($i = 6; $i <= 32; $i++) { ?>
+              <option value="<?php echo $i ?>"><?php echo $i ?></option>
+          <?php } ?>
+        </select>
+      </div>
+  </div>
+  <div class="form-group">
+    <?php echo form_label('Type', 'name', array('class' => 'col-sm-2 control-label')); ?>
+    <div class="col-sm-10"> 
+      <select name="typeid" class="form-control">
+        <?php foreach ($league_types as $key => $league_type): ?>
+          <option value="<?php echo $league_type['league_type_id']?>"><?php echo $league_type['description']?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <?php echo form_label('Invite-Only', 'label', array('class' => 'col-sm-2 control-label')); ?>
       <div class="col-sm-10">
         <label class="checkbox-inline">
-          <input type="checkbox" id="inviteonlyleaguecheckbox" value="inviteonly">
+          <input type="checkbox" name="inviteonlyleaguecheckbox" id="inviteonlyleaguecheckbox" value="inviteonly">
           <div id="inviteonlycheckboxhelper"><small>Only teams that have been invited by the League owner can join.</small></div>
         </label>
       </div>
   </div>
   <div class="form-group">
-    <?php echo form_label('Private League', 'name', array('class' => 'col-sm-2 control-label')); ?>
+    <?php echo form_label('Private League', 'label', array('class' => 'col-sm-2 control-label')); ?>
       <div class="col-sm-10">
         <label class="checkbox-inline">
-          <input type="checkbox" id="privateleaguecheckbox" value="private">
+          <input type="checkbox" name="privateleaguecheckbox" id="privateleaguecheckbox" value="private">
           <div id="privateleaguecheckboxhelper"><small>Only invited teams that have joined can see information about the league.</small></div>
         </label>
       </div>
@@ -85,25 +93,25 @@
     <?php echo form_label('Matches Every', 'name', array('class' => 'col-sm-2 control-label')); ?>
       <div class="col-sm-10">
       <label class="checkbox-inline">
-        <input type="checkbox" id="mondaycheckbox" value="Monday">Monday
+        <input type="checkbox" id="mondaycheckbox" name="mondaycheckbox" value="mondaytimepicker">Monday
       </label>
       <label class="checkbox-inline">
-        <input type="checkbox" id="tuesdaycheckbox" value="Tuesday">Tuesday
+        <input type="checkbox" id="tuesdaycheckbox" name="tuesdaycheckbox" value="tuesdaytimepicker">Tuesday
       </label>
       <label class="checkbox-inline">
-        <input type="checkbox" id="wednesdaycheckbox" value="Wednesday">Wednesday
+        <input type="checkbox" id="wednesdaycheckbox" name="wednesdaycheckbox" value="wednesdaytimepicker">Wednesday
       </label>
       <label class="checkbox-inline">
-        <input type="checkbox" id="thursdaycheckbox" value="Thursday">Thursday
+        <input type="checkbox" id="thursdaycheckbox" name="thursdaycheckbox" value="thursdaytimepicker">Thursday
       </label>
       <label class="checkbox-inline">
-        <input type="checkbox" id="fridaycheckbox" value="Friday">Friday
+        <input type="checkbox" id="fridaycheckbox" name="fridaycheckbox" value="fridaytimepicker">Friday
       </label>
       <label class="checkbox-inline">
-        <input type="checkbox" id="saturdaycheckbox" value="Saturday">Saturday
+        <input type="checkbox" id="saturdaycheckbox" name="saturdaycheckbox" value="saturdaytimepicker">Saturday
       </label>
       <label class="checkbox-inline">
-        <input type="checkbox" id="sundaycheckbox" value="Sunday">Sunday
+        <input type="checkbox" id="sundaycheckbox" name="sundaycheckbox" value="sundaytimepicker">Sunday
       </label>
     </div>
   </div>
@@ -113,7 +121,7 @@
         Monday's
       </label>
       <div class="input-append bootstrap-timepicker  col-sm-10 ">
-        <input id="mondaytimepicker" type="text" class="form-control">
+        <input name="mondaytimepicker" id="mondaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -123,7 +131,7 @@
         Tuesday's
       </label>
       <div class="col-sm-10 input-append bootstrap-timepicker">
-        <input id="tuesdaytimepicker" type="text" class="form-control">
+        <input name="tuesdaytimepicker" id="tuesdaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -133,7 +141,7 @@
         Wednesday's
       </label>
       <div class="col-sm-10 input-append bootstrap-timepicker">
-        <input id="wednesdaytimepicker" type="text" class="form-control">
+        <input name="wednesdaytimepicker" id="wednesdaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -143,7 +151,7 @@
         Thursday's
       </label>
       <div class="col-sm-10 input-append bootstrap-timepicker">
-        <input id="thursdaytimepicker" type="text" class="form-control">
+        <input name="thursdaytimepicker" id="thursdaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -153,7 +161,7 @@
         Friday's
       </label>
       <div class="col-sm-10 input-append bootstrap-timepicker">
-        <input id="fridaytimepicker" type="text" class="form-control">
+        <input name="fridaytimepicker" id="fridaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -163,7 +171,7 @@
         Saturday's
       </label>
       <div class="col-sm-10 input-append bootstrap-timepicker">
-        <input id="saturdaytimepicker" type="text" class="form-control">
+        <input name="saturdaytimepicker" id="saturdaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -173,7 +181,7 @@
         Sunday's
       </label>
       <div class="col-sm-10 input-append bootstrap-timepicker">
-        <input id="sundaytimepicker" type="text" class="form-control">
+        <input name="sundaytimepicker" id="sundaytimepicker" type="text" class="form-control">
       </div>
     </div>
   </div>
@@ -183,4 +191,4 @@
     </div>
   </div>
   <?php echo form_close(); ?>
-<!-- Register Content -->
+<!-- Create League Content -->
