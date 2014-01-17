@@ -21,6 +21,7 @@
                   <li><a href="<?php echo site_url('teams'); ?>">My Team</a></li>
                   <li><a href="<?php echo site_url('create_team'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('create_league'); ?>">Create League</a></li>
+                  <li><a href="<?php echo site_url('view_league'); ?>">View Leagues</a></li>
                 </ul>
             </li>
             <li class="active"><a href="#">Link</a></li>

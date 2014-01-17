@@ -21,21 +21,22 @@ class Team_model extends MY_Model {
   public function create_team($team,$captain)
   {
     $uniqueid = $this->generate_unique_key();
-    $sql = "INSERT INTO teams (teamid,name, esportid, captainid, min_players, countryid, stateid, regionid) 
-          VALUES ('". $uniqueid ."','". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
-    $this->db1->query($sql);
-
     switch ($team['esportid']) {
       case '1':
           //League of Legends
           $sql = "INSERT INTO teams_lol (teamid, summonerid)
                   VALUES ('". $uniqueid ."' , '" . $captain['gameid']['SummonerId'] . "')";
+          $min_players = '5';
           $this->db1->query($sql);
-          return;
           break;
       case 2:
           break;
         }
+    $sql = "INSERT INTO teams (teamid,name, esportid, captainid, countryid, stateid, regionid) 
+          VALUES ('". $uniqueid ."','". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
+    $this->db1->query($sql);
+
+    
   }
   public function get_team_by_teamid($teamid) {
     $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";

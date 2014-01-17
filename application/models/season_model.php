@@ -49,7 +49,7 @@ class Season_model extends MY_Model {
 
   	public function get_open_season() {
   		$sql = "SELECT * FROM seasons
-	  			WHERE status = 'open' 
+	  			WHERE status = 'open'
 	  			LIMIT 1";
 	  	$result = $this->db1->query($sql);
 		return $result->row_array();

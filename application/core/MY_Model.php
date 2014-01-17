@@ -5,6 +5,9 @@
  * Provides a unique key generator.
  */
 class MY_Model extends CI_Model  {
+
+	private $TIMEZONE_DEFAULT = "UTC";
+
   	public function __construct() {
     	parent::__construct();
 	}
@@ -92,5 +95,36 @@ class MY_Model extends CI_Model  {
 	      // 48 bits for "node"
 	      mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
 	    );
+	}
+
+	 /*
+	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 
+	*/
+	protected function get_local_date($epoch, $format = 'F j, Y') {
+		$date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
+		if($_SESSION['user']) {
+		  $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
+		}
+		return $date->format($format);
+	}
+
+	/*
+	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
+	*/
+	protected function get_local_datetime($epoch, $format='F j, Y H:i:s') {
+		$date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
+		if($_SESSION['user']) {
+		  $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
+		}
+		return $date->format($format);
+	}
+
+	protected function get_default_epoch($date) {
+		date_default_timezone_set($_SESSION['user']['timezone']);
+		$epoch = strtotime($date);
+		$defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['timezone']));
+		$defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
+		date_default_timezone_set($this->TIMEZONE_DEFAULT);
+		return $defdate->getTimestamp();;
+	}
   }
-}

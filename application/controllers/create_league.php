@@ -41,7 +41,7 @@ class Create_league extends MY_Controller{
         $this->load->library('form_validation');
         $this->form_validation->set_rules('typeid', 'Type', 'required');
         $this->form_validation->set_rules('esportid', 'ESport', 'trim');
-        $this->form_validation->set_rules('name', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename');
+        $this->form_validation->set_rules('name', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename|callback_day_selected');
         $this->form_validation->set_rules('max_teams', 'Maximum # of Teams', 'trim|required|callback_valid_teamcount');
         $this->form_validation->set_rules('inviteonlyleaguecheckbox', 'Invite Only');
         $this->form_validation->set_rules('privateleaguecheckbox', 'Private League');
@@ -68,6 +68,8 @@ class Create_league extends MY_Controller{
         else {
             $input = $this->input->post();
             $leagues_meta = array();
+
+            //get times of day of week if corresponding checkbox is checked
             if(in_array("mondaytimepicker", $input)) {
                 array_push($leagues_meta, $this->get_first_game_datetime('monday',$input['mondaytimepicker'],$season['startdate']));
             }
@@ -98,20 +100,30 @@ class Create_league extends MY_Controller{
             $league['leagues_meta'] = $leagues_meta;
             $league['seasonid'] = $season['seasonid'];
             $this->view_wrapper('create_league', $data);
-
             if($this->league_model->create_league($league))
                 $this->system_message_model->set_message('The League has been created.', MESSAGE_INFO);
             redirect('home', 'refresh');
         }
     }
-    public function get_first_game_datetime($dayofweek,$timeofday,$seasonstartdate) {
+    private function get_first_game_datetime($dayofweek,$timeofday,$seasonstartdate) {
         $firstmidnight = $this->get_next_dayofweek($dayofweek, $seasonstartdate);
         $dt = new DateTime("@$firstmidnight");  // convert UNIX timestamp to PHP DateTime
         return $this->get_default_epoch(($dt->format('Y-m-d') . " " .$timeofday));
     }
 
-    public function get_next_dayofweek($day,$startdate) {
+    private function get_next_dayofweek($day,$startdate) {
         return strtotime( "Next ". $day, $startdate);
+    }
+
+    public function day_selected() {
+        $days = $this->input->post();
+        if(in_array("mondaytimepicker", $days) || in_array("tuesdaytimepicker", $days) || in_array("wednesdaytimepicker", $days) || in_array("thursdaytimepicker", $days) || in_array("fridaytimepicker", $days) || in_array("saturdaytimepicker", $days) || in_array("sundaytimepicker", $days)){
+            return true;
+        }
+        else {
+            $this->form_validation->set_message('day_selected','You must select as least one day and time to play!');
+            return false;
+        }
     }
 
     public function valid_teamcount($teamcount) {
@@ -125,11 +137,23 @@ class Create_league extends MY_Controller{
     }
     public function unique_leaguename($leaguename)
     {
-        $openseason = $this->season_model->get_new_season();
+        $newseason = $this->season_model->get_new_season();
         $existing_league = $this->league_model->get_league_by_name($leaguename);
-        if($existing_league) {
+        $user_leagues_owner = $this->league_model->get_league_owner($_SESSION['user']['UserId'], $newseason['seasonid']);
+        if($existing_league && ($existing_league['status']=="new" || $existing_league['status']=="active")) {
             $this->form_validation->set_message('unique_leaguename','A league with an identical name already exists.');
             return false;
+        }
+        else if($user_leagues_owner) {
+            //user already created a league this season, check if it's for the esport
+            $esportid = $this->input->post('esportid');
+            foreach ($user_leagues_owner as $league) :
+                if($league['esportid'] == $esportid) {
+                    $this->form_validation->set_message('unique_leaguename','You can only create one League per registered Esport per Season.');
+                    return false;
+                }
+            endforeach;
+            return true;
         }
         else {
             return true;

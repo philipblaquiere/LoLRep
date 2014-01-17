@@ -21,7 +21,21 @@ class Esport_model extends CI_Model {
   public function get_all_esports() {
     $sql = "SELECT * FROM esports";
     $result = $this->db1->query($sql);
-    return $result->result_array();
+    $results = $result->result_array();
+    $esports = array();
+
+    foreach ($results as $result) {
+      $esports[$result['esportid']] = array();
+      $esports[$result['esportid']]['esportid'] = $result['esportid'];
+      $esports[$result['esportid']]['name'] = $result['name'];
+      $esports[$result['esportid']]['abbrv'] = $result['abbrv'];
+      $esports[$result['esportid']]['type'] = $result['type'];
+      $esports[$result['esportid']]['description'] = $result['description'];
+      $esports[$result['esportid']]['imageurl'] = $result['imageurl'];
+      $esports[$result['esportid']]['min_players'] = $result['min_players'];
+      $esports[$result['esportid']]['max_players'] = $result['max_players'];
+    }
+    return $esports;
   }
 
   public function get_all_registered_esports($uid) {
