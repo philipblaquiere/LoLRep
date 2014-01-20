@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1><?php echo $team['name'] ?> : Recruit</h1>
+  <h1><?php echo $team['team_name'] ?> : Recruit</h1>
   <p><h3><small>Invite players to join your team. Write them a message as to why you want them on your team!</small></h3></p>
 </div>
 <!-- Ajax Call -> controllers/ajax/get_player_details -->

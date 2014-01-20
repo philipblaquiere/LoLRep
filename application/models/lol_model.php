@@ -45,6 +45,7 @@ class Lol_model extends CI_Model {
 
 		$SummonerId = $summoner['id'];
 	    $SummonerName = $summoner['name'];
+	    $region = $summoner['region'];
 	    $ProfileIconId = $summoner['profileIconId'];
 	    $RevisionDate = $summoner['revisionDate'];
 	    $SummonerLevel = $summoner['summonerLevel'];
@@ -59,8 +60,8 @@ class Lol_model extends CI_Model {
 	    	$summonerrank = "unranked";
 	    	$summonertier = "unranked";
 	    }
-	    $sql = "INSERT INTO summoners (UserId, SummonerId, SummonerName, ProfileIconId, RevisionDate, SummonerLevel, rank, tier) 
-	            VALUES ('" . $uid . "','" . $SummonerId . "', '" . $SummonerName . "', '" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "', '" . $summonertier . "', '" . $summonerrank . "')";
+	    $sql = "INSERT INTO summoners (UserId, SummonerId, SummonerName, region, ProfileIconId, RevisionDate, SummonerLevel, rank, tier) 
+	            VALUES ('" . $uid . "','" . $SummonerId . "', '" . $SummonerName . "',  '" . $region . "','" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "', '" . $summonertier . "', '" . $summonerrank . "')";
 		$result = $this->db1->query($sql);
 		return;
 	}

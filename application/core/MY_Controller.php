@@ -79,6 +79,7 @@ class MY_Controller extends CI_Controller  {
     if($seasonid) {
       $_SESSION['seasonid'] = $seasonid['seasonid'];
     }
+    $_SESSION['esportid'] = 1;
   }
 
   protected function destroy_session() {
@@ -86,6 +87,7 @@ class MY_Controller extends CI_Controller  {
     unset($_SESSION['user']);
     unset($_SESSION['last_login']);
     unset($_SESSION['seasonid']);
+    unset($_SESSION['esportid']);
   }
 
   /**
@@ -95,7 +97,7 @@ class MY_Controller extends CI_Controller  {
   protected function require_login() {
     if (!$this->is_logged_in()) {
       $this->system_message_model->set_message('Please login to access this page.', MESSAGE_WARNING);
-      redirect('user/sign_in', 'location');
+      redirect('sign_in', 'refresh');
       die();
     }
   }
@@ -121,7 +123,9 @@ class MY_Controller extends CI_Controller  {
       $this->destroy_session();
     }
   }
-
+  protected function set_esport($esportid) {
+    $_SESSION['esportid'] = $esportid;
+  }
   /*
   *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 
   */

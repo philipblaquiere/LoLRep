@@ -50,7 +50,7 @@ else {?>
 	<span class="list-group-item">
 		<div class="row">
 			<div class="col-md-7">
-                <h2 class="list-group-item-text"><?php echo $team['name']?></h2>
+                <h2 class="list-group-item-text"><?php echo $team['team_name']?></h2>
                 <p class="list-group-item-text">Created: <?php echo $team['created']?> Summoner Name: <?php echo $team['SummonerName']?></p>
 	        </div>  
 	        <div class="col-md-5 ">

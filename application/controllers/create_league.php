@@ -43,7 +43,7 @@ class Create_league extends MY_Controller{
         $this->form_validation->set_rules('esportid', 'ESport', 'trim');
         $this->form_validation->set_rules('name', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename|callback_day_selected');
         $this->form_validation->set_rules('max_teams', 'Maximum # of Teams', 'trim|required|callback_valid_teamcount');
-        $this->form_validation->set_rules('inviteonlyleaguecheckbox', 'Invite Only');
+        /*$this->form_validation->set_rules('inviteonlyleaguecheckbox', 'Invite Only');
         $this->form_validation->set_rules('privateleaguecheckbox', 'Private League');
         $this->form_validation->set_rules('privateleaguecheckbox', 'Private League');
         $this->form_validation->set_rules('mondaycheckbox', 'Games Monday');
@@ -59,7 +59,7 @@ class Create_league extends MY_Controller{
         $this->form_validation->set_rules('thursdaytimepicker', 'Game Time Thursday');
         $this->form_validation->set_rules('fridaytimepicker', 'Game Time Friday');
         $this->form_validation->set_rules('saturdatimepicker', 'Game Time Saturday');
-        $this->form_validation->set_rules('sundaytimepicker', 'Game Time Sunday');
+        $this->form_validation->set_rules('sundaytimepicker', 'Game Time Sunday');*/
 
         if($this->form_validation->run() == FALSE) {
             $this->view_wrapper('create_league', $data);
@@ -149,7 +149,7 @@ class Create_league extends MY_Controller{
             $esportid = $this->input->post('esportid');
             foreach ($user_leagues_owner as $league) :
                 if($league['esportid'] == $esportid) {
-                    $this->form_validation->set_message('unique_leaguename','You can only create one League per registered Esport per Season.');
+                    $this->form_validation->set_message('unique_leaguename','You can only create one League per registered Esport.');
                     return false;
                 }
             endforeach;

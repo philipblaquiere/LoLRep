@@ -9,7 +9,7 @@ class League_model extends MY_Model {
 
   	public function get_league_by_name($leaguename) {
 	  	$sql = "SELECT * FROM leagues
-	  			WHERE name = '$leaguename'
+	  			WHERE league_name = '$leaguename'
 	  			LIMIT 1";
 	  	$result = $this->db1->query($sql);
 		  return $result->row_array();
@@ -20,7 +20,7 @@ class League_model extends MY_Model {
       
       $this->db1->trans_start();
       
-      $sql = "INSERT INTO leagues(leagueid, name, esportid, typeid, max_teams,invite, private)
+      $sql = "INSERT INTO leagues(leagueid, league_name, esportid, typeid, max_teams,invite, private)
           VALUES ('" . $uniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
       $this->db1->query($sql);
       $sql = "INSERT INTO leagues_meta(leagueid, first_games, seasonid)
@@ -80,41 +80,49 @@ class League_model extends MY_Model {
       $results = $result->result_array();
       $league_info = array();
       foreach ($results as $result) {
-        if(array_key_exists($result['name'], $league_info)) {
+        if(array_key_exists($result['league_name'], $league_info)) {
           //League array already created, add first game time only.
-          array_push($league_info[$result['name']]['first_games'], $this->get_local_datetime($result['first_games']));
+          array_push($league_info[$result['league_name']]['first_games'], $this->get_local_datetime($result['first_games']));
         }
         else {
           //Not in league array, create new league
-          $league_info[$result['name']] = array();
-          $league_info[$result['name']]['name'] = $result['name'];
-          $league_info[$result['name']]['esportid'] = $result['esportid'];
-          $league_info[$result['name']]['typeid'] = $result['typeid'];
-          $league_info[$result['name']]['max_teams'] = $result['max_teams'];
-          $league_info[$result['name']]['invite'] = $result['invite'];
-          $league_info[$result['name']]['first_games'] = array();
-          array_push($league_info[$result['name']]['first_games'], $this->get_local_datetime($result['first_games']));
+          $league_info[$result['league_name']] = array();
+          $league_info[$result['league_name']]['leagueid'] = $result['leagueid'];
+          $league_info[$result['league_name']]['league_name'] = $result['league_name'];
+          $league_info[$result['league_name']]['esportid'] = $result['esportid'];
+          $league_info[$result['league_name']]['typeid'] = $result['typeid'];
+          $league_info[$result['league_name']]['max_teams'] = $result['max_teams'];
+          $league_info[$result['league_name']]['invite'] = $result['invite'];
+          $league_info[$result['league_name']]['first_games'] = array();
+          array_push($league_info[$result['league_name']]['first_games'], $this->get_local_datetime($result['first_games']));
         }
       }
       return $league_info;
     }
-    public function get_active_league_teams($private = 0) {
-      $sql = "SELECT * FROM leagues l 
-              INNER JOIN league_teams lt WHERE l.leagueid = lt.leagueid AND lt.status = 'active' AND l.private = '$private'";
+    public function get_active_league_teams($esportid) {
+
+      $sql = "SELECT * FROM leagues l
+              INNER JOIN league_teams lt ON l.leagueid = lt.leagueid 
+              INNER JOIN teams t ON t.teamid = lt.teamid 
+              WHERE t.esportid = '$esportid' AND lt.status = 'active' AND l.private = '0'";
       $result = $this->db1->query($sql);
       $results = $result->result_array();
       $active_leagues = array();
       foreach ($results as $result) {
-        if(array_key_exists($result['name'], $active_leagues)) {
+        if(array_key_exists($result['league_name'], $active_leagues)) {
           //League array already created, add first game time only.
-          array_push($active_leagues[$result['name']]['teamid'], $result['teamid']);
+          $active_leagues[$result['league_name']]['teams'][$result['team_name']] = array();
+          $active_leagues[$result['league_name']]['teams'][$result['team_name']]['teamid'] = $result['teamid'];
+          $active_leagues[$result['league_name']]['teams'][$result['team_name']]['joined'] = $result['joined'];
         }
         else {
           //Not in league array, create new league
-          $active_leagues[$result['name']] = array();
-          $active_leagues[$result['name']]['leagueid'] = $result['leagueid'];
-          $active_leagues[$result['name']]['teamid'] = array();
-          array_push($active_leagues[$result['name']]['teamid'], $result['teamid']);
+          $active_leagues[$result['league_name']] = array();
+          $active_leagues[$result['league_name']]['leagueid'] = $result['leagueid'];
+          $active_leagues[$result['league_name']]['teams'] = array();
+          $active_leagues[$result['league_name']]['teams'][$result['team_name']] = array();
+          $active_leagues[$result['league_name']]['teams'][$result['team_name']]['teamid'] = $result['teamid'];
+          $active_leagues[$result['league_name']]['teams'][$result['team_name']]['joined'] = $result['joined'];
         }
       }
       //return $results->result_array();
@@ -130,5 +138,25 @@ class League_model extends MY_Model {
               WHERE seasonid = '$seasonid' AND UserId = '$uid'";
       $result = $this->db1->query($sql);
       return $result->row_array();      
+    }
+
+    public function get_current_league_by_teamid($teamid) {
+       $sql = "SELECT * FROM league_teams
+              WHERE teamid = '$teamid' AND status = 'active'
+              LIMIT 1";
+      $result = $this->db1->query($sql);
+      return $result->row_array();      
+    }
+
+    public function join_league($teamid, $leagueid) {
+      $sql = "INSERT INTO league_teams(teamid, leagueid)
+              VALUES ('" . $teamid . "', '" . $leagueid . "')";
+      $result = $this->db1->query($sql);
+    }
+    public function leave_league($teamid, $leagueid){
+      $sql = "UPDATE league_teams
+              SET status='leave'
+              WHERE teamid = '$teamid' AND leagueid = '$leagueid' AND status = 'active'";
+      $this->db1->query($sql);
     }
 }

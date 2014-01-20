@@ -114,6 +114,7 @@ class Teams extends MY_Controller{
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " is already part of a team.");
             }
             else {
+                print_r($invalidnames);
                 $this->system_message_model->set_message( join(', ', $invalidnames)  . " are already part of a team."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " are already part of a team.");
             }

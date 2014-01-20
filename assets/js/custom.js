@@ -91,6 +91,7 @@ $(".region-list li a").click(function(event) {
 
 $("#ddlViewBy :selected").val()
 $('.datepicker').datepicker();
+$('.timepicker').timepicker();
 $('#mondaytimepicker').timepicker();
 $('#tuesdaytimepicker').timepicker();
 $('#wednesdaytimepicker').timepicker();
@@ -98,7 +99,7 @@ $('#thursdaytimepicker').timepicker();
 $('#fridaytimepicker').timepicker();
 $('#saturdaytimepicker').timepicker();
 $('#sundaytimepicker').timepicker();
-
+$('#leaguestarttime').timepicker();
 
 $("#mondaycheckbox").change(function() {
     if(this.checked) {

@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1>Select a game, just one at a time</h1>
+  <h1>Select a game</h1>
   <p><h3><small>Click on the image of the game to start the registration process for the game.</small></h3></p>
   <h3><small> Once selected, we'll ask for some information which will allow us to link your game profile to our website!</small></h3>
 </div>

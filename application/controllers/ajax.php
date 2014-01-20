@@ -15,7 +15,7 @@ class Ajax extends MY_Controller {
 	public function authenticate_summoner($region, $summonerinput) {
 
 	    if($summonerinput== "-") {
-	      //user didn't enter anything, show eror message and reload.
+	        //user didn't enter anything, show error message and reload.
 		    $data['errormessage'] = "You must enter a summoner name to validate.";
 			$this->load->view('messages/rune_page_verification_fail', $data);
 			return;
@@ -26,10 +26,10 @@ class Ajax extends MY_Controller {
 			return;
 	    }
 	    else {
-	    	$region = strtolower($region);
 			//check riot servers to see if summoner actually exists.
 			$riotsummoner = $this->riotapi_model->getSummonerByName($region, $summonerinput);
-			//contains Array ( [id] => 29208894 [name] => seejimmyrun [profileIconId] => 576 [summonerLevel] => 30 [revisionDate] => 1387724620000 )
+			$riotsummoner['region'] = trim($region);
+			//contains Array ( [id] => 29208894 [name] => seejimmyrun [profileIconId] => 576 [summonerLevel] => 30 [revisionDate] => 1387724620000 [region] => NA)
 			if(!$riotsummoner['id']) {
 				$data['errormessage'] = "The specified summoner was not found in the specified region";
 				$this->load->view('messages/rune_page_verification_fail', $data);

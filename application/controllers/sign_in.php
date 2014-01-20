@@ -38,7 +38,7 @@ class Sign_in extends MY_Controller{
     $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean');
 
     if($this->form_validation->run() == FALSE){
-        $this->view_wrapper('user/sign_in');
+        $this->view_wrapper('sign_in');
     } 
     else {
       //get sign in form data
@@ -48,20 +48,20 @@ class Sign_in extends MY_Controller{
       $user = $this->user_model->get_by_email($email);
       if(!$user) {
         $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
-        $this->view_wrapper('user/sign_in');
+        $this->view_wrapper('sign_in');
       }
 
       else if($user['validated'] == 0) {
         //user did not validate themselves, prompt them to resend the validation email.
         $this->system_message_model->set_message('Hey! This account was never validated. Check your emails for an email we sent you!', MESSAGE_INFO);
-        $this->view_wrapper('user/sign_in');
+        $this->view_wrapper('sign_in');
       }
       else if($this->user_model->validate_password($user,$password)) {
         $banned_user = $this->banned_model->get_byemail($user['email']);
 
         if($banned_user) {
           $this->system_message_model->set_message('You have been banned from our website. Reason : ' . $banned_user['reason'], MESSAGE_INFO);
-          $this->view_wrapper('user/sign_in');
+          $this->view_wrapper('sign_in');
           return;
         }
         //user validated, proced with login
@@ -73,7 +73,7 @@ class Sign_in extends MY_Controller{
       }
       else {
         $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
-        $this->view_wrapper('user/sign_in');
+        $this->view_wrapper('sign_in');
       }
     }
   }
