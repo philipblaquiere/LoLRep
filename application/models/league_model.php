@@ -7,6 +7,13 @@ class League_model extends MY_Model {
 		$this->db1 = $this->load->database('default', TRUE);
 	}
 
+    public function get_league_byid($leagueid) {
+      $sql = "SELECT * FROM leagues
+          WHERE leagueid = '$leagueid'
+          LIMIT 1";
+      $result = $this->db1->query($sql);
+      return $result->row_array();
+    }
   	public function get_league_by_name($leaguename) {
 	  	$sql = "SELECT * FROM leagues
 	  			WHERE league_name = '$leaguename'

@@ -177,5 +177,36 @@ class Team_model extends MY_Model {
     $this->db1->query($sql);
   }
 
+  public function get_teams_byleagueid($leagueid, $esportid) {
+    $sql = "SELECT * FROM leagues l 
+              INNER JOIN league_teams lt ON l.leagueid = lt.leagueid 
+              INNER JOIN teams t ON t.teamid = lt.teamid 
+              WHERE l.leagueid = '$leagueid' AND t.esportid = '$esportid' AND lt.status = 'active' AND l.private = '0'";
+      $result = $this->db1->query($sql);
+      $results = $result->result_array();
+      $league = array();
+      $teams = array();
+      foreach ($results as $result) {
+        if(array_key_exists('teams', $teams)) {
+          //League array already created, add team
+          $league['teams'][$result['team_name']] = array();
+          $league['teams'][$result['team_name']]['teamid'] = $result['teamid'];
+          $league['teams'][$result['team_name']]['joined'] = $result['joined'];
+          $league['teams'][$result['team_name']]['team_name'] = $result['team_name'];
+          $league['teams'][$result['team_name']]['captainid'] = $result['captainid'];
+        }
+        else {
+          //Not in league array, create new league
+          $league['league_name'] = $result['league_name'];
+          $league['leagueid'] = $result['leagueid'];
+          $league['teams'][$result['team_name']] = array();
+          $league['teams'][$result['team_name']]['teamid'] = $result['teamid'];
+          $league['teams'][$result['team_name']]['joined'] = $result['joined'];
+          $league['teams'][$result['team_name']]['team_name'] = $result['team_name'];
+          $league['teams'][$result['team_name']]['captainid'] = $result['captainid'];
+        }
+      }
+      return $league;
+  }
 }
 

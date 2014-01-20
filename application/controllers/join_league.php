@@ -40,7 +40,7 @@ class Join_league extends MY_Controller {
             if($time_now - $joined_date < 86400) {
                 //joined today, ask to wait.
                 $this->system_message_model->set_message("You recently joined another league, you must wait 24h to switch league. You have until the registration period ends.", MESSAGE_INFO);
-                redirect('view_league', 'refresh');
+                redirect('view_leagues', 'refresh');
             }
             else {
                 //remove from league and join the other league
@@ -48,14 +48,14 @@ class Join_league extends MY_Controller {
                 $joined_league = $this->league_model->join_league($team['teamid'],$leagueid);
 
                 $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
-                redirect('view_league', 'refresh');
+                redirect('view_leagues', 'refresh');
             }
         }
         else{
             //User is not part of team and is captain of his team, join the league
             $joined_league = $this->league_model->join_league($team['teamid'],$leagueid);
             $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
-            redirect('view_league', 'refresh');
+            redirect('view_leaguse', 'refresh');
         }
     }
 }

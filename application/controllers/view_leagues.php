@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class View_league extends MY_Controller{
+class View_leagues extends MY_Controller{
 	/**
 	 * Constructor: initialize required libraries.
 	 */
@@ -72,6 +72,19 @@ class View_league extends MY_Controller{
         $data['current_league'] = $current_league;
         $data['max_league_count'] = 20;
         
+        $this->view_wrapper('view_leagues', $data);
+    }
+
+    public function view($leagueid) {
+        $this->require_login();
+        $teams = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+        if(!$teams) {
+            $teams['teams'] = array();
+        }
+        $league = $this->league_model->get_league_byid($leagueid);
+        $data['teams'] = $teams;
+        $data['league'] = $league;
         $this->view_wrapper('view_league', $data);
+
     }
 }
