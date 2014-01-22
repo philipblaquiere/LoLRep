@@ -45,4 +45,12 @@
 		</td>
 		<td><button type="submit">Open Season</button><?php echo form_close(); ?><td>
 	</tr>
+	<tr>
+		<td>Create Schedule</td>
+		<td>
+			<?php echo form_open('admin/create_matches_for_season', array('class' => 'form-horizontal')); ?>
+				<input name="leagueid" type="text" value="" placeholder="League ID"/>
+		</td>
+		<td><button type="submit">Create Schedule</button><?php echo form_close(); ?><td>
+	</tr>
 </table>

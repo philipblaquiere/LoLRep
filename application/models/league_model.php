@@ -30,7 +30,7 @@ class League_model extends MY_Model {
       $sql = "INSERT INTO leagues(leagueid, league_name, esportid, typeid, max_teams,invite, private)
           VALUES ('" . $uniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
       $this->db1->query($sql);
-      $sql = "INSERT INTO leagues_meta(leagueid, first_games, seasonid)
+      $sql = "INSERT INTO leagues_meta(leagueid, first_matches, seasonid)
           VALUES";
       foreach ($league['leagues_meta'] as $leagues_meta) {
         $sql .= "('" . $uniqueid . "', '" . $leagues_meta . "', '" . $league['seasonid'] . "'),";
@@ -89,7 +89,7 @@ class League_model extends MY_Model {
       foreach ($results as $result) {
         if(array_key_exists($result['league_name'], $league_info)) {
           //League array already created, add first game time only.
-          array_push($league_info[$result['league_name']]['first_games'], $this->get_local_datetime($result['first_games']));
+          array_push($league_info[$result['league_name']]['first_matches'], $this->get_local_datetime($result['first_matches']));
         }
         else {
           //Not in league array, create new league
@@ -100,8 +100,8 @@ class League_model extends MY_Model {
           $league_info[$result['league_name']]['typeid'] = $result['typeid'];
           $league_info[$result['league_name']]['max_teams'] = $result['max_teams'];
           $league_info[$result['league_name']]['invite'] = $result['invite'];
-          $league_info[$result['league_name']]['first_games'] = array();
-          array_push($league_info[$result['league_name']]['first_games'], $this->get_local_datetime($result['first_games']));
+          $league_info[$result['league_name']]['first_matches'] = array();
+          array_push($league_info[$result['league_name']]['first_matches'], $this->get_local_datetime($result['first_matches']));
         }
       }
       return $league_info;
@@ -153,6 +153,19 @@ class League_model extends MY_Model {
               LIMIT 1";
       $result = $this->db1->query($sql);
       return $result->row_array();      
+    }
+
+    public function get_active_league_first_matches($leagueid) {
+      $sql = "SELECT lm.first_matches as first_matches FROM leagues_meta lm
+              INNER JOIN leagues l ON l.leagueid = lm.leagueid
+              WHERE lm.leagueid = '$leagueid' AND l.status != 'inactive'";
+      $result = $this->db1->query($sql);
+      $result = $result->result_array(); 
+      $first_matches = array();
+      foreach ($result as $match) {
+             array_push($first_matches, $match['first_matches']);
+           } 
+      return $first_matches;    
     }
 
     public function join_league($teamid, $leagueid) {

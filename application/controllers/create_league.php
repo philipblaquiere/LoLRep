@@ -71,25 +71,25 @@ class Create_league extends MY_Controller{
 
             //get times of day of week if corresponding checkbox is checked
             if(in_array("mondaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('monday',$input['mondaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('monday',$input['mondaytimepicker'],$season['startdate']));
             }
             if(in_array("tuesdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('tuesday',$input['tuesdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('tuesday',$input['tuesdaytimepicker'],$season['startdate']));
             }
             if(in_array("wednesdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('wednesday',$input['wednesdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('wednesday',$input['wednesdaytimepicker'],$season['startdate']));
             }
             if(in_array("thursdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('thursday',$input['thursdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('thursday',$input['thursdaytimepicker'],$season['startdate']));
             }
             if(in_array("fridaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('friday',$input['fridaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('friday',$input['fridaytimepicker'],$season['startdate']));
             }
             if(in_array("saturdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('saturday',$input['saturdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('saturday',$input['saturdaytimepicker'],$season['startdate']));
             }
             if(in_array("sundaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_game_datetime('sunday',$input['sundaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('sunday',$input['sundaytimepicker'],$season['startdate']));
             }
             $league['name'] = $input['name'];
             $league['esportid'] = $input['esportid'];
@@ -105,7 +105,7 @@ class Create_league extends MY_Controller{
             redirect('home', 'refresh');
         }
     }
-    private function get_first_game_datetime($dayofweek,$timeofday,$seasonstartdate) {
+    private function get_first_match_datetime($dayofweek,$timeofday,$seasonstartdate) {
         $firstmidnight = $this->get_next_dayofweek($dayofweek, $seasonstartdate);
         $dt = new DateTime("@$firstmidnight");  // convert UNIX timestamp to PHP DateTime
         return $this->get_default_epoch(($dt->format('Y-m-d') . " " .$timeofday));

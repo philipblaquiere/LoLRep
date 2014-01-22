@@ -17,6 +17,8 @@ class Admin extends MY_Controller{
         $this->load->model('team_invite_model');
         $this->load->model('banned_model');
         $this->load->model('season_model');
+        $this->load->model('league_model');
+        $this->load->model('match_model');
     }
 
     public function index() {
@@ -87,5 +89,33 @@ class Admin extends MY_Controller{
         /*$this->season_model->open_season($season);
         $this->system_message_model->set_message("Season " . $season['name'] . " has been opened!" , MESSAGE_INFO);
         $this->view_wrapper('admin_panel');*/
+    }
+
+    public function create_matches_for_season() {
+
+        $leagueid = $this->input->post('leagueid');
+        $season = $this->season_model->get_new_season();
+        $teams_details = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+        $first_matches = $this->league_model->get_active_league_first_matches($leagueid);
+
+        $this->load->library('schedule_maker');
+        $this->schedule_maker->set_num_teams(count($teams_details['teams']));
+        $this->schedule_maker->set_start_end_dates($season['startdate'],$season['enddate']);
+        $this->schedule_maker->set_matches($first_matches);
+        $generated_schedule = $this->schedule_maker->generate_schedule();
+
+        $teams = array();
+        $schedule = array();
+        foreach ($teams_details['teams'] as $team) {
+            array_push($teams, $team['teamid']);
+        }
+        foreach ($generated_schedule as $match) {
+            $match_details = array();
+            $match_details['teamaid'] = $teams[$match['teamaid']];
+            $match_details['teambid'] = $teams[$match['teambid']];
+            $match_details['match_date'] = $match['match_date'];
+            array_push($schedule, $match_details);
+        }
+        $this->match_model->create_matches($leagueid, $schedule);
     }
 }

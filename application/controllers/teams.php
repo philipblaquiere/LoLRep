@@ -15,6 +15,7 @@ class Teams extends MY_Controller{
         $this->load->model('lol_model');
         $this->load->model('trade_lol_model');
         $this->load->model('team_invite_model');
+        
     }
     public function index() {
         $this->require_login();
@@ -39,6 +40,8 @@ class Teams extends MY_Controller{
     public function view($teamid) {
         $this->require_login();
         $data['team'] = $this->team_model->get_team_by_teamid($teamid);
+        $this->load->library('calendar');
+        $data['calendar'] = $this->calendar;
         $this->view_wrapper('view_team',$data);
     }
     public function invite_lol($team) {

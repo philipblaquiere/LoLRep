@@ -82,6 +82,7 @@ class View_leagues extends MY_Controller{
             $teams['teams'] = array();
         }
         $league = $this->league_model->get_league_byid($leagueid);
+
         $data['teams'] = $teams;
         $data['league'] = $league;
         $this->view_wrapper('view_league', $data);

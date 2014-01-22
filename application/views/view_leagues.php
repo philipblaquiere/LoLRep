@@ -101,10 +101,10 @@
 							<div class="col-md-10">
 				                <p class="list-group-item-text"><a href="<?php echo site_url('view_leagues/view/' . $league_info['leagueid']) ?>"><?php echo $league_info['league_name']?></a><p>
 				                <p class="list-group-item-text"><?php echo $league_info['invite'] == 1 ? "Invite Only" : null ?></p>
-				                <p class="list-group-item-text">Games/Week: <?php echo count($league_info['first_games']) ?></p>
+				                <p class="list-group-item-text">Games/Week: <?php echo count($league_info['first_matches']) ?></p>
 				                <p class="list-group-item-text">Teams: <?php echo $league_info['num_teams'] . "/" . $league_info['max_teams'] ?></p>
 				                <p class="list-group-item-text">
-				                	<?php foreach ($league_info['first_games'] as $first_game) : ?>
+				                	<?php foreach ($league_info['first_matches'] as $first_game) : ?>
 					        			<?php echo date("D'\s \- h:i A.",strtotime($first_game)) ?>
 					        		<?php endforeach; ?></p>
 					        </div>
