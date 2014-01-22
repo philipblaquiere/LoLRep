@@ -17,7 +17,12 @@ class Esport_model extends CI_Model {
     parent::__construct();
     $this->db1 = $this->load->database('default', TRUE);
   }
-
+  public function get_esport_byid($esportid) {
+    $sql = "SELECT * FROM esports
+              WHERE esportid = '$esportid'
+              LIMIT 1";
+    return  $result->row_array();
+  }
   public function get_all_esports() {
     $sql = "SELECT * FROM esports";
     $result = $this->db1->query($sql);

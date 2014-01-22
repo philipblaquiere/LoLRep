@@ -62,19 +62,20 @@ class Invite extends MY_Controller{
     * User accepts team invite, check to see if user is part of team, 
     * Take user away from exisiting team and add to new team.
     */
-    public function accept_invite($inviteid,$esportid) {
+    public function accept_invite($inviteid) {
         //get invite details
         $invite = $this->team_invite_model->get_invite_byid($inviteid);
+        $esport = $this->esport_model->get_esport_byid($_SESSION['esportid']);
 
         //check to see if team still has space.
         $numplayers = $this->team_model->get_team_lol($invite['teamid']);
 
-        if(count($numplayers) == 9) {
-            $this->system_message_model->set_message('This team is full (9 players), contact the team captain for further information'  , MESSAGE_INFO);
+        if(count($numplayers) == $esport['max_players']) {
+            $this->system_message_model->set_message('This team is full ('. $esport['max_players'] . ' players), contact the team captain for further information'  , MESSAGE_INFO);
             redirect('teams', 'refresh');
         }
         //update invite model
-        $this->team_invite_model->mark_invite_accepted($inviteid,$esportid);
+        $this->team_invite_model->mark_invite_accepted($inviteid,$_SESSION['esportid']);
         //check to see if user is presently in team, if so remove from current and add new
         $currentteam = $this->team_model->get_lol_teamname_by_uid($_SESSION['user']['UserId']);
         if($currentteam) {
@@ -87,11 +88,11 @@ class Invite extends MY_Controller{
         redirect('teams', 'refresh');
     }
 
-    public function decline_invite($inviteid,$esportid) {
+    public function decline_invite($inviteid) {
         //get invite details
         $invite = $this->team_invite_model->get_invite_byid($inviteid);
         //update invite model
-        $this->team_invite_model->mark_invite_declined($inviteid,$esportid);
+        $this->team_invite_model->mark_invite_declined($inviteid,$_SESSION['esportid']);
         $teamname = $this->team_model->get_teamname_by_teamid($invite['teamid']);
         $this->system_message_model->set_message('You have declined the offer from ' . $teamname['name'] , MESSAGE_INFO);
         redirect('teams', 'refresh');

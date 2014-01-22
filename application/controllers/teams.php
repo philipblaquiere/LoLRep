@@ -36,7 +36,11 @@ class Teams extends MY_Controller{
             $this->invite_lol($team);
         }
     }
-
+    public function view($teamid) {
+        $this->require_login();
+        $data['team'] = $this->team_model->get_team_by_teamid($teamid);
+        $this->view_wrapper('view_team',$data);
+    }
     public function invite_lol($team) {
         $this->require_login();
         $data['team'] = $team;
@@ -114,7 +118,6 @@ class Teams extends MY_Controller{
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " is already part of a team.");
             }
             else {
-                print_r($invalidnames);
                 $this->system_message_model->set_message( join(', ', $invalidnames)  . " are already part of a team."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " are already part of a team.");
             }
