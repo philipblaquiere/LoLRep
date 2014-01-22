@@ -82,7 +82,10 @@ class League_model extends MY_Model {
     }
     public function get_all_leagues_detailed($seasonid,$private = 0) {
       $sql = "SELECT * FROM leagues l
-              INNER JOIN leagues_meta lm ON l.leagueid = lm.leagueid WHERE lm.seasonid = '$seasonid' AND l.private = '$private'";
+              INNER JOIN leagues_meta lm ON l.leagueid = lm.leagueid 
+              INNER JOIN league_types tp ON l.typeid = tp.league_type_id
+              INNER JOIN esports e ON l.esportid = e.esportid
+              WHERE lm.seasonid = '$seasonid' AND l.private = '$private'";
       $result = $this->db1->query($sql);
       $results = $result->result_array();
       $league_info = array();
@@ -97,7 +100,9 @@ class League_model extends MY_Model {
           $league_info[$result['league_name']]['leagueid'] = $result['leagueid'];
           $league_info[$result['league_name']]['league_name'] = $result['league_name'];
           $league_info[$result['league_name']]['esportid'] = $result['esportid'];
+          $league_info[$result['league_name']]['esport_name'] = $result['esport_name'];
           $league_info[$result['league_name']]['typeid'] = $result['typeid'];
+          $league_info[$result['league_name']]['league_type'] = $result['league_type'];
           $league_info[$result['league_name']]['max_teams'] = $result['max_teams'];
           $league_info[$result['league_name']]['invite'] = $result['invite'];
           $league_info[$result['league_name']]['first_matches'] = array();
@@ -106,6 +111,10 @@ class League_model extends MY_Model {
       }
       return $league_info;
     }
+
+    /*
+    *Returns all league and their active teams
+    */
     public function get_active_league_teams($esportid) {
 
       $sql = "SELECT * FROM leagues l
@@ -132,9 +141,19 @@ class League_model extends MY_Model {
           $active_leagues[$result['league_name']]['teams'][$result['team_name']]['joined'] = $result['joined'];
         }
       }
-      //return $results->result_array();
       return $active_leagues;
     }
+    public function get_league_details($leagueid) {
+      $sql =  "SELECT * FROM leagues l
+              INNER JOIN league_types lt ON l.typeid = lt.league_type_id
+              INNER JOIN esports e ON l.esportid = e.esportid
+              WHERE l.leagueid = '$leagueid'
+              LIMIT 1";
+      $result = $this->db1->query($sql);
+      return $result->row_array();
+    }
+
+
   	public function get_league_types() {
   		$sql = "SELECT * FROM league_types";
 	  	$result = $this->db1->query($sql);

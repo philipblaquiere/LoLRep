@@ -54,6 +54,7 @@ class Invite extends MY_Controller{
             else {
                  $this->system_message_model->set_message(join(', ', $summonernames)  . " have been invited to " . $team['name']  , MESSAGE_INFO);
             }
+
             redirect('home', 'refresh');
         }
     }
@@ -66,7 +67,6 @@ class Invite extends MY_Controller{
         //get invite details
         $invite = $this->team_invite_model->get_invite_byid($inviteid);
         $esport = $this->esport_model->get_esport_byid($_SESSION['esportid']);
-
         //check to see if team still has space.
         $numplayers = $this->team_model->get_team_lol($invite['teamid']);
 
@@ -79,10 +79,11 @@ class Invite extends MY_Controller{
         //check to see if user is presently in team, if so remove from current and add new
         $currentteam = $this->team_model->get_lol_teamname_by_uid($_SESSION['user']['UserId']);
         if($currentteam) {
-            $this->team_model->remove_summoner($invite['summonerid']);
+            //Should have user confirmation panel, Are you sure? Y/N type...
+            $this->team_model->remove_summoner_from_team($invite['summonerid']);
         }
         //add player to new team
-        $this->team_model->add_summoner($invite['teamid'], $invite['summonerid']);
+        $this->team_model->add_summoner_to_team($invite['teamid'], $invite['summonerid']);
         $teamname = $this->team_model->get_teamname_by_teamid($invite['teamid']);
         $this->system_message_model->set_message('You have joined ' . $teamname['name'] . ', say "Hi!" to your new teammates!'  , MESSAGE_INFO);
         redirect('teams', 'refresh');

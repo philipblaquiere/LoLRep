@@ -16,6 +16,7 @@ class View_leagues extends MY_Controller{
         $this->load->model('lol_model');
         $this->load->model('league_model');
         $this->load->model('season_model');
+        $this->load->model('match_model');
     }
 
     public function index() {
@@ -25,8 +26,14 @@ class View_leagues extends MY_Controller{
         $leagues_info = $this->league_model->get_all_leagues_detailed($season['seasonid']);
         $league_teams = $this->league_model->get_active_league_teams($_SESSION['esportid']);
         $captain_team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'], $_SESSION['esportid']);
-        $current_team = $this->team_model->get_team_by_uid($_SESSION['user']['UserId'], $_SESSION['esportid']);
-        $current_league = $this->league_model->get_current_league_by_teamid($current_team['teamid']);
+        $user_current_team = $this->team_model->get_team_by_uid($_SESSION['user']['UserId'], $_SESSION['esportid']);
+        if(!empty($user_current_team)) {
+            $current_league = $this->league_model->get_current_league_by_teamid($user_current_team['teamid']);
+        }
+        else {
+            //user isn't part of a team, let the user know that he can't join a league
+            $this->system_message_model->set_message("You must be captain of your registered team to join a league!", MESSAGE_INFO);
+        }
         
         foreach ($leagues_info as $league_info) {
             //Check if user can join league, can join if 
@@ -39,7 +46,13 @@ class View_leagues extends MY_Controller{
             */
             $leagues_info[$league_info['league_name']]['num_teams'] = array_key_exists($league_info['league_name'], $league_teams) ? count($league_teams[$league_info['league_name']]['teams']) : 0 ;
 
-            if($current_league && $current_league['leagueid'] == $leagues_info[$league_info['league_name']]['leagueid']) {
+            if(!empty($user_current_team)) {
+                //User not part of a team
+                $leagues_info[$league_info['league_name']]['can_join'] = 0;
+                $leagues_info[$league_info['league_name']]['join_status'] = "Join";
+                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You need to be part of a registered team to join this league";
+            }
+            else if(!empty($current_league) && $current_league['leagueid'] == $leagues_info[$league_info['league_name']]['leagueid']) {
                 $leagues_info[$league_info['league_name']]['can_join'] = 0;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Current";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You are currently part of this league";
@@ -69,7 +82,7 @@ class View_leagues extends MY_Controller{
         }
         $data['league_teams'] = $league_teams;
         $data['leagues_info'] = $leagues_info;
-        $data['current_league'] = $current_league;
+        $data['current_league'] = empty($current_league) ? array() : $current_league;
         $data['max_league_count'] = 20;
         
         $this->view_wrapper('view_leagues', $data);
@@ -81,10 +94,12 @@ class View_leagues extends MY_Controller{
         if(!$teams) {
             $teams['teams'] = array();
         }
-        $league = $this->league_model->get_league_byid($leagueid);
-
+        $league = $this->league_model->get_league_details($leagueid);
+        $season = $this->season_model->get_new_season();
+        $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
         $data['teams'] = $teams;
         $data['league'] = $league;
+        $data['schedule'] = $schedule;
         $this->view_wrapper('view_league', $data);
 
     }

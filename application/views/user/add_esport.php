@@ -10,8 +10,8 @@
     <a href="<?php echo site_url('add_esport/register_' . $esport['abbrv'])?>" class="list-group-item">
       <div class="row ">
           <div class="col-md-7">
-              <h1 class="list-group-item-text"><?php echo $esport['name']?></h1>
-              <p class="list-group-item-text"><?php echo $esport['name']?> <?php echo $esport['description']?></p>
+              <h1 class="list-group-item-text"><?php echo $esport['esport_name']?></h1>
+              <p class="list-group-item-text"><?php echo $esport['esport_name']?> <?php echo $esport['esport_description']?></p>
           </div>
           <div class="col-md-5 text-center">
               <img class="img-responsive"  src="<?php echo $esport['imageurl']?>" >

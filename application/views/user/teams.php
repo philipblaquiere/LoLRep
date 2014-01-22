@@ -8,7 +8,7 @@
 		<span class="list-group-item">
 			<div class="row">
 				<div class="col-md-7">
-	                <h2 class="list-group-item-text"><?php echo $invite['name']?></h2>
+	                <h2 class="list-group-item-text"><?php echo $invite['team_name']?></h2>
 	                <p class="list-group-item-text">Message: <?php echo $invite['message']?> </p>
 	                <p class="list-group-item-text">Date: <?php echo $invite['invite_date']?> </p>
 	                <p class="list-group-item-text">Status: <?php echo $invite['status']?> </p>

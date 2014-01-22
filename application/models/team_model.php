@@ -91,7 +91,7 @@ class Team_model extends MY_Model {
   }
 
   public function get_lol_teamname_by_uid($uid) {
-    $sql = "SELECT t.name as team_name FROM teams t
+    $sql = "SELECT t.team_name as team_name FROM teams t
             INNER JOIN teams_lol l ON t.teamid = l.teamid 
             INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
     $result = $this->db1->query($sql);
@@ -104,7 +104,8 @@ class Team_model extends MY_Model {
         //League of Legends
         $sql = "SELECT * FROM teams t
               INNER JOIN teams_lol l ON t.teamid = l.teamid 
-              INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'
+              INNER JOIN summoners s ON s.summonerid = l.summonerid 
+              WHERE s.UserId = '$uid'
               LIMIT 1";
         $result = $this->db1->query($sql);
         return $result->row_array();
@@ -160,7 +161,7 @@ class Team_model extends MY_Model {
     return $result->result_array();
   }
 
-  public function add_summoner($teamid, $summonerid) {
+  public function add_summoner_to_team($teamid, $summonerid) {
     $sql = "INSERT INTO teams_lol (teamid, summonerid)
             VALUES ('" . $teamid . "', '" . $summonerid . "')";
     $this->db1->query($sql);
@@ -170,7 +171,7 @@ class Team_model extends MY_Model {
   * Removes summoner from the team
   * which he/she is active
   */
-  public function remove_summoner($summonerid) {
+  public function remove_summoner_from_team($summonerid) {
     $sql = "UPDATE team_lol
               SET status='leave', leave_date = now()
               WHERE summonerid = '$summonerid' AND status = 'active'";
@@ -189,21 +190,21 @@ class Team_model extends MY_Model {
       foreach ($results as $result) {
         if(array_key_exists('teams', $teams)) {
           //League array already created, add team
-          $league['teams'][$result['team_name']] = array();
-          $league['teams'][$result['team_name']]['teamid'] = $result['teamid'];
-          $league['teams'][$result['team_name']]['joined'] = $result['joined'];
-          $league['teams'][$result['team_name']]['team_name'] = $result['team_name'];
-          $league['teams'][$result['team_name']]['captainid'] = $result['captainid'];
+          $league['teams'][$result['teamid']] = array();
+          $league['teams'][$result['teamid']]['teamid'] = $result['teamid'];
+          $league['teams'][$result['teamid']]['joined'] = $result['joined'];
+          $league['teams'][$result['teamid']]['team_name'] = $result['team_name'];
+          $league['teams'][$result['teamid']]['captainid'] = $result['captainid'];
         }
         else {
           //Not in league array, create new league
           $league['league_name'] = $result['league_name'];
           $league['leagueid'] = $result['leagueid'];
-          $league['teams'][$result['team_name']] = array();
-          $league['teams'][$result['team_name']]['teamid'] = $result['teamid'];
-          $league['teams'][$result['team_name']]['joined'] = $result['joined'];
-          $league['teams'][$result['team_name']]['team_name'] = $result['team_name'];
-          $league['teams'][$result['team_name']]['captainid'] = $result['captainid'];
+          $league['teams'][$result['teamid']] = array();
+          $league['teams'][$result['teamid']]['teamid'] = $result['teamid'];
+          $league['teams'][$result['teamid']]['joined'] = $result['joined'];
+          $league['teams'][$result['teamid']]['team_name'] = $result['team_name'];
+          $league['teams'][$result['teamid']]['captainid'] = $result['captainid'];
         }
       }
       return $league;

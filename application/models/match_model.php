@@ -17,4 +17,52 @@ class Match_model extends MY_Model {
 		$sql = substr($sql, 0, -1);
 		$this->db1->query($sql);
 	}
+	
+	public function get_matches_by_teamid($teamid, $season) {
+		$season_start = $season['startdate'];
+		$season_end = $season['enddate'];
+
+		$sql = "SELECT * FROM matches
+				WHERE (teamaid = '$teamid' OR teambid = '$teamid')
+				AND match_date > '$season_start' AND match_date < '$season_end'";
+		$results = $this->db1->query($sql);
+		$results = $results->result_array();
+		$matches = array();
+		foreach ($results as $result) {
+			$match = array();
+			$match['matchid'] = $result['matchid'];
+			$match['leagueid'] = $result['leagueid'];
+			$match['teamaid'] = $result['teamaid'];
+			$match['teambid'] = $result['teambid'];
+			$match['match_date'] = $this->get_local_datetime($result['match_date']);
+			$match['winnerid'] = $result['winnerid'];
+			$match['status'] = $result['status'];
+			array_push($matches, $match);
+		}
+		return $matches;
+	}
+
+	public function get_matches_by_leagueid($leagueid, $season) {
+		$season_start = $season['startdate'];
+		$season_end = $season['enddate'];
+
+		$sql = "SELECT * FROM matches
+				WHERE leagueid = '$leagueid'
+				AND match_date > '$season_start' AND match_date < '$season_end'";
+		$results = $this->db1->query($sql);
+		$results = $results->result_array();
+		$matches = array();
+		foreach ($results as $result) {
+			$match = array();
+			$match['matchid'] = $result['matchid'];
+			$match['leagueid'] = $result['leagueid'];
+			$match['teamaid'] = $result['teamaid'];
+			$match['teambid'] = $result['teambid'];
+			$match['match_date'] = $this->get_local_datetime($result['match_date']);
+			$match['winnerid'] = $result['winnerid'];
+			$match['status'] = $result['status'];
+			array_push($matches, $match);
+		}
+		return $matches;
+	}
 }

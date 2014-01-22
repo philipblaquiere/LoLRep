@@ -37,7 +37,7 @@
     <div class="col-sm-10">
       <select name="esportid" class="form-control">
         <?php foreach($esports as $esport):?>
-          <option value="<?php echo $esport['esportid']?>"><?php echo $esport['name']?></option>
+          <option value="<?php echo $esport['esportid']?>"><?php echo $esport['esport_name']?></option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -65,7 +65,7 @@
     <div class="col-sm-10"> 
       <select name="typeid" class="form-control">
         <?php foreach ($league_types as $key => $league_type): ?>
-          <option value="<?php echo $league_type['league_type_id']?>"><?php echo $league_type['description']?></option>
+          <option value="<?php echo $league_type['league_type_id']?>"><?php echo $league_type['league_type']?></option>
         <?php endforeach; ?>
       </select>
     </div>

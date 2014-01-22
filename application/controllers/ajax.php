@@ -14,32 +14,35 @@ class Ajax extends MY_Controller {
 
 	public function authenticate_summoner($region, $summonerinput) {
 
+		$region = urldecode($region);
 	    if($summonerinput== "-") {
 	        //user didn't enter anything, show error message and reload.
 		    $data['errormessage'] = "You must enter a summoner name to validate.";
 			$this->load->view('messages/rune_page_verification_fail', $data);
 			return;
 	    }
-	    else if($region == "Region%20") {
+	    else if($region == "Region") {
 	    	$data['errormessage'] = "You must select a region";
 			$this->load->view('messages/rune_page_verification_fail', $data);
 			return;
 	    }
 	    else {
 			//check riot servers to see if summoner actually exists.
-			$riotsummoner = $this->riotapi_model->getSummonerByName($region, $summonerinput);
-			$riotsummoner['region'] = trim($region);
-			//contains Array ( [id] => 29208894 [name] => seejimmyrun [profileIconId] => 576 [summonerLevel] => 30 [revisionDate] => 1387724620000 [region] => NA)
-			if(!$riotsummoner['id']) {
+			$summonerinput = strtolower(str_replace(' ','', urldecode($summonerinput)));
+			$riotsummoners = $this->riotapi_model->getSummonerByName($region, $summonerinput);
+			$riotsummoners['region'] = trim($region);
+			print_r($riotsummoners);
+			//contains Array ( [summonername] => Array ( [id] => 39895516 [name] => Summoner Name [profileIconId] => 0 [summonerLevel] => 6 [revisionDate] => 1383423931000 ) [region] => Region )
+			if(!array_key_exists($summonerinput, $riotsummoners)) {
 				$data['errormessage'] = "The specified summoner was not found in the specified region";
 				$this->load->view('messages/rune_page_verification_fail', $data);
 				return;
 			}
 			else {
 				//check to see if summoner is banned
-				$banned_summoner = $this->banned_model->get_bysummonername($summonerinput);
+				$banned_summoner = $this->banned_model->get_bysummonername($riotsummoners[$summonerinput]['name']);
 				//summoner exists, check if summoner exists already in our db
-				$summoner = $this->lol_model->registered_summoner($summonerinput);
+				$summoner = $this->lol_model->registered_summoner($riotsummoners[$summonerinput]['name']);
 				if($banned_summoner) {
 					$data['errormessage'] = "The specified summoner has been banned from our website";
 					$this->load->view('messages/rune_page_verification_fail', $data);
@@ -49,7 +52,8 @@ class Ajax extends MY_Controller {
 					//summoner doesn't exist in db yet. Generate a Rune Page Key
 					$_SESSION['runepagekey'] = $this->user_model->generate_rune_page_key();
 					$data['runepagekey'] = $_SESSION['runepagekey'];
-					$_SESSION['summoner'] = $riotsummoner;
+					$_SESSION['summoner'] = $riotsummoners[$summonerinput];
+					$_SESSION['summoner']['region'] = $region;
 					$summonerid = $_SESSION['summoner']['id'];
 			  		$runepagekey = $_SESSION['runepagekey'];
 			  		$runepages = $this->riotapi_model->getSummoner($summonerid,"runes");
@@ -70,8 +74,8 @@ class Ajax extends MY_Controller {
   		$summonerid = $_SESSION['summoner']['id'];
   		$runepagekey = $_SESSION['runepagekey'];
   		$runepages = $this->riotapi_model->getSummoner($summonerid,"runes");
-
-  		$firstRunePageName = $runepages['pages']['0']['name'];
+  		
+  		$firstRunePageName = $runepages[$summonerid]['pages']['0']['name'];
   		if($firstRunePageName == $runepagekey) {
   			//user runepage is validated, re-check absence in db
   			$summoner = $this->lol_model->get_uid_from_summonerid($summonerid);

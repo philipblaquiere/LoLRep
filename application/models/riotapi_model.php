@@ -4,6 +4,7 @@ class Riotapi_model extends CI_Model  {
 
 	const API_URL_1_1 = 'http://prod.api.pvp.net/api/lol/{region}/v1.1/';
 	const API_URL_1_2 = 'http://prod.api.pvp.net/api/lol/{region}/v1.2/';
+	const API_URL_1_3 = 'http://prod.api.pvp.net/api/lol/{region}/v1.3/';
 	const API_URL_2_1 = 'http://prod.api.pvp.net/api/lol/{region}/v2.2/';
 	const API_KEY = 'ee9af537-a4f1-4a7a-9e7c-7ca19e4aa7a3';
 	const RATE_LIMIT_MINUTES = 500;
@@ -29,7 +30,7 @@ class Riotapi_model extends CI_Model  {
 		$call = 'game/by-summoner/' . $id . '/recent';
 
 		//add API URL to the call
-		$call = self::API_URL_1_2 . $call;
+		$call = self::API_URL_1_3 . $call;
 
 		return $this->request($call);
 	}
@@ -72,7 +73,7 @@ class Riotapi_model extends CI_Model  {
 		}
 
 		//add API URL to the call
-		$call = self::API_URL_1_2 . $call;
+		$call = self::API_URL_1_3 . $call;
 
 		return $this->request($call);
 	}
@@ -86,7 +87,7 @@ class Riotapi_model extends CI_Model  {
 		$call = 'summoner/by-name/' . $name;
 
 		//add API URL to the call
-		$call = self::API_URL_1_2 . $call;
+		$call = self::API_URL_1_3 . $call;
 
 		return $this->request($call);
 	}

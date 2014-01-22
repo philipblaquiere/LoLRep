@@ -12,7 +12,7 @@
     <div class="col-sm-10">
       <select name="esportid" class="form-control">
         <?php foreach($esports as $esport):?>
-          <option value="<?php echo $esport['esportid']?>"><?php echo $esport['name']?></option>
+          <option value="<?php echo $esport['esportid']?>"><?php echo $esport['esport_name']?></option>
         <?php endforeach; ?>
       </select>
     </div>

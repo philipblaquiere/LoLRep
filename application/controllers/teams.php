@@ -15,6 +15,9 @@ class Teams extends MY_Controller{
         $this->load->model('lol_model');
         $this->load->model('trade_lol_model');
         $this->load->model('team_invite_model');
+        $this->load->model('season_model');
+        $this->load->model('match_model');
+        $this->load->model('riotapi_model');
         
     }
     public function index() {
@@ -39,11 +42,18 @@ class Teams extends MY_Controller{
     }
     public function view($teamid) {
         $this->require_login();
-        $data['team'] = $this->team_model->get_team_by_teamid($teamid);
         $this->load->library('calendar');
+        $season = $this->season_model->get_new_season();
+        
+        $data['team'] = $this->team_model->get_team_by_teamid($teamid);
         $data['calendar'] = $this->calendar;
+        $data['schedule'] = $this->match_model->get_matches_by_teamid($teamid,$season);
+        //get the league;
+        $leagueid = $data['schedule'][0]['leagueid'];
+        $data['teams'] = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
         $this->view_wrapper('view_team',$data);
     }
+
     public function invite_lol($team) {
         $this->require_login();
         $data['team'] = $team;
@@ -57,7 +67,6 @@ class Teams extends MY_Controller{
             $this->view_wrapper('team_invite_lol',$data);
         }
         else {
-
             $invitations = $this->input->post();
             $invitation = array();
             $summonernames = explode(",", trim($invitations['summonerlist'],","));
@@ -69,10 +78,10 @@ class Teams extends MY_Controller{
                 $this->team_invite_model->invite_summoner($invitation);
             }
             if(count($summonernames) == 1) {
-                $this->system_message_model->set_message(join(', ', $summonernames)  . " has been invited to " . $team['name']  , MESSAGE_INFO);
+                $this->system_message_model->set_message(join(', ', $summonernames)  . " has been invited to " . $team['team_name']  , MESSAGE_INFO);
             }
             else {
-                 $this->system_message_model->set_message(join(', ', $summonernames)  . " have been invited to " . $team['name']  , MESSAGE_INFO);
+                 $this->system_message_model->set_message(join(', ', $summonernames)  . " have been invited to " . $team['team_name']  , MESSAGE_INFO);
             }
             redirect('home', 'refresh');
         }
