@@ -46,11 +46,13 @@ class Teams extends MY_Controller{
         $season = $this->season_model->get_new_season();
         
         $data['team'] = $this->team_model->get_team_by_teamid($teamid);
+        $data['roster'] = $this->team_model->get_team_lol($teamid);
         $data['calendar'] = $this->calendar;
         $data['schedule'] = $this->match_model->get_matches_by_teamid($teamid,$season);
         //get the league;
         $leagueid = $data['schedule'][0]['leagueid'];
         $data['teams'] = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+        print_r($data['roster']);
         $this->view_wrapper('view_team',$data);
     }
 
