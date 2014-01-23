@@ -21,6 +21,7 @@ class Team_model extends MY_Model {
   public function create_team($team,$captain)
   {
     $uniqueid = $this->generate_unique_key();
+    $team['name'] = $this->make_mysql_friendly($team['name']);
     switch ($team['esportid']) {
       case '1':
           //League of Legends

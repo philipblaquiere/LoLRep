@@ -97,6 +97,14 @@ class MY_Model extends CI_Model  {
 	    );
 	}
 
+	/*
+	* Replaces 's with \' 
+	*/
+	protected function make_mysql_friendly($string) {
+		return str_replace("'", "\'", $string);
+	}
+
+
 	 /*
 	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 
 	*/
