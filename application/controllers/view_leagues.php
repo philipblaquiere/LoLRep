@@ -22,8 +22,7 @@ class View_leagues extends MY_Controller{
     public function index() {
         $this->require_login();
         $data['esports'] = $this->esport_model->get_all_esports();
-        $season = $this->season_model->get_new_season();
-        $leagues_info = $this->league_model->get_all_leagues_detailed($season['seasonid']);
+        $leagues_info = $this->league_model->get_all_leagues_detailed($_SESSION['esportid']);
         $league_teams = $this->league_model->get_active_league_teams($_SESSION['esportid']);
         $captain_team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'], $_SESSION['esportid']);
         $user_current_team = $this->team_model->get_team_by_uid($_SESSION['user']['UserId'], $_SESSION['esportid']);
@@ -95,11 +94,10 @@ class View_leagues extends MY_Controller{
             $teams['teams'] = array();
         }
         $league = $this->league_model->get_league_details($leagueid);
-        $season = $this->season_model->get_new_season();
-        $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+        //$schedule = $this->match_model->get_matches_by_leagueid($leagueid);
         $data['teams'] = $teams;
         $data['league'] = $league;
-        $data['schedule'] = $schedule;
+        //$data['schedule'] = $schedule;
         $this->view_wrapper('view_league', $data);
 
     }

@@ -4,32 +4,21 @@
   <h4>Fill out the information below to create a league!</h4>
 </div>
 <!-- Header -->
-          
+<h2>Season</h2>
+<hr/>
 <!-- Create League Content -->
 <?php echo validation_errors(); ?>
 <?php echo form_open('create_league', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
   <div class="form-group">
-    <?php echo form_label('Season', 'name', array('class' => 'col-sm-2 control-label')); ?>
+    <?php echo form_label('Duration (Months)', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <p class="form-control-static"><?php echo $season['name'] ?></p>
-    </div>
-  </div>
-  <div class="form-group">
-    <?php echo form_label('Registration Period', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <p class="form-control-static">From <?php echo $season['registration_start']?> to <?php echo $season['registration_end'] ?></p>
-    </div>
-  </div>
-   <div class="form-group">
-    <?php echo form_label('Starts', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <p class="form-control-static"><?php echo $season['startdate'] ?> at midnight</p>
-    </div>
-  </div>
-   <div class="form-group">
-    <?php echo form_label('Ends', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <p class="form-control-static"><?php echo $season['enddate'] ?></p>
+      <select name="duration" class="form-control">
+          <option value="2">2</option>
+          <option value="4" selected>4</option>
+          <option value="6">6</option>
+          <option value="12">12</option>
+      </select>
+      <span class="help-block">Four-month Seasons are recommended as they offer the right amount of games.</span>
     </div>
   </div>
   <div class="form-group">
@@ -42,6 +31,9 @@
       </select>
     </div>
   </div>
+  <br/>
+  <h2>League</h2>
+  <hr/>
   <div class="form-group">
     <?php echo form_label('League Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
@@ -58,6 +50,7 @@
               <option value="<?php echo $i ?>"><?php echo $i ?></option>
           <?php } ?>
         </select>
+        <span class="help-block">A Season can be started as soon as the minimum number of teams (6) have joined your league.</span>
       </div>
   </div>
   <div class="form-group">

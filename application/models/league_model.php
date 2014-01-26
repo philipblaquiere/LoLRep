@@ -22,23 +22,34 @@ class League_model extends MY_Model {
 		  return $result->row_array();
   	}
 
-  	public function create_league($league) {
-  		$uniqueid = $this->generate_unique_key();
+  	public function create_league($league, $season) {
+      $seasonuniqueid = $this->generate_unique_key();
+  		$leagueuniqueid = $this->generate_unique_key();
       
       $this->db1->trans_start();
       
-      $sql = "INSERT INTO leagues(leagueid, league_name, esportid, typeid, max_teams,invite, private)
-          VALUES ('" . $uniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
+      
+      $sql = "INSERT INTO seasons (seasonid, owner_UserId, season_duration, season_esportid)
+          VALUES ('" . $seasonuniqueid . "', '" . $season['UserId'] . "', '" . $season['season_duration'] . "', '" . $season['season_esportid'] . "')";
       $this->db1->query($sql);
+
+      $sql = "INSERT INTO season_leagues (seasonid, leagueid)
+              VALUES ('" . $seasonuniqueid . "', '" . $leagueuniqueid . "')";
+      $this->db1->query($sql);
+
+      $sql = "INSERT INTO leagues(leagueid, league_name, esportid, league_type, max_teams,invite, private)
+          VALUES ('" . $leagueuniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
+      $this->db1->query($sql);
+
       $sql = "INSERT INTO leagues_meta(leagueid, first_matches, seasonid)
           VALUES";
       foreach ($league['leagues_meta'] as $leagues_meta) {
-        $sql .= "('" . $uniqueid . "', '" . $leagues_meta . "', '" . $league['seasonid'] . "'),";
+        $sql .= "('" . $leagueuniqueid . "', '" . $leagues_meta . "', '" . $seasonuniqueid . "'),";
       }
       $sql = substr($sql, 0, -1);
       $this->db1->query($sql);
-      $sql = "INSERT INTO league_owners(leagueid, UserId,seasonid,esportid)
-              VALUES ('" . $uniqueid . "', '" . $_SESSION['user']['UserId'] . "', '" . $league['seasonid'] . "', '" . $league['esportid'] . "')";
+      $sql = "INSERT INTO league_owners(leagueid, UserId, seasonid, esportid)
+              VALUES ('" . $leagueuniqueid . "', '" . $_SESSION['user']['UserId'] . "', '" . $seasonuniqueid . "', '" . $league['esportid'] . "')";
       
       $this->db1->query($sql);
   		$this->db1->trans_complete();
@@ -80,12 +91,12 @@ class League_model extends MY_Model {
       $result = $this->db1->query($sql);
       return $result->result_array();
     }
-    public function get_all_leagues_detailed($seasonid,$private = 0) {
+    public function get_all_leagues_detailed($esportid,$private = 0) {
       $sql = "SELECT * FROM leagues l
               INNER JOIN leagues_meta lm ON l.leagueid = lm.leagueid 
-              INNER JOIN league_types tp ON l.typeid = tp.league_type_id
-              INNER JOIN esports e ON l.esportid = e.esportid
-              WHERE lm.seasonid = '$seasonid' AND l.private = '$private'";
+              INNER JOIN league_types tp ON l.league_type = tp.league_type_id
+              INNER JOIN esports e ON e.esportid = '$esportid'
+              WHERE l.private = '$private' AND l.esportid = '$esportid'";
       $result = $this->db1->query($sql);
       $results = $result->result_array();
       $league_info = array();
@@ -101,7 +112,6 @@ class League_model extends MY_Model {
           $league_info[$result['league_name']]['league_name'] = $result['league_name'];
           $league_info[$result['league_name']]['esportid'] = $result['esportid'];
           $league_info[$result['league_name']]['esport_name'] = $result['esport_name'];
-          $league_info[$result['league_name']]['typeid'] = $result['typeid'];
           $league_info[$result['league_name']]['league_type'] = $result['league_type'];
           $league_info[$result['league_name']]['max_teams'] = $result['max_teams'];
           $league_info[$result['league_name']]['invite'] = $result['invite'];
@@ -145,7 +155,7 @@ class League_model extends MY_Model {
     }
     public function get_league_details($leagueid) {
       $sql =  "SELECT * FROM leagues l
-              INNER JOIN league_types lt ON l.typeid = lt.league_type_id
+              INNER JOIN league_types lt ON l.league_type = lt.league_type_id
               INNER JOIN esports e ON l.esportid = e.esportid
               WHERE l.leagueid = '$leagueid'
               LIMIT 1";

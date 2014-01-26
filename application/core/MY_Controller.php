@@ -75,10 +75,6 @@ class MY_Controller extends CI_Controller  {
     $_SESSION['uid'] = $user['UserId'];
     $_SESSION['user'] = $user;
     $_SESSION['last_login'] = $user['last_login_time'];
-    $seasonid = $this->season_model->get_current_seasonid();
-    if($seasonid) {
-      $_SESSION['seasonid'] = $seasonid['seasonid'];
-    }
     $_SESSION['esportid'] = 1;
   }
 

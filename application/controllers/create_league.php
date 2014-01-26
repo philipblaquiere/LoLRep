@@ -20,7 +20,7 @@ class Create_league extends MY_Controller{
 
     public function index() {
         $this->require_login();
-        $season = $this->season_model->get_new_season();
+
         $esports = $this->esport_model->get_all_registered_esports($_SESSION['user']['UserId']);
 
         if(!$esports) {
@@ -29,12 +29,10 @@ class Create_league extends MY_Controller{
             $this->view_wrapper('user/add_esport',$data);
             return;
         }
+
+        
+        
         $data['league_types'] = $this->league_model->get_league_types();
-        $data['season'] = $season;
-        $data['season']['registration_start'] = $this->get_local_date($data['season']['registration_start']);
-        $data['season']['registration_end'] = $this->get_local_datetime($data['season']['registration_end']);
-        $data['season']['startdate'] = $this->get_local_date($data['season']['startdate']);
-        $data['season']['enddate'] = $this->get_local_datetime($data['season']['enddate']);
         $data['esports'] = $esports;
         
         //Validation on input (requires that all fields exist)
@@ -68,29 +66,34 @@ class Create_league extends MY_Controller{
         else {
             $input = $this->input->post();
             $leagues_meta = array();
+            $time = strtotime('now');
 
             //get times of day of week if corresponding checkbox is checked
             if(in_array("mondaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('monday',$input['mondaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('monday',$input['mondaytimepicker'],$time));
             }
             if(in_array("tuesdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('tuesday',$input['tuesdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('tuesday',$input['tuesdaytimepicker'],$time));
             }
             if(in_array("wednesdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('wednesday',$input['wednesdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('wednesday',$input['wednesdaytimepicker'],$time));
             }
             if(in_array("thursdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('thursday',$input['thursdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('thursday',$input['thursdaytimepicker'],$time));
             }
             if(in_array("fridaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('friday',$input['fridaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('friday',$input['fridaytimepicker'],$time));
             }
             if(in_array("saturdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('saturday',$input['saturdaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('saturday',$input['saturdaytimepicker'],$time));
             }
             if(in_array("sundaytimepicker", $input)) {
-                array_push($leagues_meta, $this->get_first_match_datetime('sunday',$input['sundaytimepicker'],$season['startdate']));
+                array_push($leagues_meta, $this->get_first_match_datetime('sunday',$input['sundaytimepicker'],$time));
             }
+            $season['UserId'] = $_SESSION['user']['UserId'];
+            $season['season_duration'] = $input['duration'];
+            $season['season_esportid'] = $input['esportid'];
+
             $league['name'] = $input['name'];
             $league['esportid'] = $input['esportid'];
             $league['max_teams'] = $input['max_teams'];
@@ -98,9 +101,9 @@ class Create_league extends MY_Controller{
             $league['invite'] = in_array("inviteonly", $input) ? 1 : 0;
             $league['privateleague'] = in_array("private", $input) ? 1 : 0;
             $league['leagues_meta'] = $leagues_meta;
-            $league['seasonid'] = $season['seasonid'];
+            print_r($league);
             $this->view_wrapper('create_league', $data);
-            if($this->league_model->create_league($league))
+            if($this->league_model->create_league($league,$season))
                 $this->system_message_model->set_message('The League has been created.', MESSAGE_INFO);
             redirect('home', 'refresh');
         }
@@ -137,22 +140,26 @@ class Create_league extends MY_Controller{
     }
     public function unique_leaguename($leaguename)
     {
-        $newseason = $this->season_model->get_new_season();
         $existing_league = $this->league_model->get_league_by_name($leaguename);
-        $user_leagues_owner = $this->league_model->get_league_owner($_SESSION['user']['UserId'], $newseason['seasonid']);
+        $user_own_season = $this->season_model->get_user_created_seasons($_SESSION['user']['UserId']);
+
+        if($user_own_season) {
+            $this->system_message_model->set_message("You already own a League! You can join other leagues but can only be owner of a single league."  , MESSAGE_ERROR);
+            $this->view_wrapper('home',$data);
+            return;
+        }
+
         if($existing_league && ($existing_league['status']=="new" || $existing_league['status']=="active")) {
             $this->form_validation->set_message('unique_leaguename','A league with an identical name already exists.');
             return false;
         }
-        else if($user_leagues_owner) {
-            //user already created a league this season, check if it's for the esport
+        else if($user_own_season) {
+            //user already created a league this season, check if league is for the current esport
             $esportid = $this->input->post('esportid');
-            foreach ($user_leagues_owner as $league) :
-                if($league['esportid'] == $esportid) {
-                    $this->form_validation->set_message('unique_leaguename','You can only create one League per registered Esport.');
-                    return false;
-                }
-            endforeach;
+            if($league['esportid'] == $user_own_season['season_esportid']) {
+                $this->form_validation->set_message('unique_leaguename','You can only create one League per registered Esport.');
+                return false;
+            }
             return true;
         }
         else {

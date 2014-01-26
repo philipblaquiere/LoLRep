@@ -57,13 +57,22 @@ class Season_model extends MY_Model {
 
   	public function create_season($season) {
   		$uniqueid = $this->generate_unique_key();
-  		$sql = "INSERT INTO seasons (seasonid, owner_UserId, registration_start,registration_end, startdate, enddate, name)
-  				VALUES ('" . $uniqueid . "', '" . $season['UserId'] . "', '" . $season['registration_start'] . "', '" . $season['registration_end'] . "', '" . $season['startdate'] . "', '" . $season['enddate'] . "', '" . $season['name'] . "')";
+  		$sql = "INSERT INTO seasons (seasonid, owner_UserId, season_duration)
+  				VALUES ('" . $uniqueid . "', '" . $season['UserId'] . "', '" . $season['season_duration'] . "')";
   		$this->db1->query($sql);
   	}
 
   	public function open_season($seasonid) {
   		$sql = "UPDATE seasons SET status = 'open' WHERE seasonid = '$seasonid'";
   		$this->db1->query($sql);
+  	}
+
+  	public function get_user_created_seasons($userid) {
+  		$sql = "SELECT * FROM seasons
+  				WHERE owner_UserId = '$userid'
+  				AND season_status = 'active' OR season_status = 'new'
+  				LIMIT 1";
+  		$result = $this->db1->query($sql);
+		return $result->row_array();
   	}
 }
