@@ -22,7 +22,7 @@ class Teams extends MY_Controller{
     }
     public function index() {
         $this->require_login();
-        $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
+        $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId'],$_SESSION['esportid']);
         $data['invites'] = $this->team_invite_model->get_lol_new_invites_by_uid($_SESSION['user']['UserId']);
         if($data['invites']) {
             $this->team_invite_model->mark_invites_read($_SESSION['user']['UserId']);
@@ -43,15 +43,17 @@ class Teams extends MY_Controller{
     public function view($teamid) {
         $this->require_login();
         $this->load->library('calendar');
-        $season = $this->season_model->get_new_season();
         
         $data['team'] = $this->team_model->get_team_by_teamid($teamid);
-        $data['roster'] = $this->team_model->get_team_lol($teamid);
+        $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
         $data['calendar'] = $this->calendar;
+        $season = $this->season_model->get_current_season($teamid);
         $data['schedule'] = $this->match_model->get_matches_by_teamid($teamid,$season);
         //get the league;
-        $leagueid = $data['schedule'][0]['leagueid'];
-        $data['teams'] = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+        if($data['schedule']) {
+            $leagueid = $data['schedule'][0]['leagueid'];
+            $data['teams'] = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+        }
         print_r($data['roster']);
         $this->view_wrapper('view_team',$data);
     }

@@ -119,7 +119,7 @@ class Team_model extends MY_Model {
     
   }
 
-   public function get_all_teams_by_uid($uid) {
+   public function get_all_teams_by_uid($uid, $esportid) {
     /*returns 
       teamid
       team_name
@@ -139,9 +139,19 @@ class Team_model extends MY_Model {
       RevisionDate
       SummonerLevel
       created*/
-    $sql = "SELECT * FROM teams t
+      switch ($esportid) {
+        case '1':
+        //League of Legends
+          $sql = "SELECT * FROM teams t
             INNER JOIN teams_lol l ON t.teamid = l.teamid 
-            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
+            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE s.UserId = '$uid'";
+          break;
+        
+        default:
+          # code...
+          break;
+      }
+    
     $result = $this->db1->query($sql);
     return $result->result_array();
   }
@@ -154,10 +164,15 @@ class Team_model extends MY_Model {
     $result = $this->db1->query($sql);
     return $result->result_array();
   }
-  public function get_team_lol($teamid) {
-    $sql = "SELECT * FROM summoners s
+  public function get_team_roster($teamid, $esportid) {
+    switch ($esportid) {
+      case '1':
+        $sql = "SELECT * FROM summoners s
             INNER JOIN teams_lol t ON t.teamid = '$teamid'
-            WHERE t.summonerid = s.SummonerId AND t.status = 'active'";
+            WHERE t.summonerid = s.SummonerId AND t.status != 'inactive'";
+        break;
+    }
+    
     $result = $this->db1->query($sql);
     return $result->result_array();
   }
