@@ -33,11 +33,11 @@ class Create_team extends MY_Controller{
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
 
         if($this->form_validation->run() == FALSE) {
-            //$this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
+            $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
             $this->view_wrapper('user/create_team', $data);
         }
         else {
-            $team['name'] = $this->input->post('teamname');
+            $team['team_name'] = $this->input->post('teamname');
             $team['esportid'] = $this->input->post('esportid');
             $make_captain = $this->input->post('make_captain');
 
@@ -47,7 +47,7 @@ class Create_team extends MY_Controller{
                 $captain['gameid'] = $this->lol_model->get_summonerid_from_uid($captain['UserId']);
             }
             $this->team_model->create_team($team,$captain);
-            $this->system_message_model->set_message($team['name'] . ' has been created, add people to your team' , MESSAGE_INFO);
+            $this->system_message_model->set_message($team['team_name'] . ' has been created, add people to your team' , MESSAGE_INFO);
             
             redirect('home', 'location');
         }
@@ -69,7 +69,7 @@ class Create_team extends MY_Controller{
 
         foreach ($teams as $team) {
             if($team['esportid'] == $this->input->post('esportid')) {
-                $this->form_validation->set_message('has_team',"You can be registered to one team per Esport at a time. You're currently part of team : " . $team['name']);
+                $this->form_validation->set_message('has_team',"You can be registered to one team per Esport at a time. You're currently part of team : " . $team['team_name']);
                 return false;
             }
             else {
