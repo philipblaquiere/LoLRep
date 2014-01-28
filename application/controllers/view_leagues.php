@@ -87,6 +87,25 @@ class View_leagues extends MY_Controller{
         $this->view_wrapper('view_leagues', $data);
     }
 
+    public function start_season($seasonid)
+    {
+        $this->require_login();
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('season_start_date', 'Season Start', 'required|callback_value_infuture');
+        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
+
+        if($this->form_validation->run() == FALSE) {
+            $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
+            $this->view_wrapper('view_leagues/view', $data);
+        }
+        else
+        {
+            $inputs = $this->input->post();
+        }
+    }
+
+
     public function view($leagueid) 
     {
         $this->require_login();
@@ -110,5 +129,17 @@ class View_leagues extends MY_Controller{
 
         $this->view_wrapper('view_league', $data);
 
+    }
+
+    public function value_infuture($date)
+    {
+        if(strtotime('tomorrow') > strtotime($date))
+        {
+            $this->form_validation->set_message('value_infuture','Start date has to be in the future (Not today either)');
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 }

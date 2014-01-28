@@ -4,10 +4,18 @@
  	<h4>Esport: <?php echo $league['esport_name'] ?></h4>
  	<h4>Type: <?php echo $league['league_type'] ?></h4>
  	<h4>Duration: <?php echo $league['season_duration'] ?> months</h4>
- 	<?php if($league['owner_UserId'] == $_SESSION['user']['UserId'] && $league['start_date'] == null ) { ?>
-        <h4>Season hasn't started yet <a href="#" class="btn btn-sm btn-success" role="button">Start Season!</a> </h4>
-        <h4>Season start date: <?php echo date('l, F d Y', strtotime('next monday')); ?></h4> 
-    <?php } ?>
+ 	<?php if($league['start_date'] == NULL) { ?>
+ 		<h4>Season hasn't started yet</h4>
+ 	<?php }
+ 	else { ?>
+ 		<h4>Starts: <?php echo $league['start_date'] ?></h4>
+ 	<?php } ?>
+ 	<?php if($league['owner_UserId'] == $_SESSION['user']['UserId'] && $league['start_date'] == NULL) { ?>
+ 		<?php echo form_open('view_leagues/start_season/' . $league['seasonid']  , array('class' => 'form-horizontal')); ?>
+	        <h4>Set Season start date: <input name="season_start_date" type="text" class="datepicker" value id="season_start_date" /></h4>
+	        <h4><button class="btn btn-sm btn-success" type="submit">Set Start Date</button></h4>
+	    <?php echo form_close(); ?>
+	<?php } ?>
 </div>
 <!-- Header -->
 <h2>Teams <?php echo count($teams['teams']) ?>/<?php echo $league['max_teams'] ?></h2>
