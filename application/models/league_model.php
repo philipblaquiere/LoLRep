@@ -15,6 +15,7 @@ class League_model extends MY_Model {
       return $result->row_array();
     }
   	public function get_league_by_name($leaguename) {
+      $leaguename = $this->make_mysql_friendly($leaguename);
 	  	$sql = "SELECT * FROM leagues
 	  			WHERE league_name = '$leaguename'
 	  			LIMIT 1";
@@ -25,7 +26,8 @@ class League_model extends MY_Model {
   	public function create_league($league, $season) {
       $seasonuniqueid = $this->generate_unique_key();
   		$leagueuniqueid = $this->generate_unique_key();
-      
+      $league['name'] = $this->make_mysql_friendly($league['name']);
+
       $this->db1->trans_start();
       
       
@@ -155,6 +157,8 @@ class League_model extends MY_Model {
     }
     public function get_league_details($leagueid) {
       $sql =  "SELECT * FROM leagues l
+              INNER JOIN season_leagues sl ON sl.leagueid = l.leagueid
+              INNER JOIN seasons s ON s.seasonid = sl.seasonid
               INNER JOIN league_types lt ON l.league_type = lt.league_type_id
               INNER JOIN esports e ON l.esportid = e.esportid
               WHERE l.leagueid = '$leagueid'

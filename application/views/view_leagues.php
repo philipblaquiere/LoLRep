@@ -107,6 +107,7 @@
 				                	<?php foreach ($league_info['first_matches'] as $first_game) : ?>
 					        			<?php echo date("D'\s \- h:i A.",strtotime($first_game)) ?>
 					        		<?php endforeach; ?></p>
+					        	<p class="list-group-item-text">Tooltip: <?php echo $league_info['join_status_tooltip'] ?></p>
 					        </div>
 					        <div class="col-md-2">
 					        	<div class="btn-toolbar " role="toolbar">

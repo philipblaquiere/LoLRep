@@ -31,29 +31,16 @@ class Season_model extends MY_Model {
 		return $result->row_array();
   	}
 
-  	public function get_current_seasonid() {
-  		$sql = "SELECT seasonid as seasonid FROM seasons
-	  			WHERE status = 'active'
+  	public function get_current_season($teamid) {
+  		$sql = "SELECT s.start_date as start_date, s.season_esportid as season_esportid, s.season_status as season_status, s.season_status as season_status, s.created as created FROM seasons s
+	  			INNER JOIN season_leagues sl ON s.seasonid = sl.seasonid
+	  			INNER JOIN league_teams lt ON lt.leagueid = sl.leagueid
+	  			WHERE lt.teamid = '$teamid'
 	  			LIMIT 1";
 	  	$result = $this->db1->query($sql);
 		return $result->row_array();
   	}
 
-  	public function get_new_season() {
-  		$sql = "SELECT * FROM seasons
-	  			WHERE status = 'new'
-	  			LIMIT 1";
-	  	$result = $this->db1->query($sql);
-		return $result->row_array();
-  	}
-
-  	public function get_open_season() {
-  		$sql = "SELECT * FROM seasons
-	  			WHERE status = 'open'
-	  			LIMIT 1";
-	  	$result = $this->db1->query($sql);
-		return $result->row_array();
-  	}
 
   	public function create_season($season) {
   		$uniqueid = $this->generate_unique_key();

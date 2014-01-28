@@ -29,7 +29,7 @@
 		<td>Create a Season</td>
 		<td><?php echo form_open('admin/create_season', array('class' => 'form-horizontal')); ?>
 				<input name="name" type="text" placeholder="Season Name"/>
-				<input name="registration_start" type="text"  class="datepicker" placeholder="Registration Begins" />
+				<input name="registration_start" type="text" class="datepicker" placeholder="Registration Begins" />
 				<input name="enddate" type="text" class="datepicker" placeholder="End Date"/>
 		</td>
 		<td><button type="submit">Create Season</button><?php echo form_close(); ?><td>

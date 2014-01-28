@@ -55,7 +55,7 @@ class Join_league extends MY_Controller {
             //User is not part of team and is captain of his team, join the league
             $joined_league = $this->league_model->join_league($team['teamid'],$leagueid);
             $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
-            redirect('view_leaguse', 'refresh');
+            redirect('view_leagues', 'refresh');
         }
     }
 }

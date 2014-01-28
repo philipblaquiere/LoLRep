@@ -48,13 +48,15 @@ class Teams extends MY_Controller{
         $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
         $data['calendar'] = $this->calendar;
         $season = $this->season_model->get_current_season($teamid);
-        $data['schedule'] = $this->match_model->get_matches_by_teamid($teamid,$season);
-        //get the league;
-        if($data['schedule']) {
-            $leagueid = $data['schedule'][0]['leagueid'];
-            $data['teams'] = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+        $data['schedule'] = array();
+        if(array_key_exists('start_date', $season) && $season['start_date'] != NULL) {
+            $data['schedule'] = $this->match_model->get_matches_by_teamid($teamid,$season);
+            //get the league;
+            if($data['schedule']) {
+                $leagueid = $data['schedule'][0]['leagueid'];
+                $data['teams'] = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+            }
         }
-        print_r($data['roster']);
         $this->view_wrapper('view_team',$data);
     }
 
@@ -73,19 +75,19 @@ class Teams extends MY_Controller{
         else {
             $invitations = $this->input->post();
             $invitation = array();
-            $summonernames = explode(",", trim($invitations['summonerlist'],","));
-            foreach ($summonernames as $summonername) {
-                $invitation['summonerid'] = $this->lol_model->get_summonerid_from_summonername($summonername);
+            $summoner_names = explode(",", trim($invitations['summonerlist'],","));
+            foreach ($summoner_names as $summoner_name) {
+                $invitation['summonerid'] = $this->lol_model->get_summonerid_from_summoner_name($summoner_name);
                 $invitation['teamid'] = $team['teamid'];
                 $invitation['message'] = $invitations['invite_message'];
                 
                 $this->team_invite_model->invite_summoner($invitation);
             }
-            if(count($summonernames) == 1) {
-                $this->system_message_model->set_message(join(', ', $summonernames)  . " has been invited to " . $team['team_name']  , MESSAGE_INFO);
+            if(count($summoner_names) == 1) {
+                $this->system_message_model->set_message(join(', ', $summoner_names)  . " has been invited to " . $team['team_name']  , MESSAGE_INFO);
             }
             else {
-                 $this->system_message_model->set_message(join(', ', $summonernames)  . " have been invited to " . $team['team_name']  , MESSAGE_INFO);
+                 $this->system_message_model->set_message(join(', ', $summoner_names)  . " have been invited to " . $team['team_name']  , MESSAGE_INFO);
             }
             redirect('home', 'refresh');
         }
@@ -93,14 +95,14 @@ class Teams extends MY_Controller{
 
     public function summoner_registered($summonerlist) {
         //for callback
-        //for summonernamestrim
+        //for summoner_namestrim
         $summonerlist = trim($summonerlist,",");
-        $summonernames = explode(",", $summonerlist);
-        $callback = explode(",", $summonerlist);
+        $summoner_names = explode(",", $summonerlist);
+        $callback = explode (",", $summonerlist);
         $invalidnames = array();
-        foreach ($summonernames as $summonername) {
-            if(!$this->lol_model->registered_summoner(trim($summonername))) {
-               array_push($invalidnames,$summonername);
+        foreach ($summoner_names as $summoner_name) {
+            if(!$this->lol_model->registered_summoner(trim($summoner_name))) {
+               array_push($invalidnames,$summoner_name);
             }
         }
         if($invalidnames) {
@@ -122,11 +124,11 @@ class Teams extends MY_Controller{
     public function summoner_inteam($summonerlist) {
         //for callback, verifies summoner(s) are part of existing team
         $summonerlist = trim($summonerlist,",");
-        $summonernames = explode(",", $summonerlist);
+        $summoner_names = explode(",", $summonerlist);
         $invalidnames = array();
-        foreach ($summonernames as $summonername) {
-            if($this->team_model->get_team_id_by_summonername(trim($summonername))) 
-                array_push($invalidnames,$summonername);
+        foreach ($summoner_names as $summoner_name) {
+            if($this->team_model->get_team_id_by_summoner_name(trim($summoner_name))) 
+                array_push($invalidnames,$summoner_name);
         }
         if($invalidnames) {
             if(count($invalidnames) == 1) { 

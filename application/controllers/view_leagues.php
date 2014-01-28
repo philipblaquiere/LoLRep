@@ -45,7 +45,7 @@ class View_leagues extends MY_Controller{
             */
             $leagues_info[$league_info['league_name']]['num_teams'] = array_key_exists($league_info['league_name'], $league_teams) ? count($league_teams[$league_info['league_name']]['teams']) : 0 ;
 
-            if(!empty($user_current_team)) {
+            if(empty($user_current_team)) {
                 //User not part of a team
                 $leagues_info[$league_info['league_name']]['can_join'] = 0;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Join";
@@ -87,17 +87,27 @@ class View_leagues extends MY_Controller{
         $this->view_wrapper('view_leagues', $data);
     }
 
-    public function view($leagueid) {
+    public function view($leagueid) 
+    {
         $this->require_login();
         $teams = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
-        if(!$teams) {
+        if(!$teams) 
+        {
             $teams['teams'] = array();
         }
         $league = $this->league_model->get_league_details($leagueid);
-        //$schedule = $this->match_model->get_matches_by_leagueid($leagueid);
+        
+        $schedule = array();
+        if($league['season_status'] != 'new' && $league['start_date'] == null ) 
+        {
+            $schedule = $this->match_model->get_matches_by_leagueid($leagueid);
+        }
+
         $data['teams'] = $teams;
         $data['league'] = $league;
-        //$data['schedule'] = $schedule;
+        $data['schedule'] = $schedule;
+        print_r($data);
+
         $this->view_wrapper('view_league', $data);
 
     }

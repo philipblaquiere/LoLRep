@@ -19,8 +19,8 @@ class Match_model extends MY_Model {
 	}
 	
 	public function get_matches_by_teamid($teamid, $season) {
-		$season_start = $season['startdate'];
-		$season_end = $season['enddate'];
+		$season_start = $season['start_date'];
+		$season_end = $season['end_date'];
 
 		$sql = "SELECT * FROM matches
 				WHERE (teamaid = '$teamid' OR teambid = '$teamid')
