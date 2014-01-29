@@ -156,6 +156,7 @@ class View_leagues extends MY_Controller{
             $season['end_date'] = strtotime($league['end_date']);
             $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
         }
+        
         $data['teams'] = $teams;
         $data['league'] = $league;
         $data['schedule'] = $schedule;

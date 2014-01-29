@@ -40,7 +40,13 @@ class Team_model extends MY_Model {
     
   }
   public function get_team_by_teamid($teamid) {
-    $sql = "SELECT * FROM teams WHERE teamid = '$teamid' LIMIT 1";
+    $time_now = $this->get_default_epoch(date('Y-m-d H:i:s', time()));
+    $sql = "SELECT * FROM teams t
+          INNER JOIN league_teams lt ON lt.teamid = t.teamid
+          INNER JOIN season_leagues sl ON sl.leagueid = lt.leagueid
+          INNER JOIN seasons s ON s.seasonid = sl.seasonid
+          WHERE t.teamid = '$teamid' AND s.start_date < '$time_now' AND s.end_date > '$time_now'
+          LIMIT 1";
     $result = $this->db1->query($sql);
     return $result->row_array();
   }

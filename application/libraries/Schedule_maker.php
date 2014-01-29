@@ -35,7 +35,7 @@ class Schedule_maker {
     public function set_matches($match_array) {
     	$season_matches = array();
     	$week_num = 0;
-    	$end_of_season = False;
+    	$end_of_season = FALSE;
     	$match_array = $this->_bring_matches_uptodate($match_array);
 
     	//Scheduled matches end a week early to allow time for tournament
@@ -52,7 +52,7 @@ class Schedule_maker {
     				array_push($season_matches, $next_match->getTimestamp());
     			}
     			else {
-    				$end_of_season = True;
+    				$end_of_season = TRUE;
     			}
 			}
 			$week_num += 1;
@@ -105,9 +105,10 @@ class Schedule_maker {
 		$startdate->modify('+' . $this->initial_match_delay . ' day');
 		foreach ($first_matches as $first_match) 
 		{
-			if($first_match < $startdate->getTimestamp())
+			$first_match = new DateTime("@$first_match");
+			if($first_match->getTimestamp() < $startdate->getTimestamp())
 			{
-				$first_match = new DateTime("@$first_match");
+				
 				while($first_match->getTimestamp() < $startdate->getTimestamp())
 				{
 					$first_match->modify('+1 week');

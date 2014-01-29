@@ -56,7 +56,7 @@ class Teams extends MY_Controller{
             $league_details = $this->league_model->get_league_details($leagueid);
             $data['teams'] = $this->team_model->get_teams_byleagueid($league_details,$_SESSION['esportid']);
         }
-        print_r($data['schedule']);
+        print_r($data['team']);
         $this->view_wrapper('view_team',$data);
     }
 
