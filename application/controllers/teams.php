@@ -18,6 +18,7 @@ class Teams extends MY_Controller{
         $this->load->model('season_model');
         $this->load->model('match_model');
         $this->load->model('riotapi_model');
+        $this->load->model('league_model');
         
     }
     public function index() {
@@ -49,14 +50,12 @@ class Teams extends MY_Controller{
         $data['calendar'] = $this->calendar;
         
         $data['schedule'] = array();
-        $data['schedule'] = $this->match_model->get_matches_by_teamid($teamid,$season);
+        $data['schedule'] = $this->match_model->get_matches_by_teamid($data['team']);
         //get the league;
         if($data['schedule']) {
-            $leagueid = $data['schedule'][0]['leagueid'];
-            $league_details = $this->league_model->get_league_details($leagueid);
-            $data['teams'] = $this->team_model->get_teams_byleagueid($league_details,$_SESSION['esportid']);
+            $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
+            $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
         }
-        print_r($data['team']);
         $this->view_wrapper('view_team',$data);
     }
 

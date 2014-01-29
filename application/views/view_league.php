@@ -26,7 +26,7 @@
 	<span class="list-group-item">
 		<div class="row">
 			<div class="col-md-7">
-                <a href="<?php echo site_url('teams/view/' . $team['teamid']) ?>"><h2 class="list-group-item-text"><?php echo $team['team_name']?></h2></a>
+                <a href="<?php echo site_url('teams/view/' . $team['teamid']) ?>"><p class="list-group-item-text"><?php echo $team['team_name']?></p></a>
                 <p class="list-group-item-text">Active Since: <?php echo $team['joined']?> </p>
 	        </div> 
     	</div>  	

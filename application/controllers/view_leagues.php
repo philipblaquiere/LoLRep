@@ -160,6 +160,7 @@ class View_leagues extends MY_Controller{
         $data['teams'] = $teams;
         $data['league'] = $league;
         $data['schedule'] = $schedule;
+        print_r($data);
         $this->view_wrapper('view_league', $data);
 
     }
