@@ -43,12 +43,12 @@ class Match_model extends MY_Model {
 	}
 
 	public function get_matches_by_leagueid($leagueid, $season) {
-		$season_start = $season['startdate'];
-		$season_end = $season['enddate'];
+		$season_start = $season['start_date'];
+		$season_end = $season['end_date'];
 
 		$sql = "SELECT * FROM matches
 				WHERE leagueid = '$leagueid'
-				AND match_date > '$season_start' AND match_date < '$season_end'";
+				AND match_date >= '$season_start' AND match_date < '$season_end'";
 		$results = $this->db1->query($sql);
 		$results = $results->result_array();
 		$matches = array();

@@ -49,9 +49,9 @@ class Season_model extends MY_Model {
   		$this->db1->query($sql);
   	}
 
-  	public function start_season($seasonid, $start_date) {
+  	public function start_season($seasonid, $start_date, $end_date) {
   		$sql = "UPDATE seasons
-  			SET status = 'active' AND start_date = '$start_date'
+  			SET season_status = 'active', start_date = '$start_date', end_date = '$end_date'
   			WHERE seasonid = '$seasonid'";
   		$this->db1->query($sql);
   	}

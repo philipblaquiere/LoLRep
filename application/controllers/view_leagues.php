@@ -93,15 +93,42 @@ class View_leagues extends MY_Controller{
         $this->load->library('form_validation');
 
         $this->form_validation->set_rules('season_start_date', 'Season Start', 'required|callback_value_infuture');
-        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
+
+        $leagueid = $this->input->post('leagueid');
 
         if($this->form_validation->run() == FALSE) {
             $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
-            $this->view_wrapper('view_leagues/view', $data);
+            $this->view($leagueid);
         }
         else
         {
-            $inputs = $this->input->post();
+            $league = $this->league_model->get_league_details($leagueid);
+            $league_teams = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+            $start_date = $this->input->post('season_start_date');
+
+            $this->load->library('schedule_maker');
+            $this->schedule_maker->set_num_teams(count($league_teams['teams']));
+
+            $this->schedule_maker->set_start_date($start_date);
+            $this->schedule_maker->set_duration($league['season_duration']);
+            $this->schedule_maker->set_matches($league['first_matches']);
+            $schedule = $this->schedule_maker->generate_schedule();
+
+            //Replace the teamporary teamids with actual teamid's in the schedule
+            $teams = array();
+            foreach ($league_teams['teams'] as $team) {
+                array_push($teams, $team['teamid']);
+            }
+            $match_num = 0;
+            foreach ($schedule as $match) {
+                $schedule[$match_num]['teamaid'] = $teams[$match['teamaid']];
+                $schedule[$match_num]['teambid'] = $teams[$match['teambid']];
+                $match_num++;
+            }
+            
+            $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())));
+            $this->match_model->create_matches($leagueid, $schedule);
+            $this->view($leagueid);
         }
     }
 
@@ -115,18 +142,23 @@ class View_leagues extends MY_Controller{
             $teams['teams'] = array();
         }
         $league = $this->league_model->get_league_details($leagueid);
-        
-        $schedule = array();
-        if($league['season_status'] != 'new' && $league['start_date'] == null ) 
+        if($league['start_date'] != NULL)
         {
-            $schedule = $this->match_model->get_matches_by_leagueid($leagueid);
+            //get the end date of the season
+            $league['end_date'] = $this->get_local_date($league['end_date']);
+            $league['start_date'] = $this->get_local_date($league['start_date']);
         }
 
+        $schedule = array();
+        if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+        {
+            $season['start_date'] = strtotime($league['start_date']);
+            $season['end_date'] = strtotime($league['end_date']);
+            $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+        }
         $data['teams'] = $teams;
         $data['league'] = $league;
         $data['schedule'] = $schedule;
-        print_r($data);
-
         $this->view_wrapper('view_league', $data);
 
     }

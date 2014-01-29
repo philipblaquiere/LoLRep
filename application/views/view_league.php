@@ -1,19 +1,21 @@
 <!-- Header -->
 <div class="page-header">
   	<h1><?php echo $league['league_name'] ?></h1>
- 	<h4>Esport: <?php echo $league['esport_name'] ?></h4>
- 	<h4>Type: <?php echo $league['league_type'] ?></h4>
- 	<h4>Duration: <?php echo $league['season_duration'] ?> months</h4>
+ 	<p>Esport: <?php echo $league['esport_name'] ?></p>
+ 	<p>Type: <?php echo $league['league_type'] ?></p>
+ 	<p>Duration: <?php echo $league['season_duration'] ?> months</p>
  	<?php if($league['start_date'] == NULL) { ?>
- 		<h4>Season hasn't started yet</h4>
+ 		<p>Season start not announced</p>
  	<?php }
  	else { ?>
- 		<h4>Starts: <?php echo $league['start_date'] ?></h4>
+ 		<p>Starts: <?php echo $league['start_date'] ?></p>
+ 		<p>Ends: <?php echo $league['end_date'] ?></p>
  	<?php } ?>
  	<?php if($league['owner_UserId'] == $_SESSION['user']['UserId'] && $league['start_date'] == NULL) { ?>
- 		<?php echo form_open('view_leagues/start_season/' . $league['seasonid']  , array('class' => 'form-horizontal')); ?>
-	        <h4>Set Season start date: <input name="season_start_date" type="text" class="datepicker" value id="season_start_date" /></h4>
-	        <h4><button class="btn btn-sm btn-success" type="submit">Set Start Date</button></h4>
+        <?php echo form_open('view_leagues/start_season/' . $league['seasonid']  , array('class' => 'form-horizontal')); ?>
+ 			<p><input type="hidden" name="leagueid" value="<?php echo $league['leagueid'] ?>"></p>
+ 			<p>Start Date: <input name="season_start_date" id="season_start_date" type="text" class="datepicker" value id="season_start_date" /></p>
+	    	<p><button type="submit" class="btn btn-primary">Start Season</button></p>
 	    <?php echo form_close(); ?>
 	<?php } ?>
 </div>
@@ -52,3 +54,21 @@
 	</tr>
 <?php  endforeach; } ?>
 </table>
+
+
+<!-- Set Start Date Modal -->
+<div class="modal fade" id="season_startdate_modal" tabindex="-1" role="dialog" aria-labelledby="season_startdate_modallabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="season_startdate_modallabel">Double Checking...</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

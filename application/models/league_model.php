@@ -127,7 +127,8 @@ class League_model extends MY_Model {
     /*
     *Returns all league and their active teams
     */
-    public function get_active_league_teams($esportid) {
+    public function get_active_league_teams($esportid)
+    {
 
       $sql = "SELECT * FROM leagues l
               INNER JOIN league_teams lt ON l.leagueid = lt.leagueid 
@@ -155,32 +156,42 @@ class League_model extends MY_Model {
       }
       return $active_leagues;
     }
-    public function get_league_details($leagueid) {
-      $sql =  "SELECT * FROM leagues l
-              INNER JOIN season_leagues sl ON sl.leagueid = l.leagueid
-              INNER JOIN seasons s ON s.seasonid = sl.seasonid
-              INNER JOIN league_types lt ON l.league_type = lt.league_type_id
-              INNER JOIN esports e ON l.esportid = e.esportid
-              WHERE l.leagueid = '$leagueid'
-              LIMIT 1";
-      $result = $this->db1->query($sql);
-      return $result->row_array();
+    public function get_league_details($leagueid)
+    {
+      $sql =  "SELECT l.*, sl.*, s.*, lt.*, e.*, lm.first_matches FROM leagues AS l
+              INNER JOIN season_leagues AS sl ON sl.leagueid = l.leagueid
+              INNER JOIN seasons AS s ON s.seasonid = sl.seasonid
+              INNER JOIN league_types AS lt ON l.league_type = lt.league_type_id
+              INNER JOIN esports AS e ON l.esportid = e.esportid
+              INNER JOIN leagues_meta AS lm ON lm.leagueid = l.leagueid
+              WHERE l.leagueid = '$leagueid'";
+      $results = $this->db1->query($sql);
+      $results = $results->result_array();
+      $league = $results[0];
+      $league['first_matches'] = array();
+      foreach ($results as $result) {
+        array_push($league['first_matches'], $result['first_matches']);
+      }
+      return $league;
     }
 
-
-  	public function get_league_types() {
+    public function get_league_types()
+    {
   		$sql = "SELECT * FROM league_types";
 	  	$result = $this->db1->query($sql);
 		  return $result->result_array();
   	}
-    public function get_league_owner($uid, $seasonid) {
+
+    public function get_league_owner($uid, $seasonid)
+    {
       $sql = "SELECT * FROM league_owners
               WHERE seasonid = '$seasonid' AND UserId = '$uid'";
       $result = $this->db1->query($sql);
       return $result->row_array();      
     }
 
-    public function get_current_league_by_teamid($teamid) {
+    public function get_current_league_by_teamid($teamid)
+    {
        $sql = "SELECT * FROM league_teams
               WHERE teamid = '$teamid' AND status = 'active'
               LIMIT 1";
@@ -188,25 +199,30 @@ class League_model extends MY_Model {
       return $result->row_array();      
     }
 
-    public function get_active_league_first_matches($leagueid) {
+    public function get_active_league_first_matches($leagueid)
+    {
       $sql = "SELECT lm.first_matches as first_matches FROM leagues_meta lm
               INNER JOIN leagues l ON l.leagueid = lm.leagueid
               WHERE lm.leagueid = '$leagueid' AND l.status != 'inactive'";
       $result = $this->db1->query($sql);
       $result = $result->result_array(); 
       $first_matches = array();
-      foreach ($result as $match) {
-             array_push($first_matches, $match['first_matches']);
-           } 
+      foreach ($result as $match)
+      {
+        array_push($first_matches, $match['first_matches']);
+      } 
       return $first_matches;    
     }
 
-    public function join_league($teamid, $leagueid) {
+    public function join_league($teamid, $leagueid)
+    {
       $sql = "INSERT INTO league_teams(teamid, leagueid)
               VALUES ('" . $teamid . "', '" . $leagueid . "')";
       $result = $this->db1->query($sql);
     }
-    public function leave_league($teamid, $leagueid){
+
+    public function leave_league($teamid, $leagueid)
+    {
       $sql = "UPDATE league_teams
               SET status='leave'
               WHERE teamid = '$teamid' AND leagueid = '$leagueid' AND status = 'active'";

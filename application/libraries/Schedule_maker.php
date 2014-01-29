@@ -5,26 +5,40 @@ class Schedule_maker {
 	private $num_teams;
 	private $start_date;
 	private $end_date;
+	private $duration;
 	private $all_matches;
+	private $initial_match_delay = 2;
 
 	public function __construct() {
     }
 
+    public function get_end_date()
+    {
+    	return $this->end_date;
+    }
     public function set_num_teams($numteams) {
     	$this->num_teams = $numteams;
     }
 
-    public function set_start_end_dates($start,$end) {
+    public function set_start_date($start) {
     	$this->start_date = $start;
-    	$this->end_date = $end;
+    	
+    }
+    public function set_duration($duration)
+    {
+    	$startdate = strtotime($this->start_date);
+    	$this->end_date = new DateTime("@$startdate");
+    	$this->end_date->modify('+ ' . $duration . ' month');
+    	$this->end_date = $this->end_date->getTimestamp();
     }
 
     public function set_matches($match_array) {
     	$season_matches = array();
     	$week_num = 0;
     	$end_of_season = False;
+    	$match_array = $this->_bring_matches_uptodate($match_array);
 
-    	//Scheduled matches end a week early to allow time for tournment
+    	//Scheduled matches end a week early to allow time for tournament
     	$season_end_date = new DateTime("@$this->end_date");
     	$season_end_date->modify('-1 week');
     	$season_end_date_timestamp = $season_end_date->getTimestamp();
@@ -54,7 +68,7 @@ class Schedule_maker {
 		if($this->num_teams % 2 == 0) {
 			//Even Number of Teams
 			foreach ($this->all_matches as $match) {
-				$shuffled_teams = $this->shift_teams_right($shuffled_teams);
+				$shuffled_teams = $this->_shift_teams_right($shuffled_teams);
 				for ($i=0; $i < $this->num_teams/2; $i++) { 
 					$match_details = array();
 					$match_details['teamaid'] = $shuffled_teams[$i];
@@ -68,7 +82,7 @@ class Schedule_maker {
 		else {
 			//Odd Number of Teams
 			foreach ($this->all_matches as $match) {
-				$shuffled_teams = $this->shift_teams_right($shuffled_teams);
+				$shuffled_teams = $this->_shift_teams_right($shuffled_teams);
 				for ($i=0; $i < $this->num_teams/2; $i++) { 
 					array_push($schedule, array($shuffled_teams[$i], $shuffled_teams[$i+($this->num_teams/2)], $match));
 				}
@@ -76,7 +90,42 @@ class Schedule_maker {
 			return $schedule;
 		}
 	}
-	private function shift_teams_right($teams) {
+
+	/*
+	* This function converts first matchs (stored as
+	* a unix timestamp the moment the league was created) to times
+	* that are after the season start date.
+	*/
+	private function _bring_matches_uptodate($first_matches)
+	{
+		$match_number = 0;
+		$updated_matches = array();
+		$startdate = strtotime($this->start_date);
+		$startdate = new DateTime("@$startdate");
+		$startdate->modify('+' . $this->initial_match_delay . ' day');
+		foreach ($first_matches as $first_match) 
+		{
+			if($first_match < $startdate->getTimestamp())
+			{
+				$first_match = new DateTime("@$first_match");
+				while($first_match->getTimestamp() < $startdate->getTimestamp())
+				{
+					$first_match->modify('+1 week');
+				}
+				array_push($updated_matches, $first_match->getTimestamp());
+				$match_number += 1;
+			}
+			else
+			{
+				array_push($updated_matches, $first_match->getTimestamp());
+				$match_number += 1;
+			}
+		}
+		asort($updated_matches);
+		return $updated_matches;
+	}
+
+	private function _shift_teams_right($teams) {
 		$last_team = $teams[count($teams) - 1];
 		$shifted_teams = array();
 		array_push($shifted_teams, $teams[count($teams) - 1]);
