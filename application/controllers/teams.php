@@ -4,7 +4,8 @@ class Teams extends MY_Controller{
 	/**
 	 * Constructor: initialize required libraries.
 	 */
-	public function __construct(){
+	public function __construct()
+    {
         parent::__construct();
         $this->load->model('user_model');
         $this->load->model('system_message_model');
@@ -21,27 +22,34 @@ class Teams extends MY_Controller{
         $this->load->model('league_model');
         
     }
-    public function index() {
+
+    public function index()
+    {
         $this->require_login();
         $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId'],$_SESSION['esportid']);
         $data['invites'] = $this->team_invite_model->get_lol_new_invites_by_uid($_SESSION['user']['UserId']);
-        if($data['invites']) {
+        if($data['invites'])
+        {
             $this->team_invite_model->mark_invites_read($_SESSION['user']['UserId']);
         }
         $this->view_wrapper('user/teams', $data);
     }
 
-    public function join_team() {
+    public function join_team()
+    {
         $this->require_login();
     }
 
-    public function invite($teamid) {
+    public function invite($teamid)
+    {
         $team = $this->team_model->get_team_by_teamid($teamid);
-        if($team['esportid'] == 1) {
+        if($team['esportid'] == 1)
+        {
             $this->invite_lol($team);
         }
     }
-    public function view($teamid) {
+    public function view($teamid)
+    {
         $this->require_login();
         $this->load->library('calendar');
         
@@ -52,96 +60,114 @@ class Teams extends MY_Controller{
         $data['schedule'] = array();
         $data['schedule'] = $this->match_model->get_matches_by_teamid($data['team']);
         //get the league;
-        if($data['schedule']) {
+        if($data['schedule'])
+        {
             $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
             $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
         }
         $this->view_wrapper('view_team',$data);
     }
 
-    public function invite_lol($team) {
+    public function invite_lol($team)
+    {
         $this->require_login();
         $data['team'] = $team;
 
         $this->load->library('form_validation');
-
         $this->form_validation->set_rules('summonerlist', 'Summoners', 'trim|required|xss_clean|callback_summoner_registered|callback_summoner_inteam');
         $this->form_validation->set_rules('invite_message', 'Message', 'trim|required|xss_clean');
 
-        if($this->form_validation->run() == FALSE){
+        if($this->form_validation->run() == FALSE)
+        {
             $this->view_wrapper('team_invite_lol',$data);
         }
-        else {
+        else
+        {
             $invitations = $this->input->post();
             $invitation = array();
             $summoner_names = explode(",", trim($invitations['summonerlist'],","));
-            foreach ($summoner_names as $summoner_name) {
+            foreach ($summoner_names as $summoner_name)
+            {
                 $invitation['summonerid'] = $this->lol_model->get_summonerid_from_summoner_name($summoner_name);
                 $invitation['teamid'] = $team['teamid'];
                 $invitation['message'] = $invitations['invite_message'];
                 
                 $this->team_invite_model->invite_summoner($invitation);
             }
-            if(count($summoner_names) == 1) {
+            if(count($summoner_names) == 1)
+            {
                 $this->system_message_model->set_message(join(', ', $summoner_names)  . " has been invited to " . $team['team_name']  , MESSAGE_INFO);
             }
-            else {
-                 $this->system_message_model->set_message(join(', ', $summoner_names)  . " have been invited to " . $team['team_name']  , MESSAGE_INFO);
+            else
+            {
+                $this->system_message_model->set_message(join(', ', $summoner_names)  . " have been invited to " . $team['team_name']  , MESSAGE_INFO);
             }
             redirect('home', 'refresh');
         }
     }
 
-    public function summoner_registered($summonerlist) {
+    public function summoner_registered($summonerlist)
+    {
         //for callback
         //for summoner_namestrim
         $summonerlist = trim($summonerlist,",");
         $summoner_names = explode(",", $summonerlist);
         $callback = explode (",", $summonerlist);
         $invalidnames = array();
-        foreach ($summoner_names as $summoner_name) {
-            if(!$this->lol_model->registered_summoner(trim($summoner_name))) {
+        foreach ($summoner_names as $summoner_name)
+        {
+            if(!$this->lol_model->registered_summoner(trim($summoner_name)))
+            {
                array_push($invalidnames,$summoner_name);
             }
         }
-        if($invalidnames) {
-            if(count($invalidnames) == 1) {
+        if($invalidnames)
+        {
+            if(count($invalidnames) == 1)
+            {
                 $this->system_message_model->set_message(join(', ', $invalidnames)  . " is not registered in our systems."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_registered',  join(', ', $invalidnames)  . " is not registered in our systems");
             }
-            else {
+            else 
+            {
                 $this->system_message_model->set_message(join(', ', $invalidnames)  . " are not registered in our systems."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_registered',  join(', ', $invalidnames)  . " are not registered in our systems");
             }
-            return false;
+            return FALSE;
         }
-        else {
-            return true;
+        else
+        {
+            return TRUE;
         }
     }
 
-    public function summoner_inteam($summonerlist) {
+    public function summoner_inteam($summonerlist)
+    {
         //for callback, verifies summoner(s) are part of existing team
         $summonerlist = trim($summonerlist,",");
         $summoner_names = explode(",", $summonerlist);
         $invalidnames = array();
-        foreach ($summoner_names as $summoner_name) {
+        foreach ($summoner_names as $summoner_name)
+        {
             if($this->team_model->get_team_id_by_summoner_name(trim($summoner_name))) 
                 array_push($invalidnames,$summoner_name);
         }
         if($invalidnames) {
-            if(count($invalidnames) == 1) { 
+            if(count($invalidnames) == 1)
+            { 
                 $this->system_message_model->set_message( join(', ', $invalidnames)  . " is already part of a team."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " is already part of a team.");
             }
-            else {
+            else
+            {
                 $this->system_message_model->set_message( join(', ', $invalidnames)  . " are already part of a team."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " are already part of a team.");
             }
-            return false;
+            return FALSE;
         }
-        else {
-            return true;
+        else
+        {
+            return TRUE;
         }
     }
 }

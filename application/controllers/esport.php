@@ -4,7 +4,8 @@ class Esport extends MY_Controller{
 	/**
 	 * Constructor: initialize required libraries.
 	 */
-	public function __construct(){
+	public function __construct()
+    {
         parent::__construct();
         $this->load->model('user_model');
         $this->load->model('system_message_model');
@@ -15,7 +16,8 @@ class Esport extends MY_Controller{
         $this->load->model('team_model');
     }
 
-    public function register_LoL() {
+    public function register_LoL()
+    {
         $this->require_login();
         $this->view_wrapper('user/register_LoL');
     }
