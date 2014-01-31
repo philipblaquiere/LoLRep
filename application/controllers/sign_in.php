@@ -15,6 +15,7 @@ class Sign_in extends MY_Controller
     $this->load->model('esport_model');
     $this->load->model('lol_model');
     $this->load->model('team_model');
+    $this->load->model('league_model');
     $this->load->model('banned_model');
     $this->load->model('season_model');
   }
@@ -76,6 +77,8 @@ class Sign_in extends MY_Controller
           $this->view_wrapper('sign_in');
           return;
         }
+        $this->set_esport(1);
+        $user['league_info'] = $this->league_model->get_league_by_uid($user['UserId'], $_SESSION['esportid']);
         //user validated, proced with login
         $this->set_current_user($user);
 

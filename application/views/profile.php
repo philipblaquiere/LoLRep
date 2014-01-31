@@ -1,21 +1,16 @@
-<div class="header">
-  <img class="img-rounded">
-  <h1>Basic Profile Content to Display</h1>
+<div class="profile-header">
+	<h1>Basic Profile Content to Display</h1>
 </div>
-<div class="col-md-3">
-  <ul class-"nav nav-pills nav-stacked">
-    <li class="active"><a href="#">Teams</a></li>
-    <li><a href="#">Manage</a></li>   
-  </ul>
-</div>
-<div class="col-md-9">
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#">Recent</a></li>
-    <li ><a href="#">Upcoming</a></li>
-    <li ><a href="#">Standings</a></li>
-    <li ><a href="#">Leagues</a></li>
-  </ul>
-  <div id="profilecontent">
-    Test content
-  </div>
+<div class="profile-content">
+	<div class="col-md-12">
+		<ul class="nav nav-pills">
+			<li class="active"><a href="#">Recent Matches</a></li>
+			<li ><a href="#">Upcoming Matches</a></li>
+			<li ><a href="<?php echo site_url('teams/view/'.$_SESSION['user']['league_info']['teamid']); ?>">Team</a></li>
+			<li ><a href="<?php echo site_url('view_leagues/view/'.$_SESSION['user']['league_info']['leagueid']); ?>">League</a></li>
+		</ul>
+		<div id="profile_info">
+			Test content
+		</div>
+	</div>
 </div>

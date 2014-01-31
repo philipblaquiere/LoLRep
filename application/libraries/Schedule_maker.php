@@ -9,7 +9,8 @@ class Schedule_maker {
 	private $all_matches;
 	private $initial_match_delay = 2;
 
-	public function __construct() {
+	public function __construct()
+	{
     }
 
     public function get_end_date()

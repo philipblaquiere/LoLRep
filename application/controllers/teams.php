@@ -53,18 +53,19 @@ class Teams extends MY_Controller{
         $this->require_login();
         $this->load->library('calendar');
         
-        $data['team'] = $this->team_model->get_team_by_teamid($teamid);
+        $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
         $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
         $data['calendar'] = $this->calendar;
         
         $data['schedule'] = array();
-        $data['schedule'] = $this->match_model->get_matches_by_teamid($data['team']);
+        $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
         //get the league;
         if($data['schedule'])
         {
             $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
             $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
         }
+        print_r($data['team']);
         $this->view_wrapper('view_team',$data);
     }
 

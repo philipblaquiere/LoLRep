@@ -54,39 +54,39 @@ class View_leagues extends MY_Controller{
             if(empty($user_current_team))
             {
                 //User not part of a team
-                $leagues_info[$league_info['league_name']]['can_join'] = 0;
+                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Join";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You need to be part of a registered team to join this league";
             }
             else if(!empty($current_league) && $current_league['leagueid'] == $leagues_info[$league_info['league_name']]['leagueid'])
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = 0;
+                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Current";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You are currently part of this league";
             }
             else if(!$captain_team)
             {
                 //User is not a captain of any team
-                $leagues_info[$league_info['league_name']]['can_join'] = 0;
+                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Join";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You must be captain of your team to join this league";
             }
             else if($league_info['invite'] == 1)
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = 0;
+                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Invite Only";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "This league is invite only";
             }
             else if($leagues_info[$league_info['league_name']]['num_teams'] == $league_info['max_teams'])
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = 0;
+                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Join";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "This league is full";
             }
             
             else
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = 1;
+                $leagues_info[$league_info['league_name']]['can_join'] = TRUE;
                 $leagues_info[$league_info['league_name']]['join_status'] = "Join";
                 $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "Join this league";
             }

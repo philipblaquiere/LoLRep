@@ -17,8 +17,17 @@ class Match_model extends MY_Model {
 		$sql = substr($sql, 0, -1);
 		$this->db1->query($sql);
 	}
+
+	public function get_match_by_matchid($matchid, $esportid)
+	{
+		$sql = "SELECT * FROM matches
+				WHERE matchid = '$matchid'
+				LIMIT 1";
+		$result = $this->db1->query($sql);
+		return $result->row_array();
+	}
 	
-	public function get_matches_by_teamid($team) {
+	public function get_matches_by_team($team) {
 		$season_start = $team['start_date'];
 		$season_end = $team['end_date'];
 		$teamid = $team['teamid'];

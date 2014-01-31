@@ -82,7 +82,6 @@ class MY_Controller extends CI_Controller  {
     unset($_SESSION['uid']);
     unset($_SESSION['user']);
     unset($_SESSION['last_login']);
-    unset($_SESSION['seasonid']);
     unset($_SESSION['esportid']);
   }
 
@@ -104,7 +103,7 @@ class MY_Controller extends CI_Controller  {
    */
   protected function require_admin() {
     if (!$this->is_logged_in() || !$this->is_admin_user()) {
-      //$this->system_message_model->set_message('Administrator access is required to access this page.', MESSAGE_WARNING);
+      $this->system_message_model->set_message('Administrator access is required to access this page.', MESSAGE_WARNING);
       show_error('Access denied: you must be logged in as an administrator to view this content.', 403);
     }
   }

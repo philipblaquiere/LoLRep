@@ -1,0 +1,69 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+
+class Match_validator
+{
+	private $esportid;
+	private $uid;
+    private $teamid;
+
+	public function __construct()
+	{
+		$this->load->model('riotapi_model');
+        $this->load->model('league_model');
+        $this->load->model('team_model');
+        $this->load->model('match_model');
+    }
+
+    public function set_esport($esportid)
+    {
+    	$this->esportid = $esportid;
+    }
+
+    public function set_uid($uid)
+    {
+    	$this->uid = $uid;
+    }
+    public function set_teamid($teamid)
+    {
+        $this->teamid = $teamid;
+    }
+
+    public function match_complete($matchid, $esportid)
+    {
+        $match = $this->match_model->get_match_by_matchid($matchid, $esportid);
+        if($match)
+        {
+            $teama = $this->team_model->get_team_by_teamid($match['teamaid'], $esportid);
+            $teamb = $this->team_model->get_team_by_teamid($match['teambid'], $esportid);
+
+            switch ($esportid) {
+                case '1':
+                    //League of Legends
+                    $teama_match_details = array();
+                    $teamb_match_details = array();
+                    foreach($teama['roster'] as $player => $value)
+                    {
+                        $recent_games = $this->riotapi_model->getRecentGames($player['summonerid']);
+                        array_push($teama_match_details, $recent_games);
+                    }
+                    foreach($teamb['roster'] as $player => $value)
+                    {
+                        $recent_games = $this->riotapi_model->getRecentGames($player['summonerid']);
+                        array_push($teamb_match_details, $recent_games);
+                    }
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+        }
+        else
+        {
+            return FALSE;
+        }
+        
+    }
+
+
+}

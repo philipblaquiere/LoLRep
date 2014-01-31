@@ -26,20 +26,23 @@ class Banned_model extends CI_Model {
 	    return $result->row_array();
 	    
  	}
- 	public function ban_summoner($user, $reason) {
+ 	public function ban_summoner($user, $reason)
+ 	{
  		$sql = "INSERT INTO banned_summoners (Email, SummonerName, SummonerId, reason)
 	    		VALUES ('" . $user['email'] . "', '" . $user['SummonerName'] . "', '" . $user['SummonerId'] . "', '" . $reason . "')";
 	    $this->db1->query($sql);
  	}
 
- 	public function get_byemail($email) {
+ 	public function get_byemail($email)
+ 	{
  		$sql = "SELECT * FROM banned_summoners
  			 	WHERE email = '$email'
  			 	LIMIT 1";
 	    $result = $this->db1->query($sql);
 	    return $result->row_array();
  	}
- 	public function get_bysummonername($summonername) {
+ 	public function get_bysummonername($summonername)
+ 	{
  		$sql = "SELECT * FROM banned_summoners
  			 	WHERE SummonerName = '$summonername'
  			 	LIMIT 1";

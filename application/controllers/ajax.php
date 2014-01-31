@@ -112,7 +112,6 @@ class Ajax extends MY_Controller
 
   	public function find_team_lol($teamname)
   	{
-  		$esportid = 1; // LoL Esport id
   		$teamname = trim(urldecode($teamname));
   		$data['team_lol_result'] = $this->team_model->get_team_lol_byname($teamname);
   		if(!$data['team_lol_result'])
@@ -127,7 +126,7 @@ class Ajax extends MY_Controller
   			if($team['name'] == $teamname)
   			{
   				//user trying to trade with own team, deny him.
-	      		$data['errormessage'] = "Nice try. You can't trade with your own team.";
+	      		$data['errormessage'] = "You can't trade within your own team.";
 				$this->load->view('messages/rune_page_verification_fail', $data);
   			}
   			else

@@ -39,17 +39,59 @@ class Team_model extends MY_Model {
 
     
   }
-  public function get_team_by_teamid($teamid) {
+  public function get_team_by_teamid($teamid,$esportid) {
     $time_now = $this->get_default_epoch(date('Y-m-d H:i:s', time()));
-    $sql = "SELECT * FROM teams t
+    switch ($esportid) {
+      case '1':
+        $sql = "SELECT * FROM teams t
           INNER JOIN league_teams lt ON lt.teamid = t.teamid
           INNER JOIN leagues l ON l.leagueid = lt.leagueid
           INNER JOIN season_leagues sl ON sl.leagueid = lt.leagueid
           INNER JOIN seasons s ON s.seasonid = sl.seasonid
-          WHERE t.teamid = '$teamid' AND s.season_status != 'ended'
-          LIMIT 1";
-    $result = $this->db1->query($sql);
-    return $result->row_array();
+          INNER JOIN teams_lol tl ON tl.teamid = t.teamid
+          INNER JOIN summoners sum ON sum.SummonerId = tl.summonerid 
+          WHERE t.teamid = '$teamid' AND s.season_status != 'ended'";
+          $results = $this->db1->query($sql);
+          $results = $results->result_array();
+          $team = array();
+          foreach ($results as $result) {
+            if(!array_key_exists('teamid', $team))
+            {
+              $team['teamid'] = $result['teamid'];
+              $team['team_name'] = $result['team_name'];
+              $team['esportid'] = $result['esportid'];
+              $team['created'] = $result['created'];
+              $team['captainid'] = $result['captainid'];
+              $team['countryid'] = $result['countryid'];
+              $team['stateid'] = $result['stateid'];
+              $team['regionid'] = $result['regionid'];
+              $team['leagueid'] = $result['leagueid'];
+              $team['league_name'] = $result['league_name'];
+              $team['joined'] = $result['joined'];
+              $team['leave'] = $result['leave'];
+              $team['start_date'] = $result['start_date'];
+              $team['end_date'] = $result['end_date'];
+              $team['season_duration'] = $result['season_duration'];
+              $team['roster'] = array();
+            }
+            $player = array();
+            $player['summonerid'] = $result['summonerid'];
+            $player['summoner_name'] = $result['SummonerName'];
+            $player['region'] = $result['region'];
+            $player['summoner_level'] = $result['SummonerLevel'];
+            $player['rank'] = $result['rank'];
+            $player['tier'] = $result['tier'];
+            $player['joined_date'] = $result['joined_date'];
+            array_push($team['roster'], $player);
+          }
+          return $team;
+        break;
+      
+      default:
+        # code...
+        break;
+    }
+    
   }
 
   public function get_teamname_by_teamid($teamid) {
@@ -74,20 +116,6 @@ class Team_model extends MY_Model {
     $sql = "SELECT * FROM teams WHERE captainid = '$uid' AND esportid = '$esportid' LIMIT 1";
     $result = $this->db1->query($sql);
     return $result->row_array();
-  }
-
-  public function get_teams_by_esport($uid,$esportid) {
-
-    switch ($esportid) {
-      case 1:
-        //ESport - League of Legends
-        $sql = "SELECT * FROM teams t INNER JOIN teams_lol l ON t.teamid = l.teamid";
-        $result = $this->db1->query($sql);
-        return $result->result_array();
-          break;
-      case 2:
-          break;
-        }
   }
 
   public function get_team_id_by_summonername($summonername) {

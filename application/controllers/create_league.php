@@ -23,7 +23,6 @@ class Create_league extends MY_Controller{
     {
         $this->require_login();
         $registered_esports = $this->esport_model->get_all_registered_esports($_SESSION['user']['UserId']);
-
         if(!$registered_esports)
         {
             $data['esports'] = $this->esport_model->get_all_esports();
@@ -33,7 +32,7 @@ class Create_league extends MY_Controller{
         }
         
         $data['league_types'] = $this->league_model->get_league_types();
-        $data['esports'] = $esports;
+        $data['esports'] = $registered_esports;
         
         //Validation on input (requires that all fields exist)
         $this->load->library('form_validation');

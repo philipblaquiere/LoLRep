@@ -129,7 +129,6 @@ class League_model extends MY_Model {
     */
     public function get_active_league_teams($esportid)
     {
-
       $sql = "SELECT * FROM leagues l
               INNER JOIN league_teams lt ON l.leagueid = lt.leagueid 
               INNER JOIN teams t ON t.teamid = lt.teamid 
@@ -197,6 +196,28 @@ class League_model extends MY_Model {
               LIMIT 1";
       $result = $this->db1->query($sql);
       return $result->row_array();      
+    }
+
+    public function get_league_by_uid($uid, $esportid)
+    {
+      switch ($esportid) {
+        case '1':
+          //League of Legends
+          $sql = "SELECT * FROM leagues l
+              INNER JOIN summoners s ON s.UserId = '$uid'
+              INNER JOIN teams_lol tl ON tl.summonerid = s.summonerid
+              INNER JOIN teams t ON t.teamid = tl.teamid
+              INNER JOIN league_teams lt ON lt.teamid = t.teamid
+              WHERE l.leagueid = lt.leagueid and l.league_status != 'inactive'
+              LIMIT 1";
+          $result = $this->db1->query($sql);
+          return $result->row_array();
+          break;
+        
+        default:
+          # code...
+          break;
+      }
     }
 
     public function get_active_league_first_matches($leagueid)

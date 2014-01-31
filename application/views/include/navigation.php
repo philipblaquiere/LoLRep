@@ -40,6 +40,7 @@
           </li>
           <?php endif; ?>
           <li><a href="<?php echo site_url('admin') ?>">Admin</a></li>
+          <li><a href="<?php echo site_url('profile') ?>">Profile</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li class="divider-vertical"></li>

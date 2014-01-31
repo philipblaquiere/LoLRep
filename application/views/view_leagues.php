@@ -85,11 +85,11 @@
 			<div id="league_search_results">
 				<?php if(count($leagues_info) > $max_league_count) { 
 					$num_pages = ceil((count($leagues_info)/ $max_league_count));
-					for ($i=1; $i <= $num_pages; $i++) { } ?>
+					for ($i = 1; $i <= $num_pages; $i++) { } ?>
 					<ul class="pagination">
 						<li><a href="#">&laquo;</a></li>
-							<?php for ($i=1; $i <= $num_pages; $i++) { ?>
-										<li><a href="#"><?php echo $i ?></a></li>
+							<?php for ($j = 1; $j <= $num_pages; $j++) { ?>
+										<li><a href="#"><?php echo $j ?></a></li>
 							<?php } ?>
 						<li><a href="#">&raquo;</a></li>	
 					</ul>
@@ -115,7 +115,7 @@
 				              			<a href="#" type="button" class="btn btn-default" role="button">
 				              				<span class="glyphicon glyphicon-pencil"></span>
 				              			</a>
-				              			<?php if($league_info['can_join'] == 1) { ?>
+				              			<?php if($league_info['can_join']) { ?>
 					              			<a href="<?php echo site_url('join_league/join/' . $league_info['leagueid']) ?>" type="button" class="btn btn-default" role="button">
 					              				<?php echo $league_info['join_status'] ?>
 					              			</a>
