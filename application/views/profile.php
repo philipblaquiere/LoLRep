@@ -10,7 +10,35 @@
 			<li ><a href="<?php echo site_url('view_leagues/view/'.$_SESSION['user']['league_info']['leagueid']); ?>">League</a></li>
 		</ul>
 		<div id="profile_info">
-			Test content
+			<table class="match-results-lol">
+				<th class="blue-side"></th>
+				<th class="left">Team a</th>
+				<th class="items-lol">Items</th>
+				<th class="blue-side">G</th>
+				<th class="left">CS</th>
+				<th class="left">K/D/A</th>
+				<th class="right">K/D/A</th>
+				<th class="right">CS</th>
+				<th class="right">G</th>
+				<th class="items-lol">Items</th>
+				<th class="right">Team a</th>
+				<th class="right purple-side"></th>
+				<tr>
+					<td class="blue-side">t</td>
+					<td class="left">Me</td>
+					<td class="left">Items</td>
+					<td class="left">123</td>
+					<td class="left">123</td>
+					<td class="left">1/1/1</td>
+					<td>1/2/4</td>
+					<td>123</td>
+					<td>123</td>
+					<td>items</td>
+					<td>You</td>
+					<td class="purple-side">t</td>
+				</tr>
+
+			</table>
 		</div>
 	</div>
 </div>

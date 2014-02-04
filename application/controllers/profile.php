@@ -20,7 +20,6 @@ class Profile extends MY_Controller
     public function index()
     {
         $this->require_login();
-        print_r($_SESSION['user']);
         $this->view_wrapper('profile');
     }
 }

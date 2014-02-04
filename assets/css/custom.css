@@ -57,9 +57,33 @@ body { padding-top: 71px; }
   width: 320px;
 }
 
-.table > tbody > tr > td {
-  vertical-align: middle;
+.match-results-lol {
+  width: 500px;
+  text-align: center;
 }
+
+.match-results-lol .items-lol {
+  width: 80px;
+}
+
+.match-results-lol {
+}
+
+.match-result-lol .left {
+  text-align: left;
+}
+
+.match-result-lol .right {
+  text-align: right;
+}
+
+.match-result-lol .blue-side {
+  background-color: rgba(48, 32, 255, 0.9);
+}
+.match-result-lol .purple-side {
+  background: rgba(158, 39, 255, 0.9);
+}
+
 
 .padded_10 {
   padding: 10px;
