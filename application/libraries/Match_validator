@@ -2,9 +2,8 @@
 
 class Match_validator
 {
-	private $esportid;
-	private $uid;
-    private $teamid;
+    private $LOL_GAME_MODE_CLASSIC = 'CLASSIC';
+    private $LOL_GAME_MODE_CLASSIC_SIZE = 10;
 
 	public function __construct()
 	{
@@ -14,20 +13,6 @@ class Match_validator
         $this->load->model('match_model');
     }
 
-    public function set_esport($esportid)
-    {
-    	$this->esportid = $esportid;
-    }
-
-    public function set_uid($uid)
-    {
-    	$this->uid = $uid;
-    }
-    public function set_teamid($teamid)
-    {
-        $this->teamid = $teamid;
-    }
-
     public function match_complete($matchid, $esportid)
     {
         $match = $this->match_model->get_match_by_matchid($matchid, $esportid);
@@ -35,22 +20,33 @@ class Match_validator
         {
             $teama = $this->team_model->get_team_by_teamid($match['teamaid'], $esportid);
             $teamb = $this->team_model->get_team_by_teamid($match['teambid'], $esportid);
-
+            $players = array_merge($teama['roster'], $teamb['roster']);
             switch ($esportid) {
                 case '1':
                     //League of Legends
-                    $teama_match_details = array();
-                    $teamb_match_details = array();
-                    foreach($teama['roster'] as $player => $value)
+                    foreach($players as $player)
                     {
                         $recent_games = $this->riotapi_model->getRecentGames($player['summonerid']);
-                        array_push($teama_match_details, $recent_games);
+                        foreach ($recent_games as $game)
+                        {
+                            $matched_players = array();
+                            $player_num = $this->_get_lol_player_num($game);
+                            $fellow_players = $game['fellowPlayers'];
+                            foreach ($fellow_players as $fellow_player)
+                            {
+                                if($this->_has_player($players,$fellow_player['summonerId']))
+                                {
+                                    array_push($matched_players, $fellow_player['summonerId']);   
+                                }
+
+                                if(count($matched_players) == $player_num)
+                                { 
+                                    return array_push($matched_players, $player['summonerid']);
+                                }
+                            }
+                        }
                     }
-                    foreach($teamb['roster'] as $player => $value)
-                    {
-                        $recent_games = $this->riotapi_model->getRecentGames($player['summonerid']);
-                        array_push($teamb_match_details, $recent_games);
-                    }
+                    return array();
                     break;
                 
                 default:
@@ -63,6 +59,23 @@ class Match_validator
             return FALSE;
         }
         
+    }
+
+    private function _get_lol_player_num($game)
+    {
+        switch ($game['gameMode']) {
+
+            case $this->LOL_GAME_MODE_CLASSIC:
+                return $this->LOL_GAME_MODE_CLASSIC_SIZE;
+            
+            default:
+                return 100;
+        }
+    }
+
+    private function _has_player($players, $player_id)
+    {
+        return in_array($player_id, $players);
     }
 
 

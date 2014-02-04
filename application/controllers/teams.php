@@ -77,7 +77,7 @@ class Teams extends MY_Controller{
         $this->load->library('form_validation');
         $this->form_validation->set_rules('summonerlist', 'Summoners', 'trim|required|xss_clean|callback_summoner_registered|callback_summoner_inteam');
         $this->form_validation->set_rules('invite_message', 'Message', 'trim|required|xss_clean');
-
+        
         if($this->form_validation->run() == FALSE)
         {
             $this->view_wrapper('team_invite_lol',$data);
