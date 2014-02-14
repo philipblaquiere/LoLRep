@@ -18,6 +18,15 @@ class Match_model extends MY_Model {
 		$this->db1->query($sql);
 	}
 
+	public function get_match($matchid, $esportid)
+	{
+		$sql = "SELECT * FROM matches
+				WHERE matchid = '$matchid'
+				LIMIT 1";
+		$result = $this->db1->query($sql);
+		return $result->row_array();
+	}
+
 	public function get_match_by_matchid($matchid, $esportid)
 	{
 		$sql = "SELECT * FROM matches
@@ -25,6 +34,100 @@ class Match_model extends MY_Model {
 				LIMIT 1";
 		$result = $this->db1->query($sql);
 		return $result->row_array();
+	}
+
+	public function get_match_details($matchids, $esportid)
+	{
+		switch ($esportid) {
+			case '1':
+				$matches = array();
+				$this->db1->trans_start();
+				foreach ($matchids as $matchid) {
+					$sql = "SELECT sl.*, s.SummonerName, s.SummonerId FROM statistics_lol sl
+						INNER JOIN summoners s ON s.SummonerId = sl.SummonerId
+						WHERE sl.matchid = '$matchid'";
+					$statistics_results = $this->db1->query($sql);
+      				$statistics_results = $statistics_results->result_array();
+      				
+      				//Clean up stats
+      				$statistics = array();
+      				foreach ($statistics_results as $statistics_result)
+      				{
+      					$statistics[$statistics_result['summonerid']] = $statistics_result;
+      				}
+
+      				//Get all summonerids in match stats
+      				$summonerids = "";
+      				foreach ($statistics_lol as $player)
+      				{
+      					$summonerids .= $player['summonerid'] . ",";
+      				}
+      				$summonerids = "(" . substr($summonerids, 0, -1) . ")";
+
+      				//Query from summonerids to get both teams info
+					$sql = "SELECT s.SummonerName, t.team_name, t.teamid , m.* FROM summoners s 
+						INNER JOIN matches m ON m.matchid = '$matchid'
+						INNER JOIN teams t ON t.team_name = m.teamaid OR t.team_name = m.teambid
+						WHERE s.SummmonerId IN '$summonerids'";
+					$player_teams = $this->db1->query($sql);
+      				$player_teams = $player_teams->result_array();
+
+      				$teama = array();
+      				$teamb = array();
+      				$match_details = array();
+      				foreach ($player_teams as $player_team)
+      				{
+      					$match_details['match_date'] = $player['match_date'];
+      					$match_details['winnerid'] = $player['winnerid'];
+      					$match_details['status'] = $player['status'];
+      					$player = array();
+      					$team_name = $player_team['team_name'];
+      					$player['name'] = $player_team['SummonerName'];
+      					$player['statistics'] = $statistics[$player['SummonerId']];
+      					if(array_key_exists('name', $teama) && $teama['name'] == $team_name)
+      					{
+      						//player part of teama
+      						array_push($teama, $player);
+      					}
+      					else if (array_key_exists('name', $teamb) && $teamb['name'] == $team_name)
+      					{
+      						//player part of teamb
+      						array_push($teamb, $player);
+      					}
+      					else if(!array_key_exists('name', $teama) && !array_key_exists('name', $teamb))
+      					{
+      						//initialize teama 
+      						$teama['name'] = $player_team['team_name'];
+      						$teama['teamid'] = $player_team['teamid '];
+      					}
+      					else if(!array_key_exists('name', $teamb))
+      					{
+      						//initialize teamb
+      						$teamb['name'] = $player_team['team_name'];
+      						$teamb['teamid'] = $player_team['teamid'];
+      					}
+      					else
+      					{
+      						//code will never reach here
+      					}
+      				}
+      				$match['match_date'] = $match_details['match_date'];
+      				$match['winnerid'] = $match_details['winnerid'];
+      				$match['status'] = $match_details['status'];
+      				$match = array();
+      				array_push($match, $teama);
+      				array_push($match, $teamb);
+      				$match['details'] = $match;
+      				array_push($matches, $match);
+				}
+				$this->db1->trans_complete();
+				return $matches;
+				break;
+			
+			default:
+				# code...
+				break;
+		}
 	}
 	
 	public function get_matches_by_team($team) {

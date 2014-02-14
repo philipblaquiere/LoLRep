@@ -1,60 +1,60 @@
 
-    //ajax call for summoner validation process.
-    $('#lolSummonerRegistrationForm').submit(function(event) {
-    	/* Stop form from submitting normally */
-        event.preventDefault();
+//ajax call for summoner validation process.
+$('#lolSummonerRegistrationForm').submit(function(event) {
+	/* Stop form from submitting normally */
+    event.preventDefault();
 
-        /* Clear rune page div*/
-        $("#authenticate_runepage_page").html('');
-        $("#summoner_validation_error").html('');
+    /* Clear rune page div*/
+    $("#authenticate_runepage_page").html('');
+    $("#summoner_validation_error").html('');
 
-        /* Get some values from elements on the page: */
-       var summonername = document.getElementById("summonername").value;
-       if(summonername == "")
-        summonername = "-";
-       var region = document.getElementById("region").firstChild.data;
-        
-        /* Send the data using post and put the results in a div */
-        $.ajax({
-            url: '/LoLRep/ajax/authenticate_summoner/'+ region +'/'+ summonername.trim(),
-            type: "post",
-            data: summonername,
-            success: function(data){
-                $("#authenticate_runepage_page").html(data);
-            },
-            error:function(jqXHR, textStatus, errorThrown){
-                $("#authenticate_runepage_page").html(summonername + " error " + textStatus + " " + errorThrown );
-            }
-        });
-    });
+    /* Get some values from elements on the page: */
+   var summonername = document.getElementById("summonername").value;
+   if(summonername == "")
+    summonername = "-";
+   var region = document.getElementById("region").firstChild.data;
     
-    $(document).on('submit','#rune_page_verification',function(event) {
-        /* Stop form from submitting normally */
-        event.preventDefault();
-
-        /* Clear any previous error message*/
-        $("#rune_page_verification_result").html('');
-
-        /* Send the data using post and put the results in a div */
-        $.ajax({
-            url: '/LoLRep/ajax/rune_page_verification',
-            type: "post",
-            data: {},
-            success: function(data){
-                if(data == "success") {
-                    //verification succeeded, create user
-                    switchButtonToRegister();
-                }
-                else {
-                    $("#rune_page_verification_result").html(data);
-                }
-            },
-            error:function(jqXHR, textStatus, errorThrown){
-                alert(errorThrown);
-                $("#rune_page_verification_result").html(textStatus + ": " + errorThrown );
-            }
-        });
+    /* Send the data using post and put the results in a div */
+    $.ajax({
+        url: '/LoLRep/ajax/authenticate_summoner/'+ region +'/'+ summonername.trim(),
+        type: "post",
+        data: summonername,
+        success: function(data){
+            $("#authenticate_runepage_page").html(data);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+            $("#authenticate_runepage_page").html(summonername + " error " + textStatus + " " + errorThrown );
+        }
     });
+});
+    
+$(document).on('submit','#rune_page_verification',function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    /* Clear any previous error message*/
+    $("#rune_page_verification_result").html('');
+
+    /* Send the data using post and put the results in a div */
+    $.ajax({
+        url: '/LoLRep/ajax/rune_page_verification',
+        type: "post",
+        data: {},
+        success: function(data){
+            if(data == "success") {
+                //verification succeeded, create user
+                switchButtonToRegister();
+            }
+            else {
+                $("#rune_page_verification_result").html(data);
+            }
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+            alert(errorThrown);
+            $("#rune_page_verification_result").html(textStatus + ": " + errorThrown );
+        }
+    });
+});
 
 $('#lolteamsearchform').submit(function(event) {
         /* Stop form from submitting normally */
@@ -81,6 +81,48 @@ $('#lolteamsearchform').submit(function(event) {
             }
         });
     });
+
+//used in profile page
+$("#view-profile-team").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    /* Clear profile content*/
+    $("#profile-content").html('');
+
+    $.ajax({
+            url: '/LoLRep/ajax/profile_view_team/',
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#profile-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+            }
+        });
+});
+
+//used in profile page
+$("#view-profile-league").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    /* Clear profile content*/
+    $("#profile-content").html('');
+
+    $.ajax({
+            url: '/LoLRep/ajax/profile_view_league/',
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#profile-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+            }
+        });
+});
 
 //used to set value from left text input dropdown
 $(".region-list li a").click(function(event) {

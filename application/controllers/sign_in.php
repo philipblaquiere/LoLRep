@@ -93,7 +93,7 @@ class Sign_in extends MY_Controller
       }
     }
   }
-
+  
   public function sign_out()
   {
     $this->require_login();

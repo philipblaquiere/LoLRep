@@ -60,13 +60,11 @@ body { padding-top: 71px; }
 .match-results-lol {
   width: 500px;
   text-align: center;
+  background: rgba(0,255,0,0.2);
 }
 
 .match-results-lol .items-lol {
   width: 80px;
-}
-
-.match-results-lol {
 }
 
 .match-result-lol .left {

@@ -11,6 +11,8 @@ class Ajax extends MY_Controller
 	    $this->load->model('riotapi_model');
 	    $this->load->model('system_message_model');
 	    $this->load->model('banned_model');
+	    $this->load->model('match_model');
+	    $this->load->model('league_model');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
@@ -134,5 +136,58 @@ class Ajax extends MY_Controller
   				$this->load->view('ajax/team_lol_search_result',$data);
   			}
   		}
+  	}
+
+  	public function profile_view_team()
+  	{
+  		$this->load->library('calendar');
+        $teamid = $_SESSION['user']['league_info']['teamid'];
+        $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
+        $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
+        $data['calendar'] = $this->calendar;
+        
+        $data['schedule'] = array();
+        $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
+        //get the league;
+        if($data['schedule'])
+        {
+            $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
+            $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
+        }
+  		$this->load->view('view_team', $data);
+
+  	}
+
+  	public function profile_view_league()
+  	{
+  		$this->require_login();
+  		$leagueid = $_SESSION['user']['league_info']['leagueid'];
+        $teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
+
+        if(!$teams)
+        {
+            $teams['teams'] = array();
+        }
+        
+        $league = $this->league_model->get_league_details($leagueid);
+        if($league['start_date'] != NULL)
+        {
+            //get the end date of the season
+            $league['end_date'] = $this->get_local_date($league['end_date']);
+            $league['start_date'] = $this->get_local_date($league['start_date']);
+        }
+
+        $schedule = array();
+        if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+        {
+            $season['start_date'] = strtotime($league['start_date']);
+            $season['end_date'] = strtotime($league['end_date']);
+            $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+        }
+        
+        $data['teams'] = $teams;
+        $data['league'] = $league;
+        $data['schedule'] = $schedule;
+        $this->load->view('view_league', $data);
   	}
 }
