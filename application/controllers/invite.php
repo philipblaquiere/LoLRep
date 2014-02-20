@@ -77,7 +77,7 @@ class Invite extends MY_Controller
         $invite = $this->team_invite_model->get_invite_byid($inviteid);
         $esport = $this->esport_model->get_esport_byid($_SESSION['esportid']);
         //check to see if team still has space.
-        $numplayers = $this->team_model->get_team_lol($invite['teamid']);
+        $numplayers = $this->team_model->get_team_by_teamid($invite['teamid'], $esportid);
 
         if(count($numplayers) == $esport['max_players'])
         {

@@ -1,8 +1,8 @@
 <!-- Header -->
 <div class="page-header">
 	  <h1><?php echo $team['team_name'] ?></h1>
-	  <p>Current League: <a href="<?php echo site_url('view_leagues/view/' . $team['leagueid']) ?>" ><?php echo $team['league_name'] ?></a></p>
-	  <p>Joined: <?php echo $team['joined'] ?></p>
+	  <!--<p>Current League: <a href="<?php echo site_url('view_leagues/view/' . $team['leagueid']) ?>" ><?php echo $team['league_name'] ?></a></p>
+	  <!-- <p>Joined: <?php echo $team['joined'] ?></p>-->
 </div>
 <!-- Header -->
 <div class="team_calendar">

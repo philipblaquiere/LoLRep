@@ -60,25 +60,30 @@ class Create_team extends MY_Controller{
     public function unique_teamname($teamname)
     {
         $existing_team = $this->team_model->get_team_by_name($teamname, $this->input->post('esportid'));
-        if($existing_team) {
+        if($existing_team)
+        {
             $this->form_validation->set_message('unique_teamname','A team with an identical name already exists.');
             return FALSE;
         }
-        else {
+        else
+        {
             return TRUE;
         }
     }
 
     public function has_team()
     {
-        $teams = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId']);
+        $teams = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId'], $_SESSION['esportid']);
 
-        foreach ($teams as $team) {
-            if($team['esportid'] == $this->input->post('esportid')) {
-                $this->form_validation->set_message('has_team',"You can be registered to one team per Esport at a time. You're currently part of team : " . $team['team_name']);
+        foreach ($teams as $team)
+        {
+            if($team['esportid'] == $this->input->post('esportid'))
+            {
+                $this->form_validation->set_message('has_team',"You're currently part of team : " . $team['team_name']);
                 return FALSE;
             }
-            else {
+            else
+            {
                 return TRUE;
             }
         }

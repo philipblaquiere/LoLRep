@@ -39,9 +39,26 @@ class Team_model extends MY_Model {
 
     
   }
-  public function get_team_by_teamid($teamid,$esportid) {
+
+  public function get_team_by_teamid($teamid, $esportid)
+  {
+    switch ($esportid)
+    {
+      case '1':
+      //League of Legends
+        $sql = "SELECT * FROM teams 
+              WHERE teamid = '$teamid'
+              LIMIT 1";
+        $result = $this->db1->query($sql);
+        return $result->row_array();
+    }
+  }
+
+  public function get_detailed_team_by_teamid($teamid,$esportid)
+  {
     $time_now = $this->get_default_epoch(date('Y-m-d H:i:s', time()));
-    switch ($esportid) {
+    switch ($esportid)
+    {
       case '1':
         $sql = "SELECT * FROM teams t
           INNER JOIN league_teams lt ON lt.teamid = t.teamid

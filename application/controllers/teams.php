@@ -42,7 +42,7 @@ class Teams extends MY_Controller{
 
     public function invite($teamid)
     {
-        $team = $this->team_model->get_team_by_teamid($teamid);
+        $team = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
         if($team['esportid'] == 1)
         {
             $this->invite_lol($team);
@@ -54,6 +54,7 @@ class Teams extends MY_Controller{
         $this->load->library('calendar');
         
         $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
+        //$data['team_details'] = $this->team_model->get_detailed_team_by_teamid($teamid,$_SESSION['esportid']);
         $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
         $data['calendar'] = $this->calendar;
         
@@ -65,7 +66,6 @@ class Teams extends MY_Controller{
             $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
             $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
         }
-        print_r($data['team']);
         $this->view_wrapper('view_team',$data);
     }
 
@@ -89,7 +89,7 @@ class Teams extends MY_Controller{
             $summoner_names = explode(",", trim($invitations['summonerlist'],","));
             foreach ($summoner_names as $summoner_name)
             {
-                $invitation['summonerid'] = $this->lol_model->get_summonerid_from_summoner_name($summoner_name);
+                $invitation['summonerid'] = $this->lol_model->get_summonerid_from_summonername($summoner_name);
                 $invitation['teamid'] = $team['teamid'];
                 $invitation['message'] = $invitations['invite_message'];
                 
@@ -150,7 +150,7 @@ class Teams extends MY_Controller{
         $invalidnames = array();
         foreach ($summoner_names as $summoner_name)
         {
-            if($this->team_model->get_team_id_by_summoner_name(trim($summoner_name))) 
+            if($this->team_model->get_team_id_by_summonername(trim($summoner_name))) 
                 array_push($invalidnames,$summoner_name);
         }
         if($invalidnames) {

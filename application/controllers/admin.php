@@ -25,7 +25,6 @@ class Admin extends MY_Controller{
     public function index()
     {
         $data['result'] = array();
-        $data['new_seasons'] = $this->season_model->get_new_season();
         $this->view_wrapper('admin_panel',$data);
     }
 

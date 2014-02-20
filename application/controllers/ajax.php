@@ -37,7 +37,6 @@ class Ajax extends MY_Controller
 			$summonerinput = strtolower(str_replace(' ','', urldecode($summonerinput)));
 			$riotsummoners = $this->riotapi_model->getSummonerByName($region, $summonerinput);
 			$riotsummoners['region'] = trim($region);
-			print_r($riotsummoners);
 			//contains Array ( [summonername] => Array ( [id] => 39895516 [name] => Summoner Name [profileIconId] => 0 [summonerLevel] => 6 [revisionDate] => 1383423931000 ) [region] => Region )
 			if(!array_key_exists($summonerinput, $riotsummoners))
 			{
