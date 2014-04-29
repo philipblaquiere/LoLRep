@@ -9,7 +9,8 @@ class MY_Controller extends CI_Controller  {
 
   private $TIMEZONE_DEFAULT = "UTC";
 
-  public function __construct() {
+  public function __construct()
+  {
     parent::__construct();
     session_start();
     //$this->load->library('database_layer');
@@ -49,7 +50,7 @@ class MY_Controller extends CI_Controller  {
    *   TRUE if the user is currently authenticated, FALSE otherwise.
    */
   protected function is_logged_in() {
-    return isset($_SESSION['uid']);
+    return isset($_SESSION['userid']);
   }
 
   protected function is_admin_user() {
@@ -68,18 +69,18 @@ class MY_Controller extends CI_Controller  {
    * Convinience function to get the ID of the currently logged in user.
    */
   protected function get_current_user() {
-    return isset($_SESSION['uid']) ? $_SESSION['uid'] : 0;
+    return isset($_SESSION['userid']) ? $_SESSION['userid'] : 0;
   }
 
   protected function set_current_user($user) {
-    $_SESSION['uid'] = $user['UserId'];
+    $_SESSION['userid'] = $user['userid'];
     $_SESSION['user'] = $user;
     $_SESSION['last_login'] = $user['last_login_time'];
     $_SESSION['esportid'] = 1;
   }
 
   protected function destroy_session() {
-    unset($_SESSION['uid']);
+    unset($_SESSION['userid']);
     unset($_SESSION['user']);
     unset($_SESSION['last_login']);
     unset($_SESSION['esportid']);
@@ -89,7 +90,8 @@ class MY_Controller extends CI_Controller  {
    * Verifies the current user's session and redirects to the login form if the
    * user has not authenticated.
    */
-  protected function require_login() {
+  protected function require_login()
+  {
     if (!$this->is_logged_in()) {
       $this->system_message_model->set_message('Please login to access this page.', MESSAGE_WARNING);
       redirect('sign_in', 'refresh');
@@ -102,7 +104,8 @@ class MY_Controller extends CI_Controller  {
    * user has not authenticated.
    */
   protected function require_admin() {
-    if (!$this->is_logged_in() || !$this->is_admin_user()) {
+    if (!$this->is_logged_in() || !$this->is_admin_user())
+    {
       $this->system_message_model->set_message('Administrator access is required to access this page.', MESSAGE_WARNING);
       show_error('Access denied: you must be logged in as an administrator to view this content.', 403);
     }
@@ -112,7 +115,8 @@ class MY_Controller extends CI_Controller  {
   * Verifies that client is not logged in, and if so, it logs them out but allows them to view
   * the originally requested page (ie Registration)
   */
-  protected function require_not_login(){
+  protected function require_not_login()
+  {
     if ($this->is_logged_in()){
       $this->system_message_model->set_message('You have been automatically logged out in order to view this page.', MESSAGE_WARNING);
       $this->destroy_session();
@@ -124,7 +128,8 @@ class MY_Controller extends CI_Controller  {
   /*
   *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 
   */
-  protected function get_local_date($epoch, $format = 'F j, Y') {
+  protected function get_local_date($epoch, $format = 'F j, Y')
+  {
     $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
       $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
@@ -135,7 +140,8 @@ class MY_Controller extends CI_Controller  {
   /*
   *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
   */
-  protected function get_local_datetime($epoch, $format='F j, Y H:i:s') {
+  protected function get_local_datetime($epoch, $format='F j, Y H:i:s')
+  {
     $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
       $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
@@ -143,13 +149,28 @@ class MY_Controller extends CI_Controller  {
     return $date->format($format);
   }
 
-  protected function get_default_epoch($date) {
+  protected function get_default_epoch($date)
+  {
     date_default_timezone_set($_SESSION['user']['timezone']);
     $epoch = strtotime($date);
     $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['timezone']));
     $defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
     date_default_timezone_set($this->TIMEZONE_DEFAULT);
     return $defdate->getTimestamp();;
+  }
+
+  /**
+   * Hash a password using the user's unique salt.
+   */
+  public function password_hash($password)
+  {
+    // append the salt to thwart rainbow tables
+    return sha1($password . $this->get_salt());
+  }
+
+  protected function get_salt()
+  {
+    return "LF98af2kF4K2kjL!dB";
   }
 
 }

@@ -28,9 +28,6 @@ class Register extends MY_Controller
     $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
     $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
     $this->form_validation->set_rules('timezone', 'Time Zone', 'required');
-    $this->form_validation->set_rules('countryid', 'Country', 'required');
-    $this->form_validation->set_rules('provincestateid', 'Province/State', 'required');
-    $this->form_validation->set_rules('regionid', 'Region', 'required');
 
     if($this->form_validation->run() == FALSE)
     {
@@ -42,8 +39,7 @@ class Register extends MY_Controller
       $ip = $this->input->ip_address();
 
       $user = $this->input->post();
-      $user['salt'] = $this->user_model->_generate_salt();
-      $user['password'] = $this->user_model->_password_hash($user['password1'], $user['salt']);
+      $user['password'] = $this->password_hash($user['password1']);
       //Save user object and get key to send to user email.
       $newuser = $this->user_model->create($user);
 

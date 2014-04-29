@@ -67,7 +67,7 @@ class Sign_in extends MY_Controller
         $this->system_message_model->set_message('Hey! This account was never validated. Check your emails for an email we sent you!', MESSAGE_INFO);
         $this->view_wrapper('sign_in');
       }
-      else if($this->user_model->validate_password($user,$password)) 
+      else if($this->_validate_password($user,$password)) 
       {
         $banned_user = $this->banned_model->get_byemail($user['email']);
 
@@ -77,13 +77,12 @@ class Sign_in extends MY_Controller
           $this->view_wrapper('sign_in');
           return;
         }
-        $this->set_esport(1);
-        $user['league_info'] = $this->league_model->get_league_by_uid($user['UserId'], $_SESSION['esportid']);
+        $user['league_info'] = $this->league_model->get_league_by_uid($user['userid'], $_SESSION['esportid']);
         //user validated, proced with login
         $this->set_current_user($user);
 
-        $this->user_model->log_login($user['UserId']);
-        $this->system_message_model->set_message('Welcome, ' . $user['firstname'], MESSAGE_INFO);
+        $this->user_model->log_login($user['userid']);
+        $this->system_message_model->set_message('Welcome, ' . $user['first_name'], MESSAGE_INFO);
         redirect('home', 'refresh');
       }
       else
@@ -101,5 +100,11 @@ class Sign_in extends MY_Controller
     $data = array('page_title' => 'Sign out successful');
     $this->system_message_model->set_message('Sign out successful', MESSAGE_INFO);
     redirect('home', 'location');
+  }
+
+  private function _validate_password($user,$password) {
+    if(!$password || !$user['email'])
+      return false;
+    return $user['password'] === $this->password_hash($password);
   }
 }

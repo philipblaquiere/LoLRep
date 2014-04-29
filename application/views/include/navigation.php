@@ -14,7 +14,7 @@
         <ul class="nav navbar-nav">
           <?php if ($is_logged_in): ?>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['firstname']; ?><b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['first_name']; ?><b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add ESport</a></li>
                   <li><a href="<?php echo site_url('profile'); ?>">My Profile</a></li>
@@ -22,6 +22,7 @@
                   <li><a href="<?php echo site_url('create_team'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('create_league'); ?>">Create League</a></li>
                   <li><a href="<?php echo site_url('view_leagues'); ?>">View Leagues</a></li>
+                  <li><a href="<?php echo site_url('market'); ?>">Market</a></li>
                 </ul>
             </li>
             <li class="active"><a href="#">Link</a></li>

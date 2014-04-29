@@ -24,7 +24,7 @@ class Add_esport extends MY_Controller{
 	public function register_LoL()
 	{
 		$this->require_login();
-		$summonername = $this->lol_model->get_summonername_from_uid($_SESSION['user']['UserId']);
+		$summonername = $this->lol_model->get_summonername_from_uid($_SESSION['user']['userid']);
 		if($summonername)
 		{
 			$data['esports'] = $this->esport_model->get_all_esports();
@@ -51,8 +51,8 @@ class Add_esport extends MY_Controller{
 			 //valid summoner, create summoner and redirect to home page.
 			$_SESSION['summoner']['summonerrank'] = $this->riotapi_model->getLeague($_SESSION['summoner']['id']);
 			
-			$this->lol_model->create_summoner($_SESSION['uid'], $_SESSION['summoner']);
-			$this->esport_model->register_user_lol($_SESSION['uid']);
+			$this->lol_model->create_summoner($_SESSION['userid'], $_SESSION['summoner']);
+			$this->esport_model->register_user_lol($_SESSION['userid']);
 			$this->system_message_model->set_message($_SESSION['summoner']['name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
 			unset($_SESSION['summoner']);
 			$this->view_wrapper('home');

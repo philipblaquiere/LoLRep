@@ -1,0 +1,26 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Market_model extends MY_Model {
+
+	public function __construct() {
+		parent::__construct();
+		$this->db1 = $this->load->database('default', TRUE);
+	}
+
+	public function get_players($esportid)
+	{
+		switch ($esportid) {
+			case '1':
+				# League of Legends
+				$sql = "SELECT * FROM summoners"
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+		$sql = "SELECT "
+	}
+
+
+}

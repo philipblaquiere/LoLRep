@@ -90,33 +90,6 @@ foreach ($regions as $name => $mask)
     </div>
   </div>
   <div class="form-group">
-    <?php echo form_label('Country', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <select class="form-control" name="countryid">
-        <option <?php echo set_select('countryid', 'error', TRUE); ?>>Select Country</option>
-        <option value="1" <?php echo set_select('regionid', '1'); ?>>1</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group">
-    <?php echo form_label('Province/State', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <select class="form-control" name="provincestateid">
-        <option <?php echo set_select('provincestateid', 'error', TRUE); ?> >Select Province/State</option>
-        <option value="68" <?php echo set_select('provincestateid', '68'); ?>>68</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group">
-    <?php echo form_label('Region', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <select class="form-control" name="regionid">
-          <option <?php echo set_select('regionid', 'error', TRUE); ?>>Select Region</option>
-          <option value="6" <?php echo set_select('regionid', '6'); ?>>6</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       <?php echo form_submit('submit', 'Register', "class='btn btn-default'"); ?>
     </div>
