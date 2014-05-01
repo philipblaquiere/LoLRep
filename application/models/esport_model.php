@@ -52,10 +52,4 @@ class Esport_model extends CI_Model {
       $result = $this->db1->query($sql);
       return $result->result_array();
   }
-
-  public function register_user_lol($uid) {
-    $sql = "INSERT INTO user_esport (UserId, esportid) 
-            VALUES ('" . $uid . "', '1')";
-    $result = $this->db1->query($sql);
-  }
 }

@@ -33,10 +33,10 @@ class Banned_model extends CI_Model {
 	    $this->db1->query($sql);
  	}
 
- 	public function get_byemail($email)
+ 	public function get_by_userid($userid)
  	{
- 		$sql = "SELECT * FROM banned_summoners
- 			 	WHERE email = '$email'
+ 		$sql = "SELECT * FROM user_banned
+ 			 	WHERE userid = '$userid'
  			 	LIMIT 1";
 	    $result = $this->db1->query($sql);
 	    return $result->row_array();

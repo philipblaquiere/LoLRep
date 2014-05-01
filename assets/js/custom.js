@@ -230,9 +230,9 @@ function reloadLoLRegister(message) {
 
 function switchButtonToRegister(){
     button = document.getElementById('rune_page_verification_button');
-    button.setAttribute('id','create_summoner_button');
+    button.setAttribute('id','create_player_button');
     button.setAttribute('value','Register');
     form = document.getElementById('rune_page_verification');
-    form.setAttribute('id','create_summoner');
-    form.setAttribute('action', 'create_summoner');
+    form.setAttribute('id','create');
+    form.setAttribute('action', 'player/create');
 }

@@ -68,18 +68,34 @@ class MY_Controller extends CI_Controller  {
   /**
    * Convinience function to get the ID of the currently logged in user.
    */
-  protected function get_current_user() {
+  protected function get_current_userid() 
+  {
     return isset($_SESSION['userid']) ? $_SESSION['userid'] : 0;
   }
 
-  protected function set_current_user($user) {
+  protected function set_current_user($user)
+  {
     $_SESSION['userid'] = $user['userid'];
     $_SESSION['user'] = $user;
     $_SESSION['last_login'] = $user['last_login_time'];
     $_SESSION['esportid'] = 1;
   }
 
-  protected function destroy_session() {
+  protected function set_player($player)
+  {
+    $_SESSION['player'] = $player;
+  }
+  protected function get_player()
+  {
+    return isset($_SESSION['player']) ? $_SESSION['player'] : 0;
+  }
+  protected function player_exists()
+  {
+    return isset($_SESSION['player']);
+  }
+
+  protected function destroy_session() 
+  {
     unset($_SESSION['userid']);
     unset($_SESSION['user']);
     unset($_SESSION['last_login']);
@@ -92,7 +108,8 @@ class MY_Controller extends CI_Controller  {
    */
   protected function require_login()
   {
-    if (!$this->is_logged_in()) {
+    if (!$this->is_logged_in()) 
+    {
       $this->system_message_model->set_message('Please login to access this page.', MESSAGE_WARNING);
       redirect('sign_in', 'refresh');
       die();
@@ -103,7 +120,8 @@ class MY_Controller extends CI_Controller  {
    * Verifies the current user's session and redirects to the login form if the
    * user has not authenticated.
    */
-  protected function require_admin() {
+  protected function require_admin() 
+  {
     if (!$this->is_logged_in() || !$this->is_admin_user())
     {
       $this->system_message_model->set_message('Administrator access is required to access this page.', MESSAGE_WARNING);
@@ -117,13 +135,20 @@ class MY_Controller extends CI_Controller  {
   */
   protected function require_not_login()
   {
-    if ($this->is_logged_in()){
+    if ($this->is_logged_in())
+    {
       $this->system_message_model->set_message('You have been automatically logged out in order to view this page.', MESSAGE_WARNING);
       $this->destroy_session();
     }
   }
-  protected function set_esport($esportid) {
+  protected function set_esportid($esportid) 
+  {
     $_SESSION['esportid'] = $esportid;
+  }
+
+  protected function get_esportid()
+  {
+    return isset($_SESSION['esportid']) ? $_SESSION['esportid'] : 0;
   }
   /*
   *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 

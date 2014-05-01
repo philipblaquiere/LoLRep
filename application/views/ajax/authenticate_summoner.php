@@ -1,4 +1,4 @@
-<!-- Inner AJAX call, populated in register_LoL.php -->
+<!-- Inner AJAX call, populated in register_lol.php -->
 <h2>Step 2 : Rename First Rune Page</h2>
 <p><h3><small>Follow these steps in order to verify that you're the owner of this account and to complete the registration. Feel free to change it back once the verification is done.</small></h3></p>
 

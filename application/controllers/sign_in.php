@@ -13,7 +13,7 @@ class Sign_in extends MY_Controller
     $this->load->model('country_model');
     $this->load->model('ip_log_model');
     $this->load->model('esport_model');
-    $this->load->model('lol_model');
+    $this->load->model('player_model');
     $this->load->model('team_model');
     $this->load->model('league_model');
     $this->load->model('banned_model');
@@ -69,7 +69,7 @@ class Sign_in extends MY_Controller
       }
       else if($this->_validate_password($user,$password)) 
       {
-        $banned_user = $this->banned_model->get_byemail($user['email']);
+        $banned_user = $this->banned_model->get_by_userid($user['userid']);
 
         if($banned_user)
         {
@@ -77,10 +77,10 @@ class Sign_in extends MY_Controller
           $this->view_wrapper('sign_in');
           return;
         }
-        $user['league_info'] = $this->league_model->get_league_by_uid($user['userid'], $_SESSION['esportid']);
         //user validated, proced with login
+        $player = $this->player_model->get_player_by_email($user['email'], 1);
         $this->set_current_user($user);
-
+        $this->set_player($player);
         $this->user_model->log_login($user['userid']);
         $this->system_message_model->set_message('Welcome, ' . $user['first_name'], MESSAGE_INFO);
         redirect('home', 'refresh');

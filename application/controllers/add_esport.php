@@ -10,30 +10,38 @@ class Add_esport extends MY_Controller{
 		$this->load->model('user_model');
 		$this->load->model('system_message_model');
 		$this->load->model('esport_model');
-		$this->load->model('lol_model');
+		$this->load->model('player_model');
 		$this->load->model('riotapi_model');
 	}
 	public function index()
 	{
 		$this->require_login();
-		$esports = $this->esport_model->get_all_esports();
-		$data['esports'] = $esports;
-		$this->view_wrapper('user/add_esport',$data);
+		switch ($this->get_esportid()) 
+		{
+			case '1':
+				# Register League of Legends
+				$this->register_lol();
+				break;
+			
+			default:
+				# code...
+				break;
+		}
 	}
 
-	public function register_LoL()
+	public function register_lol()
 	{
 		$this->require_login();
-		$summonername = $this->lol_model->get_summonername_from_uid($_SESSION['user']['userid']);
-		if($summonername)
+		print_r($this->get_esportid());
+		$player = $this->player_model->get_player_by_userid($this->get_current_userid(), $this->get_esportid());
+		if($player)
 		{
-			$data['esports'] = $this->esport_model->get_all_esports();
-			$this->system_message_model->set_message("You have already registered a League of Legends account : " . $summonername['SummonerName']  , MESSAGE_INFO);
-			$this->view_wrapper('user/add_esport', $data);
+			$this->system_message_model->set_message("You have already registered a League of Legends account : " . $player['player_name']  , MESSAGE_INFO);
+			redirect('home', 'refresh');
 		}
 		else
 		{
-			$this->view_wrapper('user/register_LoL');
+			$this->view_wrapper('register_lol');
 		}
 	}
 
