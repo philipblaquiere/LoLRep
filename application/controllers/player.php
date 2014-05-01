@@ -49,7 +49,7 @@ class Player extends MY_Controller{
       $this->player_model->create($this->get_current_userid(), $_SESSION['player'], $this->get_esportid());
       $this->system_message_model->set_message($_SESSION['player']['player_name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
       unset($_SESSION['player']);
-      $this->view_wrapper('home');
+      redirect('home','refresh');
     }
   }
 }

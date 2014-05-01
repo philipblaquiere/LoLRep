@@ -19,13 +19,19 @@ class Player_model extends MY_Model {
 		     		$rank = $entry['rank'];
 		    }
 	    } 
-	   else {
+	   else 
+	    {
 	    	$rank = "unranked";
 	    	$tier = "unranked";
 	    }
 	    $sql = "INSERT INTO players (playerid, player_name, esportid, region, icon, level, rank, tier) 
 	            VALUES ('" . $player['playerid'] . "','" . $player['player_name'] . "', '" . $esportid . "',  '" . $player['region'] . "','" . $player['icon'] . "', '" . $player['level'] . "', '" . $rank . "', '" . $tier . "')";
 		$result = $this->db1->query($sql);
+
+		//relate the playerid to the userid in the user_players table
+	    $sql = "INSERT INTO user_players (userid, playerid) 
+	            VALUES ('" . $userid . "','" . $player['playerid'] . "')";
+	    $result = $this->db1->query($sql);
 		return;
 	}
 

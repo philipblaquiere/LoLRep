@@ -116,6 +116,14 @@ class MY_Controller extends CI_Controller  {
     }
   }
 
+  /*
+  * Verifies if the user is has registered his gaming account to the current set esport.
+  */
+  protected function require_registered()
+  {
+    return isset($_SESSION['player']) && $this->get_esportid() == $_SESSION['player']['esportid'];
+  }
+
   /**
    * Verifies the current user's session and redirects to the login form if the
    * user has not authenticated.
@@ -182,6 +190,11 @@ class MY_Controller extends CI_Controller  {
     $defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
     date_default_timezone_set($this->TIMEZONE_DEFAULT);
     return $defdate->getTimestamp();;
+  }
+
+  protected function show_404()
+  {
+    return;
   }
 
   /**

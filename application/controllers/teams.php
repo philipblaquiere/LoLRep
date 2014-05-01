@@ -15,7 +15,7 @@ class Teams extends MY_Controller{
         $this->load->model('team_model');
         $this->load->model('lol_model');
         $this->load->model('trade_lol_model');
-        $this->load->model('team_invite_model');
+        $this->load->model('invite_model');
         $this->load->model('season_model');
         $this->load->model('match_model');
         $this->load->model('riotapi_model');
@@ -26,28 +26,66 @@ class Teams extends MY_Controller{
     public function index()
     {
         $this->require_login();
-        $data['teams'] = $this->team_model->get_all_teams_by_uid($_SESSION['user']['UserId'],$_SESSION['esportid']);
-        $data['invites'] = $this->team_invite_model->get_lol_new_invites_by_uid($_SESSION['user']['UserId']);
+        $data['teams'] = $this->team_model->get_teams_by_uid($this->get_current_userid(), $this->get_esportid());
+        $data['invites'] = $this->invite_model->get_invites_by_uid($this->get_current_userid(), $this->get_esportid());
         if($data['invites'])
         {
-            $this->team_invite_model->mark_invites_read($_SESSION['user']['UserId']);
+            $this->invite_model->mark_invites_read($this->get_current_userid(), $this->get_esportid());
         }
-        $this->view_wrapper('user/teams', $data);
+        print_r($data);
+        $this->view_wrapper('teams', $data);
     }
+
+    public function create()
+    {
+        $this->require_login();
+        $this->require_registered();
+        if(!$esports)
+        {
+            $data['esports'] = $this->esport_model->get_all_esports();
+            $this->system_message_model->set_message("Add an Esport to your account before creating a team!"  , MESSAGE_ERROR);
+            $this->view_wrapper('user/add_esport',$data);
+            return;
+        }
+
+        $data['esports'] = $esports;
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('esportid', 'ESport', 'required');
+        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
+
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
+            $this->view_wrapper('user/create_team', $data);
+        }
+        else
+        {
+            $team['team_name'] = $this->input->post('teamname');
+            $team['esportid'] = $this->input->post('esportid');
+            $make_captain = $this->input->post('make_captain');
+
+            $captain = $_SESSION['user'];
+            if($team['esportid'] == 1)
+            {
+                //Game is league of legends, get summonerid
+                $captain['gameid'] = $this->lol_model->get_summonerid_from_uid($captain['UserId']);
+            }
+            $this->team_model->create_team($team,$captain);
+            $this->system_message_model->set_message($team['team_name'] . ' has been created, add people to your team' , MESSAGE_INFO);
+            redirect('home', 'location');
+        }
+    }
+
+
+
+
 
     public function join_team()
     {
         $this->require_login();
     }
 
-    public function invite($teamid)
-    {
-        $team = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
-        if($team['esportid'] == 1)
-        {
-            $this->invite_lol($team);
-        }
-    }
     public function view($teamid)
     {
         $this->require_login();
@@ -106,6 +144,7 @@ class Teams extends MY_Controller{
             redirect('home', 'refresh');
         }
     }
+
 
     public function summoner_registered($summonerlist)
     {

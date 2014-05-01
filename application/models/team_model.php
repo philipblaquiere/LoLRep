@@ -171,39 +171,19 @@ class Team_model extends MY_Model {
     
   }
 
-   public function get_all_teams_by_uid($uid, $esportid) {
-    /*returns 
-      teamid
-      team_name
-      esportid
-      created
-      captainid
-      countryid
-      stateid
-      regionid
-      teamid
-      summonerid
-      joined_date
-      UserId
-      SummonerId
-      SummonerName
-      ProfileIconId
-      RevisionDate
-      SummonerLevel
-      created*/
-      switch ($esportid) {
-        case '1':
-        //League of Legends
-          $sql = "SELECT * FROM teams t
-            INNER JOIN teams_lol l ON t.teamid = l.teamid 
-            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE s.UserId = '$uid'";
-          break;
-        
-        default:
-          # code...
-          break;
-      }
-    
+   public function get_teams_by_uid($uid, $esportid) 
+   {
+    //Returns a list of the user's team's names, team id's, and their creation date.
+    $sql = "SELECT  t.teamid,
+                    t.team_name,
+                    t.created
+            FROM teams t
+            INNER JOIN player_teams l 
+              ON t.teamid = l.teamid
+            INNER JOIN players p 
+              ON p.playerid = l.playerid 
+            WHERE s.userid = '$uid' 
+              AND t.esportid = '$esportid'";
     $result = $this->db1->query($sql);
     return $result->result_array();
   }

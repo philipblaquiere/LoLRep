@@ -35,7 +35,7 @@
 if(!$teams) {?>
 <div class="page-header">
   <h1>Uh Oh!</h1>
-  <h3>You aren't part of any team, create one <a href="<?php echo site_url('create_team'); ?>">here</a>!</h3>
+  <h3>You aren't part of any team, create one <a href="<?php echo site_url('teams/create'); ?>">here</a>!</h3>
 </div>
 <?php }
 else {?>
