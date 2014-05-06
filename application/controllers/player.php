@@ -35,20 +35,20 @@ class Player extends MY_Controller{
 
   private function _create_lol()
   {
-    if(!$_SESSION['player'])
+    if($this->player_exists())
     {
-      //global object not present, an error has occured while checking rune pages or while redirecting here from JQuery
+      //global object not present, an error has occured while checking pages or while redirecting herrune e from JQuery
       $this->system_message_model->set_message('Error: No Summoner has been found. Cannot complete registration', MESSAGE_INFO);
       redirect('add_esport', 'location');
     }
     else
     {
-       //valid summoner, create summoner and redirect to home page.
-      //Check function below, returns a 401
-      $_SESSION['player']['rank'] = $this->riotapi_model->getLeague($_SESSION['player']['playerid']);
-      $this->player_model->create($this->get_current_userid(), $_SESSION['player'], $this->get_esportid());
-      $this->system_message_model->set_message($_SESSION['player']['player_name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
-      unset($_SESSION['player']);
+      //valid summoner, create summoner and redirect to home page.
+      $player = $this->get_player();
+      $player['rank'] = $this->riotapi_model->getLeague($player['playerid']);
+      
+      $this->player_model->create($this->get_userid(), $player , $this->get_esportid());
+      $this->system_message_model->set_message($player['player_name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
       redirect('home','refresh');
     }
   }

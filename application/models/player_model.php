@@ -38,7 +38,7 @@ class Player_model extends MY_Model {
 	public function get_player_by_name($player_name, $esportid)
 	{
 		$sql = "SELECT 	p.player_name as player_name,
-						p.playerid as playerid
+						p.playerid as playerid,
 						p.region as region,
 						p.icon as icon,
 						p.level as level,
@@ -54,7 +54,7 @@ class Player_model extends MY_Model {
 
 	public function get_player_by_userid($uid, $esportid) {
 		$sql = "SELECT 	p.player_name as player_name,
-						p.playerid as playerid
+						p.playerid as playerid,
 						p.region as region,
 						p.icon as icon,
 						p.level as level,
