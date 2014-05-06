@@ -104,7 +104,7 @@ class User_Model extends MY_Model {
   public function _pend_valdiation($newuser)
   {
     $key = $this->_generate_user_validation_key();
-    $sql = "INSERT INTO pendingaccounts (userid, email, validationkey) 
+    $sql = "INSERT INTO user_pending (userid, email, validationkey) 
             VALUES ('". $newuser['userid'] ."', '". $newuser['email'] ."', '". $key ."')";
     $this->db1->query($sql);
     return $key;

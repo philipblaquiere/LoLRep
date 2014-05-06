@@ -24,7 +24,7 @@ class Register extends MY_Controller
 
     $this->form_validation->set_rules('fname', 'First Name', 'trim|required|xss_clean');
     $this->form_validation->set_rules('lname', 'Last Name', 'trim|required|xss_clean');
-    $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email|callback_is_banned');
+    $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email');
     $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
     $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
     $this->form_validation->set_rules('timezone', 'Time Zone', 'required');
