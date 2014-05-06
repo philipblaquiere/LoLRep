@@ -45,7 +45,7 @@ class Register extends MY_Controller
 
       $this->system_message_model->set_message('We sent you a confirmation email, follow the link to complete your registration.', MESSAGE_INFO);
 
-      redirect('user/pending_validation', 'refresh');
+      redirect('pending_validation', 'refresh');
     }
   }
 
