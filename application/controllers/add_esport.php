@@ -32,10 +32,9 @@ class Add_esport extends MY_Controller{
 	public function register_lol()
 	{
 		$this->require_login();
-		print_r($this->get_esportid());
-		$player = $this->player_model->get_player_by_userid($this->get_userid(), $this->get_esportid());
-		if($player)
+		if($this->player_exists())
 		{
+			$player = $this->get_player();
 			$this->system_message_model->set_message("You have already registered a League of Legends account : " . $player['player_name']  , MESSAGE_INFO);
 			redirect('home', 'refresh');
 		}

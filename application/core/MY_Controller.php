@@ -88,11 +88,11 @@ class MY_Controller extends CI_Controller  {
   }
   protected function get_player()
   {
-    return isset($_SESSION['player']) ? $_SESSION['player'] : 0;
+    return isset($_SESSION['player']) ? $_SESSION['player'] : array();
   }
   protected function player_exists()
   {
-    return isset($_SESSION['player']);
+    return isset($_SESSION['player']) && isset($_SESSION['player']['playerid']);
   }
 
   protected function destroy_session() 
