@@ -18,26 +18,16 @@ class Team_model extends MY_Model {
     $this->db1 = $this->load->database('default', TRUE);
   }
 
-  public function create_team($team,$captain)
+  public function create_team($team,$player)
   {
     $uniqueid = $this->generate_unique_key();
-    $team['name'] = $this->make_mysql_friendly($team['name']);
-    switch ($team['esportid']) {
-      case '1':
-          //League of Legends
-          $sql = "INSERT INTO teams_lol (teamid, summonerid)
-                  VALUES ('". $uniqueid ."' , '" . $captain['gameid']['SummonerId'] . "')";
-          $min_players = '5';
-          $this->db1->query($sql);
-          break;
-      case 2:
-          break;
-        }
-    $sql = "INSERT INTO teams (teamid,team_name, esportid, captainid, countryid, stateid, regionid) 
-          VALUES ('". $uniqueid ."','". $team['name'] ."', '". $team['esportid'] ."', '". $captain['UserId'] ."', '". $captain['countryid'] ."', '". $captain['provincestateid'] ."', '". $captain['regionid'] ."')";
+    $team['team_name'] = $this->make_mysql_friendly($team['team_name']);
+    $sql = "INSERT INTO player_teams (teamid, playerid)
+            VALUES ('". $uniqueid ."' , '" . $player['playerid'] . "')";
     $this->db1->query($sql);
-
-    
+    $sql = "INSERT INTO teams (teamid,team_name, esportid, captainid) 
+          VALUES ('". $uniqueid ."','". $team['team_name'] ."', '". $team['esportid'] ."', '". $team['captainid'] ."')";
+    $this->db1->query($sql);
   }
 
   public function get_team_by_teamid($teamid, $esportid)
@@ -180,9 +170,9 @@ class Team_model extends MY_Model {
             FROM teams t
             INNER JOIN player_teams l 
               ON t.teamid = l.teamid
-            INNER JOIN players p 
+            INNER JOIN user_players p 
               ON p.playerid = l.playerid 
-            WHERE s.userid = '$uid' 
+            WHERE p.userid = '$uid' 
               AND t.esportid = '$esportid'";
     $result = $this->db1->query($sql);
     return $result->result_array();

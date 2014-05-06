@@ -16,7 +16,7 @@ class Invite_model extends MY_Model {
 
   public function get_invites_by_uid($uid, $esportid) 
   {
-    $sql = "SELECT  i.invitedid AS inviteid,
+    $sql = "SELECT  i.inviteid AS inviteid,
                     i.teamid AS teamid,
                     t.team_name AS team_name,
                     i.esportid AS esportid,
@@ -60,7 +60,6 @@ class Invite_model extends MY_Model {
                   WHERE inviteid = '$inviteid'
                     AND esportid = '$esportid'";
           $this->db1->query($sql);
-    }
   }
 
   public function mark_invite_declined($inviteid,$esportid)
@@ -70,6 +69,5 @@ class Invite_model extends MY_Model {
                   WHERE inviteid = '$inviteid'
                     AND esportid = '$esportid'";
           $this->db1->query($sql);
-    }
   }
 }

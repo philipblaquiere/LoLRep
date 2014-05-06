@@ -78,8 +78,8 @@ class Sign_in extends MY_Controller
           return;
         }
         //user validated, proced with login
-        $player = $this->player_model->get_player_by_email($user['email'], 1);
-        $this->set_current_user($user);
+        $player = $this->player_model->get_player_by_email($user['email'], $this->get_esportid());
+        $this->set_user($user);
         $this->set_player($player);
         $this->user_model->log_login($user['userid']);
         $this->system_message_model->set_message('Welcome, ' . $user['first_name'], MESSAGE_INFO);

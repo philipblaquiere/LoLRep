@@ -26,13 +26,12 @@ class Teams extends MY_Controller{
     public function index()
     {
         $this->require_login();
-        $data['teams'] = $this->team_model->get_teams_by_uid($this->get_current_userid(), $this->get_esportid());
-        $data['invites'] = $this->invite_model->get_invites_by_uid($this->get_current_userid(), $this->get_esportid());
+        $data['teams'] = $this->team_model->get_teams_by_uid($this->get_userid(), $this->get_esportid());
+        $data['invites'] = $this->invite_model->get_invites_by_uid($this->get_userid(), $this->get_esportid());
         if($data['invites'])
         {
-            $this->invite_model->mark_invites_read($this->get_current_userid(), $this->get_esportid());
+            $this->invite_model->mark_invites_read($this->get_userid(), $this->get_esportid());
         }
-        print_r($data);
         $this->view_wrapper('teams', $data);
     }
 
@@ -40,46 +39,27 @@ class Teams extends MY_Controller{
     {
         $this->require_login();
         $this->require_registered();
-        if(!$esports)
-        {
-            $data['esports'] = $this->esport_model->get_all_esports();
-            $this->system_message_model->set_message("Add an Esport to your account before creating a team!"  , MESSAGE_ERROR);
-            $this->view_wrapper('user/add_esport',$data);
-            return;
-        }
 
-        $data['esports'] = $esports;
         $this->load->library('form_validation');
 
-        $this->form_validation->set_rules('esportid', 'ESport', 'required');
-        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_has_team|callback_unique_teamname');
+        $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
 
         if($this->form_validation->run() == FALSE)
         {
             $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
-            $this->view_wrapper('user/create_team', $data);
+            $this->view_wrapper('create_team');
         }
         else
         {
             $team['team_name'] = $this->input->post('teamname');
-            $team['esportid'] = $this->input->post('esportid');
-            $make_captain = $this->input->post('make_captain');
+            $team['esportid'] = $this->get_esportid();
+            $team['captainid'] = $this->input->post('make_captain') ? $this->get_userid() : null;
 
-            $captain = $_SESSION['user'];
-            if($team['esportid'] == 1)
-            {
-                //Game is league of legends, get summonerid
-                $captain['gameid'] = $this->lol_model->get_summonerid_from_uid($captain['UserId']);
-            }
-            $this->team_model->create_team($team,$captain);
+            $this->team_model->create_team($team,$this->get_player());
             $this->system_message_model->set_message($team['team_name'] . ' has been created, add people to your team' , MESSAGE_INFO);
             redirect('home', 'location');
         }
     }
-
-
-
-
 
     public function join_team()
     {
@@ -203,6 +183,20 @@ class Teams extends MY_Controller{
                 $this->system_message_model->set_message( join(', ', $invalidnames)  . " are already part of a team."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('summoner_inteam',  join(', ', $invalidnames)  . " are already part of a team.");
             }
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+    }
+
+    public function unique_teamname($teamname)
+    {
+        $existing_team = $this->team_model->get_team_by_name($teamname, $this->get_esportid());
+        if($existing_team)
+        {
+            $this->form_validation->set_message('unique_teamname','A team with an identical name already exists.');
             return FALSE;
         }
         else

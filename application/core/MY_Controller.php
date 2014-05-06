@@ -18,6 +18,7 @@ class MY_Controller extends CI_Controller  {
     $this->load->helper('form');
     $this->load->helper('date');
     //load all models
+    $this->set_esportid(1);
   }
 
   /**
@@ -68,22 +69,22 @@ class MY_Controller extends CI_Controller  {
   /**
    * Convinience function to get the ID of the currently logged in user.
    */
-  protected function get_current_userid() 
+  protected function get_userid() 
   {
-    return isset($_SESSION['userid']) ? $_SESSION['userid'] : 0;
+    return isset($_SESSION['user']) ? $_SESSION['user']['userid'] : 0;
   }
 
-  protected function set_current_user($user)
+  protected function set_user($user)
   {
     $_SESSION['userid'] = $user['userid'];
     $_SESSION['user'] = $user;
-    $_SESSION['last_login'] = $user['last_login_time'];
-    $_SESSION['esportid'] = 1;
+    $_SESSION['esportid'] = $this->get_esportid();
   }
 
   protected function set_player($player)
   {
     $_SESSION['player'] = $player;
+    $_SESSION['player']['esportid'] = $this->get_esportid();
   }
   protected function get_player()
   {
@@ -100,6 +101,7 @@ class MY_Controller extends CI_Controller  {
     unset($_SESSION['user']);
     unset($_SESSION['last_login']);
     unset($_SESSION['esportid']);
+    unset($_SESSION['player']);
   }
 
   /**

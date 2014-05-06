@@ -6,17 +6,7 @@
 <!-- Header -->
           
 <!-- Create Team Content -->
-<?php echo form_open('create_team', array('class' => 'form-horizontal', 'id' => 'createTeamForm')); ?>
-  <div class="form-group">
-    <?php echo form_label('ESport', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <select name="esportid" class="form-control">
-        <?php foreach($esports as $esport):?>
-          <option value="<?php echo $esport['esportid']?>"><?php echo $esport['esport_name']?></option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-  </div>
+<?php echo form_open('teams/create', array('class' => 'form-horizontal', 'id' => 'createTeamForm')); ?>
   <div class="form-group">
     <?php echo form_label('Team Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">

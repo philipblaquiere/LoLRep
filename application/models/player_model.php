@@ -38,11 +38,12 @@ class Player_model extends MY_Model {
 	public function get_player_by_name($player_name, $esportid)
 	{
 		$sql = "SELECT 	p.player_name as player_name,
+						p.playerid as playerid
 						p.region as region,
 						p.icon as icon,
 						p.level as level,
 						p.rank as rank,
-						p.tier as tier 
+						p.tier as tier
 				FROM players p
 				WHERE player_name = '$player_name'
 					AND esportid = '$esportid'
@@ -53,13 +54,14 @@ class Player_model extends MY_Model {
 
 	public function get_player_by_userid($uid, $esportid) {
 		$sql = "SELECT 	p.player_name as player_name,
+						p.playerid as playerid
 						p.region as region,
 						p.icon as icon,
 						p.level as level,
 						p.rank as rank,
 						p.tier as tier
 						FROM players p, user_players up
-						WHERE up.userid = '$uid' 
+						WHERE up.userid = '$uid'
 							AND p.playerid = up.playerid 
 							AND p.esportid = '$esportid'
 						LIMIT 1";
@@ -69,6 +71,7 @@ class Player_model extends MY_Model {
 
 	public function get_player_by_email($email, $esportid) {
 		$sql = "SELECT 	p.player_name as player_name,
+						p.playerid as playerid,
 						p.region as region,
 						p.icon as icon,
 						p.level as level,
