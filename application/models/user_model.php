@@ -83,12 +83,12 @@ class User_Model extends MY_Model {
 
   public function validate_user($key, $uid) 
   {
-    $sql = "SELECT * FROM pendingaccounts WHERE uid = '$uid' and validationkey = '$key' LIMIT 1";
+    $sql = "SELECT * FROM user_pending WHERE uid = '$uid' and validation_key = '$key' LIMIT 1";
     $query = $this->db1->query($sql);
     if($query==true)
     {
       //user is validated, update user in table 'users'
-      $sql ="UPDATE users SET validated = 1 WHERE UserId = '$uid'";
+      $sql ="UPDATE users SET validated = 1 WHERE userid = '$uid'";
       $this->db1->query($sql);
       return true;
     }
@@ -104,7 +104,7 @@ class User_Model extends MY_Model {
   public function _pend_valdiation($newuser)
   {
     $key = $this->_generate_user_validation_key();
-    $sql = "INSERT INTO user_pending (userid, email, validationkey) 
+    $sql = "INSERT INTO user_pending (userid, email, validation_key) 
             VALUES ('". $newuser['userid'] ."', '". $newuser['email'] ."', '". $key ."')";
     $this->db1->query($sql);
     return $key;
