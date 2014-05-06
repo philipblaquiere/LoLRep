@@ -31,7 +31,7 @@ class Register extends MY_Controller
 
     if($this->form_validation->run() == FALSE)
     {
-      $this->view_wrapper('user/register');
+      $this->view_wrapper('register');
     } 
 
     else
