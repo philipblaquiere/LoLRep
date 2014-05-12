@@ -41,7 +41,6 @@ class Teams extends MY_Controller{
         $this->require_registered();
 
         $this->load->library('form_validation');
-
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
 
         if($this->form_validation->run() == FALSE)
