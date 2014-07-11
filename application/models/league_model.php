@@ -24,34 +24,33 @@ class League_model extends MY_Model {
   	}
 
   	public function create_league($league, $season) {
-      $seasonuniqueid = $this->generate_unique_key();
-  		$leagueuniqueid = $this->generate_unique_key();
+      $season_uniqueid = $this->generate_unique_key();
+  		$league_uniqueid = $this->generate_unique_key();
       $league['name'] = $this->make_mysql_friendly($league['name']);
 
       $this->db1->trans_start();
       
-      
-      $sql = "INSERT INTO seasons (seasonid, owner_UserId, season_duration, season_esportid)
-          VALUES ('" . $seasonuniqueid . "', '" . $season['UserId'] . "', '" . $season['season_duration'] . "', '" . $season['season_esportid'] . "')";
+      $sql = "INSERT INTO seasons (seasonid, owner_userid, season_duration, season_esportid)
+          VALUES ('" . $season_uniqueid . "', '" . $season['userid'] . "', '" . $season['season_duration'] . "', '" . $season['season_esportid'] . "')";
       $this->db1->query($sql);
 
       $sql = "INSERT INTO season_leagues (seasonid, leagueid)
-              VALUES ('" . $seasonuniqueid . "', '" . $leagueuniqueid . "')";
+              VALUES ('" . $season_uniqueid . "', '" . $league_uniqueid . "')";
       $this->db1->query($sql);
 
       $sql = "INSERT INTO leagues(leagueid, league_name, esportid, league_type, max_teams,invite, private)
-          VALUES ('" . $leagueuniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
+          VALUES ('" . $league_uniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
       $this->db1->query($sql);
 
-      $sql = "INSERT INTO leagues_meta(leagueid, first_matches, seasonid)
+      $sql = "INSERT INTO league_meta(leagueid, first_matches, seasonid)
           VALUES";
       foreach ($league['leagues_meta'] as $leagues_meta) {
-        $sql .= "('" . $leagueuniqueid . "', '" . $leagues_meta . "', '" . $seasonuniqueid . "'),";
+        $sql .= "('" . $league_uniqueid . "', '" . $leagues_meta . "', '" . $season_uniqueid . "'),";
       }
       $sql = substr($sql, 0, -1);
       $this->db1->query($sql);
-      $sql = "INSERT INTO league_owners(leagueid, UserId, seasonid, esportid)
-              VALUES ('" . $leagueuniqueid . "', '" . $_SESSION['user']['UserId'] . "', '" . $seasonuniqueid . "', '" . $league['esportid'] . "')";
+      $sql = "INSERT INTO league_owners(leagueid, userid, seasonid, esportid)
+              VALUES ('" . $league_uniqueid . "', '" . $season['userid'] . "', '" . $season_uniqueid . "', '" . $league['esportid'] . "')";
       
       $this->db1->query($sql);
   		$this->db1->trans_complete();

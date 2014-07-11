@@ -56,10 +56,11 @@ class Season_model extends MY_Model {
   		$this->db1->query($sql);
   	}
 
-  	public function get_user_created_seasons($userid) {
+  	public function get_seasons_by_owner($userid, $esportid) {
   		$sql = "SELECT * FROM seasons
-  				WHERE owner_UserId = '$userid'
+  				WHERE owner_userid = '$userid'
   				AND season_status = 'active' OR season_status = 'new'
+          AND season_esportid = '$esportid'
   				LIMIT 1";
   		$result = $this->db1->query($sql);
 		return $result->row_array();

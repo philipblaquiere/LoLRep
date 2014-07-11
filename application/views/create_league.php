@@ -4,11 +4,12 @@
   <h4>Fill out the information below to create a league!</h4>
 </div>
 <!-- Header -->
+
 <h2>Season</h2>
 <hr/>
 <!-- Create League Content -->
 <?php echo validation_errors(); ?>
-<?php echo form_open('create_league', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
+<?php echo form_open('leagues/create', array('class' => 'form-horizontal', 'id' => 'registrationForm')); ?>
   <div class="form-group">
     <?php echo form_label('Duration (Months)', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
@@ -19,16 +20,6 @@
           <option value="12">12</option>
       </select>
       <span class="help-block">Four-month Seasons are recommended as they offer the right amount of games.</span>
-    </div>
-  </div>
-  <div class="form-group">
-    <?php echo form_label('ESport', 'name', array('class' => 'col-sm-2 control-label')); ?>
-    <div class="col-sm-10">
-      <select name="esportid" class="form-control">
-        <?php foreach($esports as $esport):?>
-          <option value="<?php echo $esport['esportid']?>"><?php echo $esport['esport_name']?></option>
-        <?php endforeach; ?>
-      </select>
     </div>
   </div>
   <br/>

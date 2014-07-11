@@ -167,7 +167,7 @@ class MY_Controller extends CI_Controller  {
   {
     $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
-      $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
+      $date->setTimezone(new DateTimeZone($_SESSION['user']['time_zone']));
     }
     return $date->format($format);
   }
@@ -179,16 +179,16 @@ class MY_Controller extends CI_Controller  {
   {
     $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
-      $date->setTimezone(new DateTimeZone($_SESSION['user']['timezone']));
+      $date->setTimezone(new DateTimeZone($_SESSION['user']['time_zone']));
     }
     return $date->format($format);
   }
 
   protected function get_default_epoch($date)
   {
-    date_default_timezone_set($_SESSION['user']['timezone']);
+    date_default_timezone_set($_SESSION['user']['time_zone']);
     $epoch = strtotime($date);
-    $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['timezone']));
+    $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['time_zone']));
     $defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
     date_default_timezone_set($this->TIMEZONE_DEFAULT);
     return $defdate->getTimestamp();;

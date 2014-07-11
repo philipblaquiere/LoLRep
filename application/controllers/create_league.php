@@ -132,37 +132,6 @@ class Create_league extends MY_Controller{
             return TRUE;
         }
     }
-    public function unique_leaguename($leaguename)
-    {
-        $existing_league = $this->league_model->get_league_by_name($leaguename);
-        $user_own_season = $this->season_model->get_user_created_seasons($_SESSION['user']['UserId']);
 
-        if($user_own_season)
-        {
-            $this->system_message_model->set_message("You already own a League! You can join other leagues but can only be owner of a single league."  , MESSAGE_ERROR);
-            $this->view_wrapper('home',$data);
-            return;
-        }
-
-        if($existing_league && ($existing_league['status']=="new" || $existing_league['status']=="active"))
-        {
-            $this->form_validation->set_message('unique_leaguename','A league with an identical name already exists.');
-            return FALSE;
-        }
-        else if($user_own_season)
-        {
-            //user already created a league this season, check if league is for the current esport
-            $esportid = $this->input->post('esportid');
-            if($league['esportid'] == $user_own_season['season_esportid'])
-            {
-                $this->form_validation->set_message('unique_leaguename','You can only create one League per registered Esport.');
-                return FALSE;
-            }
-            return TRUE;
-        }
-        else
-        {
-            return TRUE;
-        }
-    }
+   
 }
