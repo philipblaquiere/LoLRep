@@ -52,9 +52,10 @@ class Teams extends MY_Controller{
         {
             $team['team_name'] = $this->input->post('teamname');
             $team['esportid'] = $this->get_esportid();
-            $team['captainid'] = $this->input->post('make_captain') ? $this->get_userid() : null;
-
-            $this->team_model->create_team($team,$this->get_player());
+            //$team['captainid'] = $this->input->post('make_captain') ? $this->get_playerid() : null;
+            $team['captainid'] = $this->get_playerid();
+            $team['playerid'] = $this->get_playerid();
+            $this->team_model->create_team($team);
             $this->system_message_model->set_message($team['team_name'] . ' has been created, add people to your team' , MESSAGE_INFO);
             redirect('home', 'location');
         }

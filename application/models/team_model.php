@@ -18,16 +18,17 @@ class Team_model extends MY_Model {
     $this->db1 = $this->load->database('default', TRUE);
   }
 
-  public function create_team($team,$player)
+  public function create_team($team)
   {
     $uniqueid = $this->generate_unique_key();
     $team['team_name'] = $this->make_mysql_friendly($team['team_name']);
     $sql = "INSERT INTO player_teams (teamid, playerid)
-            VALUES ('". $uniqueid ."' , '" . $player['playerid'] . "')";
+            VALUES ('". $uniqueid ."' , '" . $team['playerid'] . "')";
     $this->db1->query($sql);
-    $sql = "INSERT INTO teams (teamid,team_name, esportid, captainid) 
+    $sql = "INSERT INTO teams (teamid, team_name, esportid, captainid) 
           VALUES ('". $uniqueid ."','". $team['team_name'] ."', '". $team['esportid'] ."', '". $team['captainid'] ."')";
     $this->db1->query($sql);
+    return;
   }
 
   public function get_team_by_teamid($teamid, $esportid)
