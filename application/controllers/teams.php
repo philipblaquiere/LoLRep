@@ -40,10 +40,6 @@ class Teams extends MY_Controller{
     {
         $this->require_login();
         $this->require_registered();
-<<<<<<< HEAD
-=======
-        print_r($this->get_player());
->>>>>>> origin/master
         $this->load->library('form_validation');
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
         if($this->form_validation->run() == FALSE)
@@ -72,13 +68,13 @@ class Teams extends MY_Controller{
     public function view($teamid)
     {
         $this->require_login();
-<<<<<<< HEAD
+
         
         $data['team'] = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
         //$data['team_details'] = $this->team_model->get_detailed_team_by_teamid($teamid,$_SESSION['esportid']);
         //$data['roster'] = $this->team_model->get_team_roster($teamid, $this->get_esportid());
         
-=======
+
         $this->load->library('calendar');
 
         $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
@@ -86,7 +82,7 @@ class Teams extends MY_Controller{
         $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
         $data['calendar'] = $this->calendar;
 
->>>>>>> origin/master
+
         $data['schedule'] = array();
         //$data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
         //get the league;
@@ -180,13 +176,13 @@ class Teams extends MY_Controller{
         $invalidnames = array();
         foreach ($player_names as $player_name)
         {
-<<<<<<< HEAD
+
             if($this->team_model->get_team_id_by_summonername(trim($player_name))) 
                 array_push($invalidnames, $player_name);
-=======
+
             if($this->team_model->get_team_id_by_summonername(trim($summoner_name)))
                 array_push($invalidnames,$summoner_name);
->>>>>>> origin/master
+
         }
         if($invalidnames) {
             if(count($invalidnames) == 1)
