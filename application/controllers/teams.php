@@ -20,7 +20,7 @@ class Teams extends MY_Controller{
         $this->load->model('match_model');
         $this->load->model('riotapi_model');
         $this->load->model('league_model');
-        
+
     }
 
     public function index()
@@ -40,6 +40,10 @@ class Teams extends MY_Controller{
     {
         $this->require_login();
         $this->require_registered();
+<<<<<<< HEAD
+=======
+        print_r($this->get_player());
+>>>>>>> origin/master
         $this->load->library('form_validation');
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
         if($this->form_validation->run() == FALSE)
@@ -68,11 +72,21 @@ class Teams extends MY_Controller{
     public function view($teamid)
     {
         $this->require_login();
+<<<<<<< HEAD
         
         $data['team'] = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
         //$data['team_details'] = $this->team_model->get_detailed_team_by_teamid($teamid,$_SESSION['esportid']);
         //$data['roster'] = $this->team_model->get_team_roster($teamid, $this->get_esportid());
         
+=======
+        $this->load->library('calendar');
+
+        $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
+        //$data['team_details'] = $this->team_model->get_detailed_team_by_teamid($teamid,$_SESSION['esportid']);
+        $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
+        $data['calendar'] = $this->calendar;
+
+>>>>>>> origin/master
         $data['schedule'] = array();
         //$data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
         //get the league;
@@ -92,7 +106,7 @@ class Teams extends MY_Controller{
         $this->load->library('form_validation');
         $this->form_validation->set_rules('player_list', 'Summoners', 'trim|required|xss_clean|callback_player_registered|callback_player_inteam');
         $this->form_validation->set_rules('invite_message', 'Message', 'trim|required|xss_clean');
-        
+
         if($this->form_validation->run() == FALSE)
         {
             $this->view_wrapper('team_invite_lol',$data);
@@ -107,7 +121,7 @@ class Teams extends MY_Controller{
                 $invitation['summonerid'] = $this->lol_model->get_summonerid_from_summonername($player_name);
                 $invitation['teamid'] = $team['teamid'];
                 $invitation['message'] = $invitations['invite_message'];
-                
+
                 $this->team_invite_model->invite_summoner($invitation);
             }
             if(count($player_names) == 1)
@@ -145,7 +159,7 @@ class Teams extends MY_Controller{
                 $this->system_message_model->set_message(join(', ', $invalidnames)  . " is not registered in our systems."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('player_registered',  join(', ', $invalidnames)  . " is not registered in our systems");
             }
-            else 
+            else
             {
                 $this->system_message_model->set_message(join(', ', $invalidnames)  . " are not registered in our systems."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('player_registered',  join(', ', $invalidnames)  . " are not registered in our systems");
@@ -166,12 +180,17 @@ class Teams extends MY_Controller{
         $invalidnames = array();
         foreach ($player_names as $player_name)
         {
+<<<<<<< HEAD
             if($this->team_model->get_team_id_by_summonername(trim($player_name))) 
                 array_push($invalidnames, $player_name);
+=======
+            if($this->team_model->get_team_id_by_summonername(trim($summoner_name)))
+                array_push($invalidnames,$summoner_name);
+>>>>>>> origin/master
         }
         if($invalidnames) {
             if(count($invalidnames) == 1)
-            { 
+            {
                 $this->system_message_model->set_message( join(', ', $invalidnames)  . " is already part of a team."  , MESSAGE_ERROR);
                 $this->form_validation->set_message('player_inteam',  join(', ', $invalidnames)  . " is already part of a team.");
             }
