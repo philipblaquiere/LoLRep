@@ -32,8 +32,6 @@ class Teams extends MY_Controller{
         {
             $this->invite_model->mark_invites_read($this->get_userid(), $this->get_esportid());
         }
-        
-        print_r($data);
         $this->view_wrapper('teams', $data);
     }
 
