@@ -84,12 +84,13 @@ class MY_Controller extends CI_Controller  {
   protected function set_player($player)
   {
     $_SESSION['player'] = $player;
-    $_SESSION['player']['esportid'] = $this->get_esportid();
   }
+
   protected function get_player()
   {
     return isset($_SESSION['player']) ? $_SESSION['player'] : array();
   }
+
   protected function player_exists()
   {
     return isset($_SESSION['player']) && isset($_SESSION['player']['playerid']);
@@ -119,11 +120,16 @@ class MY_Controller extends CI_Controller  {
   }
 
   /*
-  * Verifies if the user is has registered his gaming account to the current set esport.
+  * Verifies if the user has registered his gaming account to the current set esport.
   */
   protected function require_registered()
   {
-    return isset($_SESSION['player']) && $this->get_esportid() == $_SESSION['player']['esportid'];
+    if(empty($_SESSION['player']))
+    {
+      $this->system_message_model->set_message('You must link your gaming account in order to access this page.', MESSAGE_WARNING);
+      redirect('add_esport', 'refresh');
+      die();
+    }
   }
 
   /**

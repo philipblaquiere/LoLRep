@@ -44,8 +44,8 @@ class League_model extends MY_Model {
 
       $sql = "INSERT INTO league_meta(leagueid, first_matches, seasonid)
           VALUES";
-      foreach ($league['leagues_meta'] as $leagues_meta) {
-        $sql .= "('" . $league_uniqueid . "', '" . $leagues_meta . "', '" . $season_uniqueid . "'),";
+      foreach ($league['league_meta'] as $league_meta) {
+        $sql .= "('" . $league_uniqueid . "', '" . $league_meta . "', '" . $season_uniqueid . "'),";
       }
       $sql = substr($sql, 0, -1);
       $this->db1->query($sql);
@@ -87,14 +87,17 @@ class League_model extends MY_Model {
 
       }    
     }
+
     public function get_all_leagues() {
       $sql = "SELECT * FROM leagues";
       $result = $this->db1->query($sql);
       return $result->result_array();
     }
-    public function get_all_leagues_detailed($esportid,$private = 0) {
+
+    public function get_leagues($esportid, $private = 0)
+    {
       $sql = "SELECT * FROM leagues l
-              INNER JOIN leagues_meta lm ON l.leagueid = lm.leagueid 
+              INNER JOIN league_meta lm ON l.leagueid = lm.leagueid 
               INNER JOIN league_types tp ON l.league_type = tp.league_type_id
               INNER JOIN esports e ON e.esportid = '$esportid'
               WHERE l.private = '$private' AND l.esportid = '$esportid'";
@@ -161,7 +164,7 @@ class League_model extends MY_Model {
               INNER JOIN seasons AS s ON s.seasonid = sl.seasonid
               INNER JOIN league_types AS lt ON l.league_type = lt.league_type_id
               INNER JOIN esports AS e ON l.esportid = e.esportid
-              INNER JOIN leagues_meta AS lm ON lm.leagueid = l.leagueid
+              INNER JOIN league_meta AS lm ON lm.leagueid = l.leagueid
               WHERE l.leagueid = '$leagueid'";
       $results = $this->db1->query($sql);
       $results = $results->result_array();
@@ -188,40 +191,35 @@ class League_model extends MY_Model {
       return $result->row_array();      
     }
 
-    public function get_current_league_by_teamid($teamid)
+    public function get_leagues_by_teamids($teams)
     {
-       $sql = "SELECT * FROM league_teams
-              WHERE teamid = '$teamid' AND status = 'active'
-              LIMIT 1";
+      foreach ($teams['teamid'] as $teamids)
+      {
+        $sql = "SELECT * FROM league_teams
+              WHERE teamid = '$teamid' AND status = 'active'";
+      }
       $result = $this->db1->query($sql);
       return $result->row_array();      
     }
 
-    public function get_league_by_uid($uid, $esportid)
+    public function get_leagues_by_uid($uid, $esportid)
     {
-      switch ($esportid) {
-        case '1':
-          //League of Legends
-          $sql = "SELECT * FROM leagues l
-              INNER JOIN summoners s ON s.UserId = '$uid'
-              INNER JOIN teams_lol tl ON tl.summonerid = s.summonerid
-              INNER JOIN teams t ON t.teamid = tl.teamid
-              INNER JOIN league_teams lt ON lt.teamid = t.teamid
-              WHERE l.leagueid = lt.leagueid and l.league_status != 'inactive'
-              LIMIT 1";
-          $result = $this->db1->query($sql);
-          return $result->row_array();
-          break;
-        
-        default:
-          # code...
-          break;
-      }
+      $sql = "SELECT  l.league_name as league_name
+                      l.leagueid as leagueid 
+              FROM leagues l
+          INNER JOIN user_players up ON up.userid = '$uid'
+          INNER JOIN players p ON p.playerid = up.playerid
+          INNER JOIN player_teams pt ON pt.playerid = p.playerid
+          INNER JOIN teams t ON t.teamid = pt.teamid
+          INNER JOIN league_teams lt ON lt.teamid = t.teamid
+          WHERE l.leagueid = lt.leagueid and l.league_status != 'inactive'";
+      $result = $this->db1->query($sql);
+      return $result->result_array();
     }
 
     public function get_active_league_first_matches($leagueid)
     {
-      $sql = "SELECT lm.first_matches as first_matches FROM leagues_meta lm
+      $sql = "SELECT lm.first_matches as first_matches FROM league_meta lm
               INNER JOIN leagues l ON l.leagueid = lm.leagueid
               WHERE lm.leagueid = '$leagueid' AND l.status != 'inactive'";
       $result = $this->db1->query($sql);

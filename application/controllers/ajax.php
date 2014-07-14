@@ -41,7 +41,7 @@ class Ajax extends MY_Controller
   			//contains Array ( [summonername] => Array ( [id] => 39895516 [name] => Summoner Name [profileIconId] => 0 [summonerLevel] => 6 [revisionDate] => 1383423931000 ) [region] => Region )
 			if(!array_key_exists($summonerinput, $riotsummoners))
 			{
-				$data['errormessage'] = "The specified summoner was not found in the specified region";
+				$data['errormessage'] = "Error " . $riotsummoners['status']['status_code'] . " : " . $riotsummoners['status']['message'];
 				$this->load->view('messages/rune_page_verification_fail', $data);
 				return;
 			}
@@ -49,7 +49,7 @@ class Ajax extends MY_Controller
 			{
 				//check to see if summoner is banned
 				//$banned_summoner = $this->banned_model->get_bysummonername($riotsummoners[$summonerinput]['name']);
-				//summoner exists, check if player exists already in our db
+				//summoner exists, check if player exists already in db
 				$player = $this->player_model->get_player_by_name($riotsummoners[$summonerinput]['name'], $this->get_esportid());
         /*if($banned_summoner) 
 				{
@@ -59,13 +59,12 @@ class Ajax extends MY_Controller
 				}*/
 				if(!$player)
 				{
-					//summoner doesn't exist in db yet. Generate a Rune Page Key
+					//player doesn't exist in db yet. Generate a Rune Page Key
 					$_SESSION['runepagekey'] = $this->user_model->generate_rune_page_key();
 					$data['runepagekey'] = $_SESSION['runepagekey'];
 					$_SESSION['player']['player_name'] = $riotsummoners[$summonerinput]['name'];
           $_SESSION['player']['playerid'] = $riotsummoners[$summonerinput]['id'];
           $_SESSION['player']['icon'] = $riotsummoners[$summonerinput]['profileIconId'];
-          $_SESSION['player']['level'] = $riotsummoners[$summonerinput]['summonerLevel'];
           $_SESSION['player']['player_name'] = $riotsummoners[$summonerinput]['name'];
 					$_SESSION['player']['region'] = $riotsummoners['region'];
 			  	$runepages = $this->riotapi_model->getSummoner($_SESSION['player']['playerid'],"runes");
@@ -75,7 +74,7 @@ class Ajax extends MY_Controller
 				else
 				{
 					//summoner already existing return error
-					$data['errormessage'] = "Summoner is already registered in our database";
+					$data['errormessage'] = "Player is already registered in our database";
 					$this->load->view('messages/rune_page_verification_fail', $data);
 					return;
 				}
@@ -94,7 +93,7 @@ class Ajax extends MY_Controller
   		{
   			//user runepage is validated, re-check absence in db
   			$player = $this->player_model->get_player_by_name($playerid, $this->get_esportid());
-  			if(!$player)
+  			if(empty($player))
   			{
   				//redirects to user/create_summoner
   				echo "success";
@@ -142,7 +141,6 @@ class Ajax extends MY_Controller
 
   	public function profile_view_team()
   	{
-  		$this->load->library('calendar');
         $teamid = $_SESSION['user']['league_info']['teamid'];
         $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
         $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);

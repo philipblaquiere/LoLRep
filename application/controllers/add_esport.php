@@ -43,26 +43,4 @@ class Add_esport extends MY_Controller{
 			$this->view_wrapper('register_lol');
 		}
 	}
-
-	public function create_summoner() 
-	{
-		$this->require_login();
-		if(!$_SESSION['summoner']) 
-		{
-			//global object not present, an error has occured while checking rune pages or while redirecting here from JQuery
-			$this->system_message_model->set_message('Error: No Summoner has been found. Cannot complete registration', MESSAGE_INFO);
-			redirect('user/register_LoL', 'location');
-		}
-		else 
-		{
-			 //valid summoner, create summoner and redirect to home page.
-			$_SESSION['summoner']['summonerrank'] = $this->riotapi_model->getLeague($_SESSION['summoner']['id']);
-			
-			$this->lol_model->create_summoner($_SESSION['userid'], $_SESSION['summoner']);
-			$this->esport_model->register_user_lol($_SESSION['userid']);
-			$this->system_message_model->set_message($_SESSION['summoner']['name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
-			unset($_SESSION['summoner']);
-			$this->view_wrapper('home');
-		}
-	}
 }

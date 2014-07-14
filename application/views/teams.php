@@ -51,7 +51,7 @@ else {?>
 		<div class="row">
 			<div class="col-md-7">
                 <a href="<?php echo site_url('teams/view/' . $team['teamid']) ?>"><h2 class="list-group-item-text"><?php echo $team['team_name']?></h2></a>
-                <p class="list-group-item-text">Created: <?php echo $team['created']?> Summoner Name: <?php echo $team['player_name']?></p>
+                <p class="list-group-item-text">Created: <?php echo $team['created']?> Player Name: <?php echo $player['player_name']?></p>
 	        </div>  
 	        <div class="col-md-5 ">
 	        	<div class="btn-toolbar " role="toolbar">
@@ -65,7 +65,7 @@ else {?>
               			<a href="#" type="button" class="btn btn-default" role="button">
               				<span class="glyphicon glyphicon-stats"></span>
               			</a>
-              			<?php if($_SESSION['user']['UserId'] == $team['captainid']) { 
+              			<?php if($player['playerid'] == $team['captainid']) { 
               			//user is captain, show captain settings?>
               			<a href="<?php echo site_url('teams/invite/' .  $team['teamid']) ?>" type="button" class="btn btn-default" role="button">
               				<span class="glyphicon glyphicon-plus"></span>

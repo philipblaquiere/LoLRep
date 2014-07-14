@@ -4,30 +4,24 @@
 	  <!--<p>Current League: <a href="<?php echo site_url('view_leagues/view/' . $team['leagueid']) ?>" ><?php echo $team['league_name'] ?></a></p>
 	  <!-- <p>Joined: <?php echo $team['joined'] ?></p>-->
 </div>
-<!-- Header -->
-<div class="team_calendar">
-	<?php echo $calendar->generate(); ?>
-</div>
 <h2>Roster</h2>
 <hr>
 <table class="table table-striped table-condensed table-hover">
 				<th></th>
-				<th>Summoner Name</th>
-				<th>Rank</th>
-				<th>Region</th>
+				<th>Player Name</th>
 				<th>KDA</th>
-				<?php foreach($roster as $player):?>
+				<?php foreach($team['players'] as $player):?>
 				<tr>
-					<td><?php echo $player['ProfileIconId'] ?></td>
-					<td><?php echo $player['SummonerName'] ?></td>
-					<td><?php echo $player['rank'] . ' ' . $player['tier'] ?></td>
-					<td><?php echo $player['region'] ?></td>
+					<td></td>
+					<td><?php echo $player['player_name'] ?></td>
 					<td>K/D/A</td>
 				</tr>
 				<?php endforeach; ?>
 			</table>
 
 <hr>
+
+<?php if(array_key_exists('season', $team) && $team['season']['season_status'] == 'active') { ?>
 <div class="panel-group" id="accordion">
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -59,4 +53,5 @@
 		</div>
 	</div>
 </div>
+<?php } ?>
 

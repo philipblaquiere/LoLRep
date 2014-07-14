@@ -33,73 +33,61 @@ class Team_model extends MY_Model {
 
   public function get_team_by_teamid($teamid, $esportid)
   {
-    switch ($esportid)
-    {
-      case '1':
-      //League of Legends
-        $sql = "SELECT * FROM teams 
-              WHERE teamid = '$teamid'
-              LIMIT 1";
-        $result = $this->db1->query($sql);
-        return $result->row_array();
-    }
-  }
+    //Get Team information
+    $sql = "SELECT  t.team_name as team_name,
+                    t.created as created,
+                    t.captainid as captainid
+            FROM teams t 
+            WHERE t.teamid = '$teamid'
+            LIMIT 1";
+    $result = $this->db1->query($sql);
+    $team = $result->row_array();
 
-  public function get_detailed_team_by_teamid($teamid,$esportid)
-  {
-    $time_now = $this->get_default_epoch(date('Y-m-d H:i:s', time()));
-    switch ($esportid)
+    //Get players on the team
+    $sql = "SELECT  p.player_name as player_name,
+                    p.playerid as playerid,
+                    p.joined as joined
+            FROM players p 
+            INNER JOIN player_teams pt ON p.playerid = p.playerid
+            WHERE pt.teamid = '$teamid'";
+    $result = $this->db1->query($sql);
+    $players = $result->result_array();
+    $team['players'] = $players;
+
+
+    //Get the League
+    $sql = "SELECT  l.league_name as league_name,
+                    l.leagueid as leagueid,
+                    l.invite as invite,
+                    l.private as private
+            FROM leagues l
+            INNER JOIN league_teams lt ON lt.leagueid = l.leagueid
+            WHERE lt.teamid = '$teamid' AND lt.status = 'active'";
+
+    $result = $this->db1->query($sql);
+    $league = $result->result_array();
+    $team['league'] = $league;
+
+    //Get the season
+    if($league)
     {
-      case '1':
-        $sql = "SELECT * FROM teams t
-          INNER JOIN league_teams lt ON lt.teamid = t.teamid
-          INNER JOIN leagues l ON l.leagueid = lt.leagueid
-          INNER JOIN season_leagues sl ON sl.leagueid = lt.leagueid
-          INNER JOIN seasons s ON s.seasonid = sl.seasonid
-          INNER JOIN teams_lol tl ON tl.teamid = t.teamid
-          INNER JOIN summoners sum ON sum.SummonerId = tl.summonerid 
-          WHERE t.teamid = '$teamid' AND s.season_status != 'ended'";
-          $results = $this->db1->query($sql);
-          $results = $results->result_array();
-          $team = array();
-          foreach ($results as $result) {
-            if(!array_key_exists('teamid', $team))
-            {
-              $team['teamid'] = $result['teamid'];
-              $team['team_name'] = $result['team_name'];
-              $team['esportid'] = $result['esportid'];
-              $team['created'] = $result['created'];
-              $team['captainid'] = $result['captainid'];
-              $team['countryid'] = $result['countryid'];
-              $team['stateid'] = $result['stateid'];
-              $team['regionid'] = $result['regionid'];
-              $team['leagueid'] = $result['leagueid'];
-              $team['league_name'] = $result['league_name'];
-              $team['joined'] = $result['joined'];
-              $team['leave'] = $result['leave'];
-              $team['start_date'] = $result['start_date'];
-              $team['end_date'] = $result['end_date'];
-              $team['season_duration'] = $result['season_duration'];
-              $team['roster'] = array();
-            }
-            $player = array();
-            $player['summonerid'] = $result['summonerid'];
-            $player['summoner_name'] = $result['SummonerName'];
-            $player['region'] = $result['region'];
-            $player['summoner_level'] = $result['SummonerLevel'];
-            $player['rank'] = $result['rank'];
-            $player['tier'] = $result['tier'];
-            $player['joined_date'] = $result['joined_date'];
-            array_push($team['roster'], $player);
-          }
-          return $team;
-        break;
-      
-      default:
-        # code...
-        break;
+      $leagueid = $league['leagueid'];
+      $sql = "SELECT  s.start_date as start_date,
+                      s.end_date as end_date,
+                      s.season_status as season_status,
+                      s.season_duration as season_duration
+              FROM seasons s
+              INNER JOIN season_teams st ON st.seasonid = s.seasonid
+              WHERE st.league = '$leagueid' 
+                AND s.season_status = 'active' 
+                OR s.season_status = 'new'";
+
+      $result = $this->db1->query($sql);
+      $season = $result->result_array();
+      $team['season'] = $season;
     }
     
+    return $team;
   }
 
   public function get_teamname_by_teamid($teamid) {
@@ -142,32 +130,13 @@ class Team_model extends MY_Model {
     return $result->result_array();
   }
 
-  public function get_team_by_uid($uid, $esportid) {
-    switch ($esportid) {
-      case '1':
-        //League of Legends
-        $sql = "SELECT * FROM teams t
-              INNER JOIN teams_lol l ON t.teamid = l.teamid 
-              INNER JOIN summoners s ON s.summonerid = l.summonerid 
-              WHERE s.UserId = '$uid'
-              LIMIT 1";
-        $result = $this->db1->query($sql);
-        return $result->row_array();
-        break;
-
-      default:
-        # code...
-        break;
-    }
-    
-  }
-
    public function get_teams_by_uid($uid, $esportid) 
    {
     //Returns a list of the user's team's names, team id's, and their creation date.
     $sql = "SELECT  t.teamid,
                     t.team_name,
-                    t.created
+                    t.created,
+                    t.captainid
             FROM teams t
             INNER JOIN player_teams l 
               ON t.teamid = l.teamid
@@ -186,35 +155,6 @@ class Team_model extends MY_Model {
             WHERE l.summonerid = s.SummonerId";
     $result = $this->db1->query($sql);
     return $result->result_array();
-  }
-  public function get_team_roster($teamid, $esportid) {
-    switch ($esportid) {
-      case '1':
-        $sql = "SELECT * FROM summoners s
-            INNER JOIN teams_lol t ON t.teamid = '$teamid'
-            WHERE t.summonerid = s.SummonerId AND t.status != 'inactive'";
-        break;
-    }
-    
-    $result = $this->db1->query($sql);
-    return $result->result_array();
-  }
-
-  public function add_summoner_to_team($teamid, $summonerid) {
-    $sql = "INSERT INTO teams_lol (teamid, summonerid)
-            VALUES ('" . $teamid . "', '" . $summonerid . "')";
-    $this->db1->query($sql);
-  }
-
-  /*
-  * Removes summoner from the team
-  * which he/she is active
-  */
-  public function remove_summoner_from_team($summonerid) {
-    $sql = "UPDATE team_lol
-              SET status='leave', leave_date = now()
-              WHERE summonerid = '$summonerid' AND status = 'active'";
-    $this->db1->query($sql);
   }
 
   public function get_teams_byleagueid($leagueid, $esportid) {

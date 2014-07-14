@@ -24,14 +24,13 @@ class Leagues extends MY_Controller{
     public function index()
     {
         $this->require_login();
-        $data['esports'] = $this->esport_model->get_all_esports();
-        $leagues_info = $this->league_model->get_all_leagues_detailed($_SESSION['esportid']);
+        $leagues_info = $this->league_model->get_leagues($_SESSION['esportid']);
         $league_teams = $this->league_model->get_active_league_teams($_SESSION['esportid']);
-        $captain_team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'], $_SESSION['esportid']);
-        $user_current_team = $this->team_model->get_team_by_uid($_SESSION['user']['UserId'], $_SESSION['esportid']);
+        $captain_team = $this->team_model->get_team_by_captainid($this->get_userid(), $this->get_esportid());
+        $user_current_teams = $this->team_model->get_teams_by_uid($this->get_userid(), $this->get_esportid());
         if(!empty($user_current_team))
         {
-            $current_league = $this->league_model->get_current_league_by_teamid($user_current_team['teamid']);
+            $current_league = $this->league_model->get_leagues_by_teamids($user_current_teams);
         }
         else
         {

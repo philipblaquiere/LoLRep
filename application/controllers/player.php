@@ -35,7 +35,7 @@ class Player extends MY_Controller{
 
   private function _create_lol()
   {
-    if($this->player_exists())
+    if(empty($this->get_player()))
     {
       //global object not present, an error has occured while checking pages or while redirecting herrune e from JQuery
       $this->system_message_model->set_message('Error: No Summoner has been found. Cannot complete registration', MESSAGE_INFO);
