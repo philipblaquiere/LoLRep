@@ -50,7 +50,7 @@ class Leagues extends MY_Controller{
             */
             $leagues_info[$league_info['league_name']]['num_teams'] = array_key_exists($league_info['league_name'], $league_teams) ? count($league_teams[$league_info['league_name']]['teams']) : 0 ;
 
-            if(empty($user_current_team))
+            if(empty($user_current_teams))
             {
                 //User not part of a team
                 $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
@@ -107,12 +107,6 @@ class Leagues extends MY_Controller{
             redirect('add_esport','refresh');
             return;
         }
-        if($this->_owns_season($this->get_userid()))
-        {
-            $this->system_message_model->set_message("You already own a League! You can join other leagues but can only be owner of a single league."  , MESSAGE_ERROR);
-            redirect('home', 'refresh');
-            return;
-        }
         
         $data['league_types'] = $this->league_model->get_league_types();
         
@@ -165,7 +159,7 @@ class Leagues extends MY_Controller{
             $league['typeid'] = $input['typeid'];
             $league['invite'] = in_array("inviteonly", $input) ? 1 : 0;
             $league['privateleague'] = in_array("private", $input) ? 1 : 0;
-            $league['leagues_meta'] = $leagues_meta;
+            $league['league_meta'] = $leagues_meta;
             $this->view_wrapper('create_league', $data);
             if($this->league_model->create_league($league,$season))
             {

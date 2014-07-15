@@ -75,22 +75,21 @@ class Teams extends MY_Controller{
         //$data['roster'] = $this->team_model->get_team_roster($teamid, $this->get_esportid());
         
 
-        $this->load->library('calendar');
-
-        $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
         //$data['team_details'] = $this->team_model->get_detailed_team_by_teamid($teamid,$_SESSION['esportid']);
-        $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
-        $data['calendar'] = $this->calendar;
 
-
-        $data['schedule'] = array();
-        //$data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
-        //get the league;
-        if($data['schedule'])
+        //Verify if season started
+        if(array_key_exists('start_date', $data['team']))
         {
-            $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
-            $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$this->get_esportid());
+            $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
+            //get the league;
+            print_r($data['team']);
+            if(!empty($data['schedule']))
+            {
+                $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
+                $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$this->get_esportid());
+            }
         }
+        print_r($data['team']);
         $this->view_wrapper('view_team',$data);
     }
 

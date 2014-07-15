@@ -22,17 +22,8 @@ class Create_league extends MY_Controller{
     public function index()
     {
         $this->require_login();
-        $registered_esports = $this->esport_model->get_all_registered_esports($_SESSION['user']['UserId']);
-        if(!$registered_esports)
-        {
-            $data['esports'] = $this->esport_model->get_all_esports();
-            $this->system_message_model->set_message("Add an Esport to your account before creating a League. You must also be Captain of your team to create a league!"  , MESSAGE_ERROR);
-            $this->view_wrapper('user/add_esport',$data);
-            return;
-        }
         
         $data['league_types'] = $this->league_model->get_league_types();
-        $data['esports'] = $registered_esports;
         
         //Validation on input (requires that all fields exist)
         $this->load->library('form_validation');

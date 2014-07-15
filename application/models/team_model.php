@@ -33,6 +33,8 @@ class Team_model extends MY_Model {
 
   public function get_team_by_teamid($teamid, $esportid)
   {
+    $this->db1->trans_start();
+
     //Get Team information
     $sql = "SELECT  t.team_name as team_name,
                     t.created as created,
@@ -48,7 +50,7 @@ class Team_model extends MY_Model {
                     p.playerid as playerid,
                     p.joined as joined
             FROM players p 
-            INNER JOIN player_teams pt ON p.playerid = p.playerid
+            INNER JOIN player_teams pt ON pt.playerid = p.playerid
             WHERE pt.teamid = '$teamid'";
     $result = $this->db1->query($sql);
     $players = $result->result_array();
@@ -66,8 +68,11 @@ class Team_model extends MY_Model {
 
     $result = $this->db1->query($sql);
     $league = $result->result_array();
-    $team['league'] = $league;
-
+    if(!empty($league))
+    {
+      $team['league'] = $league;
+    }
+    
     //Get the season
     if($league)
     {
@@ -83,10 +88,14 @@ class Team_model extends MY_Model {
                 OR s.season_status = 'new'";
 
       $result = $this->db1->query($sql);
+      $this->db1->trans_complete();
+
       $season = $result->result_array();
-      $team['season'] = $season;
+      if(!empty($season))
+      {
+        $team['season'] = $season;
+      }
     }
-    
     return $team;
   }
 
@@ -122,14 +131,6 @@ class Team_model extends MY_Model {
     return $result->row_array();
   }
 
-  public function get_lol_teamname_by_uid($uid) {
-    $sql = "SELECT t.team_name as team_name FROM teams t
-            INNER JOIN teams_lol l ON t.teamid = l.teamid 
-            INNER JOIN summoners s ON s.summonerid = l.summonerid WHERE  s.UserId = '$uid'";
-    $result = $this->db1->query($sql);
-    return $result->result_array();
-  }
-
    public function get_teams_by_uid($uid, $esportid) 
    {
     //Returns a list of the user's team's names, team id's, and their creation date.
@@ -144,15 +145,6 @@ class Team_model extends MY_Model {
               ON p.playerid = l.playerid 
             WHERE p.userid = '$uid' 
               AND t.esportid = '$esportid'";
-    $result = $this->db1->query($sql);
-    return $result->result_array();
-  }
-
-  public function get_team_lol_byname($teamname) {
-    $sql = "SELECT s.UserId as UserId, s.SummonerId as SummonerId, s.SummonerName as SummonerName FROM summoners s
-            INNER JOIN teams t ON t.team_name = '$teamname' 
-            INNER JOIN teams_lol l ON l.teamid = t.teamid
-            WHERE l.summonerid = s.SummonerId";
     $result = $this->db1->query($sql);
     return $result->result_array();
   }

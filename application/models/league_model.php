@@ -64,30 +64,6 @@ class League_model extends MY_Model {
       return $result->result_array();
     }
 
-    public function get_leagues_fromsearch($searchcriteria) {
-      if(!$searchcriteria['search_text']) {
-
-      }
-      if(!$searchcriteria['esportid']) {
-
-      }
-      if(!$searchcriteria['typeid']) {
-
-      }
-      if(!$searchcriteria['max_teams']) {
-
-      }
-      if(!$searchcriteria['invite']) {
-
-      }      
-      if(!$searchcriteria['private']) {
-
-      }
-      if(!$searchcriteria['status']) {
-
-      }    
-    }
-
     public function get_all_leagues() {
       $sql = "SELECT * FROM leagues";
       $result = $this->db1->query($sql);

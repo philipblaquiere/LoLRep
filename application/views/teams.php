@@ -51,11 +51,7 @@ else {?>
 		<div class="row">
 			<div class="col-md-7">
                 <a href="<?php echo site_url('teams/view/' . $team['teamid']) ?>"><h2 class="list-group-item-text"><?php echo $team['team_name']?></h2></a>
-
                 <p class="list-group-item-text">Created: <?php echo $team['created']?> Player Name: <?php echo $player['player_name']?></p>
-
-                <p class="list-group-item-text">Created: <?php echo $team['created']?> Summoner Name: <?php echo $team['SummonerName']?></p>
-
 	        </div>  
 	        <div class="col-md-5 ">
 	        	<div class="btn-toolbar " role="toolbar">

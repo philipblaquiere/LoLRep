@@ -153,6 +153,7 @@ class Match_model extends MY_Model {
 			array_push($matches, $match);
 		}
 		return $matches;
+
 	}
 
 	public function get_matches_by_leagueid($leagueid, $season) {
