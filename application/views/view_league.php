@@ -1,18 +1,17 @@
 <!-- Header -->
 <div class="page-header">
   	<h1><?php echo $league['league_name'] ?></h1>
- 	<p>Esport: <?php echo $league['esport_name'] ?></p>
  	<p>Type: <?php echo $league['league_type'] ?></p>
- 	<p>Duration: <?php echo $league['season_duration'] ?> months</p>
- 	<?php if($league['start_date'] == NULL) { ?>
+ 	<p>Duration: <?php echo $season['season_duration'] ?> months</p>
+ 	<?php if($season['start_date'] == NULL) { ?>
  		<p>Season start not announced</p>
  	<?php }
  	else { ?>
- 		<p>Starts: <?php echo $league['start_date'] ?></p>
- 		<p>Ends: <?php echo $league['end_date'] ?></p>
+ 		<p>Starts: <?php echo $season['start_date'] ?></p>
+ 		<p>Ends: <?php echo $season['end_date'] ?></p>
  	<?php } ?>
- 	<?php if($league['owner_UserId'] == $_SESSION['user']['UserId'] && $league['start_date'] == NULL) { ?>
-        <?php echo form_open('view_leagues/start_season/' . $league['seasonid']  , array('class' => 'form-horizontal')); ?>
+ 	<?php if($league['ownerid'] == $_SESSION['userid'] && $season['start_date'] == NULL) { ?>
+        <?php echo form_open('leagues/start_season/' . $season['seasonid']  , array('class' => 'form-horizontal')); ?>
  			<p><input type="hidden" name="leagueid" value="<?php echo $league['leagueid'] ?>"></p>
  			<p>Start Date: <input name="season_start_date" id="season_start_date" type="text" class="datepicker" value id="season_start_date" /></p>
 	    	<p><button type="submit" class="btn btn-primary">Start Season</button></p>

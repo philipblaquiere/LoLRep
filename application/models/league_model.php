@@ -7,12 +7,62 @@ class League_model extends MY_Model {
 		$this->db1 = $this->load->database('default', TRUE);
 	}
 
-    public function get_league_byid($leagueid) {
-      $sql = "SELECT * FROM leagues
-          WHERE leagueid = '$leagueid'
-          LIMIT 1";
+    public function get_league($leagueid) {
+      $sql = "SELECT  l.*, 
+                      s.start_date, 
+                      s.end_date, 
+                      s.season_duration, 
+                      s.season_status,
+                      s.seasonid,
+                      lm.first_matches,
+                      lo.userid
+              FROM leagues AS l, seasons AS s, league_types AS tp, season_leagues AS sl, league_owners AS lo
+              INNER JOIN league_meta AS lm
+              WHERE l.leagueid = '$leagueid'
+                AND s.seasonid = sl.seasonid
+                AND l.league_type = tp.league_type_id
+                AND sl.leagueid = l.leagueid
+                AND lm.leagueid = l.leagueid
+                AND lo.leagueid = '$leagueid'
+                AND lo.seasonid = s.seasonid";
+              
       $result = $this->db1->query($sql);
-      return $result->row_array();
+      $results = $result->result_array();
+      $league = array();
+      foreach ($results as $result)
+      {
+        if(array_key_exists($result['leagueid'], $league))
+        {
+          //League array already created, add first game time only.
+          array_push($league[$result['leagueid']]['seasons'][$result['seasonid']]['first_matches'],$result['first_matches']);
+        }
+        else
+        {
+          //Not in league array, create new league
+          $league[$result['leagueid']]['leagueid'] = $result['leagueid'];
+          $league[$result['leagueid']]['league_name'] = $result['league_name'];
+          $league[$result['leagueid']]['league_type'] = $result['league_type'];
+          $league[$result['leagueid']]['max_teams'] = $result['max_teams'];
+          $league[$result['leagueid']]['invite'] = $result['invite'];
+          $league[$result['leagueid']]['ownerid'] = $result['userid'];
+          $league[$result['leagueid']]['imageurl'] = $result['imageurl'];
+          $league[$result['leagueid']]['seasons'] = array();
+
+          //populate season
+          $season = array();
+          $season['start_date'] = $result['start_date'];
+          $season['end_date'] = $result['end_date'];
+          $season['season_duration'] = $result['season_duration'];
+          $season['season_status'] = $result['season_status'];
+          $season['seasonid'] = $result['seasonid'];
+          $season['first_matches'] = array();
+          array_push($season['first_matches'], $result['first_matches']);
+
+          $league[$result['leagueid']]['seasons'][$season['seasonid']] = $season;
+          
+        }
+      }
+      return $league;
     }
   	public function get_league_by_name($leaguename) {
       $leaguename = $this->make_mysql_friendly($leaguename);
@@ -78,20 +128,22 @@ class League_model extends MY_Model {
                       s.season_duration, 
                       s.season_status,
                       s.seasonid,
-                      lm.first_matches
-              FROM leagues AS l, seasons AS s, league_types AS tp, season_leagues AS sl 
+                      lm.first_matches,
+                      lo.userid
+              FROM leagues AS l, seasons AS s, league_types AS tp, season_leagues AS sl, league_owners AS lo
               INNER JOIN league_meta AS lm
               WHERE l.private = '$private'
                 AND l.esportid = '$esportid'
                 AND s.seasonid = sl.seasonid
                 AND l.league_type = tp.league_type_id
                 AND sl.leagueid = l.leagueid
-                AND lm.leagueid = l.leagueid";
+                AND lm.leagueid = l.leagueid
+                AND lo.leagueid = l.leagueid";
               
       $result = $this->db1->query($sql);
       $results = $result->result_array();
       $leagues = array();
-      
+
       foreach ($results as $result)
       {
         if(array_key_exists($result['leagueid'], $leagues))
@@ -103,12 +155,14 @@ class League_model extends MY_Model {
         {
           //Not in league array, create new league
           $leagues[$result['leagueid']] = array();
-          $leagues[$result['leagueid']]['seasons'] = array();
           $leagues[$result['leagueid']]['leagueid'] = $result['leagueid'];
           $leagues[$result['leagueid']]['league_name'] = $result['league_name'];
           $leagues[$result['leagueid']]['league_type'] = $result['league_type'];
           $leagues[$result['leagueid']]['max_teams'] = $result['max_teams'];
           $leagues[$result['leagueid']]['invite'] = $result['invite'];
+          $league[$result['leagueid']]['ownerid'] = $result['userid'];
+          $league[$result['leagueid']]['imageurl'] = $result['imageurl'];
+          $leagues[$result['leagueid']]['seasons'] = array();
 
           //populate season
           $season = array();
@@ -141,7 +195,7 @@ class League_model extends MY_Model {
       $result = $this->db1->query($sql);
       $leagues = $result->result_array();
 
-      $sql = "SELECT t.teamid AS teamid, t.team_name AS team_name, lt.leagueid AS leagueid
+      $sql = "SELECT t.teamid AS teamid, t.team_name AS team_name, lt.leagueid AS leagueid, lt.joined AS joined
               FROM teams t
               INNER JOIN league_teams lt 
                 ON t.teamid = lt.teamid
@@ -164,7 +218,7 @@ class League_model extends MY_Model {
       }
       foreach ($teams as $team)
       {
-        array_push($league_teams[$team['leagueid']]['teams'], $team); 
+        $league_teams[$team['leagueid']]['teams'][$team['teamid']] =  $team; 
       }
       return $league_teams;
     }

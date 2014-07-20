@@ -84,8 +84,8 @@
 	<div class="panel-body">
 		<div class="list-group">
 			<div id="league_search_results">
-				<?php if(count($leagues_info) > $max_league_count) { 
-					$num_pages = ceil((count($leagues_info)/ $max_league_count));
+				<?php if(count($leagues) > $max_league_count) { 
+					$num_pages = ceil((count($leagues)/ $max_league_count));
 					for ($i = 1; $i <= $num_pages; $i++) { } ?>
 					<ul class="pagination">
 						<li><a href="#">&laquo;</a></li>
@@ -96,19 +96,19 @@
 					</ul>
 				<?php } 
 				else { 
-				  foreach($leagues_info as $league_info): ?>
+				  foreach($leagues as $league): ?>
 					<div class="list-group-item">
 						<div class="row">
 							<div class="col-md-10">
-				                <p class="list-group-item-text"><a href="<?php echo site_url('view_leagues/view/' . $league_info['leagueid']) ?>"><?php echo $league_info['league_name']?></a><p>
-				                <p class="list-group-item-text"><?php echo $league_info['invite'] == 1 ? "Invite Only" : null ?></p>
-				                <p class="list-group-item-text">Games/Week: <?php echo count($league_info['first_matches']) ?></p>
-				                <p class="list-group-item-text">Teams: <?php echo $league_info['num_teams'] . "/" . $league_info['max_teams'] ?></p>
-				                <p class="list-group-item-text">
-				                	<?php foreach ($league_info['first_matches'] as $first_game) : ?>
+				                <p class="list-group-item-text"><a href="<?php echo site_url('leagues/view/' . $league['leagueid']) ?>"><?php echo $league['league_name']?></a><p>
+				                <p class="list-group-item-text"><?php echo $league['invite'] == 1 ? "Invite Only" : null ?></p>
+				                <!--<p class="list-group-item-text">Games/Week: <?php echo count($league['first_matches']) ?></p>-->
+				                <p class="list-group-item-text">Teams: <?php echo $league['num_teams'] . "/" . $league['max_teams'] ?></p>
+				                <!--<p class="list-group-item-text">
+				                	<?php foreach ($league['first_matches'] as $first_game) : ?>
 					        			<?php echo date("D'\s \- h:i A.",strtotime($first_game)) ?>
-					        		<?php endforeach; ?></p>
-					        	<p class="list-group-item-text">Tooltip: <?php echo $league_info['join_status_tooltip'] ?></p>
+					        		<?php endforeach; ?></p>-->
+					        	<p class="list-group-item-text">Tooltip: <?php echo $league['join_status_tooltip'] ?></p>
 					        </div>
 					        <div class="col-md-2">
 					        	<div class="btn-toolbar " role="toolbar">
@@ -116,14 +116,14 @@
 				              			<a href="#" type="button" class="btn btn-default" role="button">
 				              				<span class="glyphicon glyphicon-pencil"></span>
 				              			</a>
-				              			<?php if($league_info['can_join']) { ?>
-					              			<a href="<?php echo site_url('leagues/join/' . $league_info['leagueid']) ?>" type="button" class="btn btn-default" role="button">
-					              				<?php echo $league_info['join_status'] ?>
+				              			<?php if($league['can_join']) { ?>
+					              			<a href="<?php echo site_url('leagues/join/' . $league['leagueid']) ?>" type="button" class="btn btn-default" role="button">
+					              				<?php echo $league['join_status'] ?>
 					              			</a>
 				              			<?php }
 				              			else { ?>
 					              			<a type="button" disabled class="btn btn-default" role="button">
-					              				<?php echo $league_info['join_status'] ?>
+					              				<?php echo $league['join_status'] ?>
 					              			</a>
 				              			<?php } ?>
 				              		</div>

@@ -44,7 +44,8 @@ class Schedule_maker {
     	$season_end_date->modify('-1 week');
     	$season_end_date_timestamp = $season_end_date->getTimestamp();
     	$week_num = 0;
-    	while (!$end_of_season) {
+    	while (!$end_of_season)
+    	{
     		foreach ($match_array as $match_time) {
     			$next_match = new DateTime("@$match_time");
     			$next_match->modify('+'. $week_num .' week');
@@ -68,12 +69,13 @@ class Schedule_maker {
 
 		if($this->num_teams % 2 == 0) {
 			//Even Number of Teams
-			foreach ($this->all_matches as $match) {
+			foreach ($this->all_matches as $match)
+			{
 				$shuffled_teams = $this->_shift_teams_right($shuffled_teams);
 				for ($i=0; $i < $this->num_teams/2; $i++) { 
 					$match_details = array();
 					$match_details['teamaid'] = $shuffled_teams[$i];
-					$match_details['teambid'] = $shuffled_teams[$i+($this->num_teams/2)];
+					$match_details['teambid'] = $shuffled_teams[($this->num_teams - 1 - $i)];
 					$match_details['match_date'] = $match;
 					array_push($schedule, $match_details);
 				}
@@ -127,11 +129,14 @@ class Schedule_maker {
 		return $updated_matches;
 	}
 
-	private function _shift_teams_right($teams) {
-		$last_team = $teams[count($teams) - 1];
+	private function _shift_teams_right($teams) 
+	{
 		$shifted_teams = array();
-		array_push($shifted_teams, $teams[count($teams) - 1]);
-		for ($i = 0; $i < count($teams) - 1; $i++) { 
+		//set pivot
+		array_push($shifted_teams, $teams[0]);
+		array_push($shifted_teams, $teams[(count($teams)-1)]);
+		for ($i = 1; $i < $this->num_teams - 1; $i++)
+		{ 
 			array_push($shifted_teams, $teams[$i]);
 		}
 		return $shifted_teams;

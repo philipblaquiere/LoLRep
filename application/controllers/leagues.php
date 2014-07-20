@@ -30,7 +30,6 @@ class Leagues extends MY_Controller{
         $player = $this->get_player();
         $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
         $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
-        print_r($leagues);
         if(empty($player_teams))
         {
            //user isn't part of a team, let the user know that he can't join a league
@@ -91,7 +90,7 @@ class Leagues extends MY_Controller{
         }
         $data['captain_team'] = $captain_team;
         $data['league_teams'] = $league_teams;
-        $data['leagues_info'] = $leagues;
+        $data['leagues'] = $leagues;
         $data['current_league'] = empty($current_league) ? array() : $current_league;
         $data['max_league_count'] = $this->MAX_LEAGUE_COUNT;
         
@@ -208,6 +207,48 @@ class Leagues extends MY_Controller{
         }
     }
 
+    public function view($leagueid) 
+    {
+        $this->require_login();
+        $league = $this->league_model->get_league($leagueid);
+        $league = $league[$leagueid];
+        $league_teams = $this->league_model->get_league_teams($this->get_esportid(),array($leagueid));
+        $league_teams = $league_teams[$leagueid];
+        $player = $this->get_player();
+
+        $season = array();
+
+        foreach ($league['seasons'] as $league_season)
+        {
+            if($league_season['season_status'] == 'new' || $league_season['season_status'] == 'active')
+            {
+                $season = $league_season;
+                break;
+            }
+        }
+        if($season['start_date'] != NULL)
+        {
+            //get the end date of the season
+            $season['end_date'] = $this->get_local_date($season['end_date']);
+            $season['start_date'] = $this->get_local_date($season['start_date']);
+        }
+
+        $schedule = array();
+        if($season['season_status'] != 'new' && $season['start_date'] != NULL) 
+        {
+            $season['start_date'] = strtotime($season['start_date']);
+            $season['end_date'] = strtotime($season['end_date']);
+            $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+        }
+        $data['player'] = $player;
+        $data['season'] = $season;
+        $data['teams'] = $league_teams;
+        $data['league'] = $league;
+        $data['schedule'] = $schedule;
+        $this->view_wrapper('view_league', $data);
+
+    }
+
     public function start_season($seasonid)
     {
         $this->require_login();
@@ -224,16 +265,18 @@ class Leagues extends MY_Controller{
         }
         else
         {
-            $league = $this->league_model->get_league_details($leagueid);
-            $league_teams = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+            $league = $this->league_model->get_league($leagueid);
+            $league = $league[$leagueid];
+            $league_teams = $this->league_model->get_league_teams($this->get_esportid(),array($leagueid));
+            $league_teams = $league_teams[$leagueid];
             $start_date = $this->input->post('season_start_date');
 
             $this->load->library('schedule_maker');
             $this->schedule_maker->set_num_teams(count($league_teams['teams']));
 
             $this->schedule_maker->set_start_date($start_date);
-            $this->schedule_maker->set_duration($league['season_duration']);
-            $this->schedule_maker->set_matches($league['first_matches']);
+            $this->schedule_maker->set_duration($league['seasons'][$seasonid]['season_duration']);
+            $this->schedule_maker->set_matches($league['seasons'][$seasonid]['first_matches']);
             $schedule = $this->schedule_maker->generate_schedule();
 
             //Replace the teamporary teamids with actual teamid's in the schedule
@@ -252,7 +295,7 @@ class Leagues extends MY_Controller{
             
             $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())));
             $this->match_model->create_matches($leagueid, $schedule);
-            $this->view($leagueid);
+            redirect('leagues/view/'.$leagueid,'refresh');
         }
     }
 

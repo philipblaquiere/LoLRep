@@ -131,8 +131,8 @@ class Match_model extends MY_Model {
 	}
 	
 	public function get_matches_by_team($team) {
-		$season_start = $team['start_date'];
-		$season_end = $team['end_date'];
+		$season_start = $team['season']['start_date'];
+		$season_end = $team['season']['end_date'];
 		$teamid = $team['teamid'];
 
 		$sql = "SELECT * FROM matches

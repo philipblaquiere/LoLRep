@@ -38,7 +38,8 @@ class Team_model extends MY_Model {
     //Get Team information
     $sql = "SELECT  t.team_name as team_name,
                     t.created as created,
-                    t.captainid as captainid
+                    t.captainid as captainid,
+                    t.teamid as teamid
             FROM teams t 
             WHERE t.teamid = '$teamid'
             LIMIT 1";
@@ -61,36 +62,36 @@ class Team_model extends MY_Model {
     $sql = "SELECT  l.league_name as league_name,
                     l.leagueid as leagueid,
                     l.invite as invite,
-                    l.private as private
+                    l.private as private,
+                    lt.joined as joined
             FROM leagues l
-            INNER JOIN league_teams lt ON lt.leagueid = l.leagueid
-            WHERE lt.teamid = '$teamid' AND lt.status = 'active'";
+            INNER JOIN league_teams lt
+            WHERE lt.teamid = '$teamid' 
+              AND lt.status = 'active'
+              AND lt.leagueid = l.leagueid
+            LIMIT 1";
 
     $result = $this->db1->query($sql);
-    $league = $result->result_array();
+    $league = $result->row_array();
+
+    //Get the season
     if(!empty($league))
     {
       $team['league'] = $league;
-    }
-    
-    //Get the season
-    if($league)
-    {
       $leagueid = $league['leagueid'];
       $sql = "SELECT  s.start_date as start_date,
                       s.end_date as end_date,
                       s.season_status as season_status,
                       s.season_duration as season_duration
               FROM seasons s
-              INNER JOIN season_teams st ON st.seasonid = s.seasonid
-              WHERE st.league = '$leagueid' 
-                AND s.season_status = 'active' 
-                OR s.season_status = 'new'";
+              INNER JOIN season_leagues sl ON sl.seasonid = s.seasonid
+              WHERE sl.leagueid = '$leagueid'
+              LIMIT 1";
 
       $result = $this->db1->query($sql);
       $this->db1->trans_complete();
 
-      $season = $result->result_array();
+      $season = $result->row_array();
       if(!empty($season))
       {
         $team['season'] = $season;
@@ -147,11 +148,15 @@ class Team_model extends MY_Model {
     return $result->result_array();
   }
 
-  public function get_teams_byleagueid($leagueid, $esportid) {
+  public function get_teams_byleagueid($leagueid, $esportid)
+  {
     $sql = "SELECT * FROM leagues l 
               INNER JOIN league_teams lt ON l.leagueid = lt.leagueid 
               INNER JOIN teams t ON t.teamid = lt.teamid 
-              WHERE l.leagueid = '$leagueid' AND t.esportid = '$esportid' AND lt.status = 'active' AND l.private = '0'";
+              WHERE l.leagueid = '$leagueid' 
+                AND t.esportid = '$esportid' 
+                AND lt.status = 'active' 
+                AND l.private = '0'";
       $result = $this->db1->query($sql);
       $results = $result->result_array();
       $league = array();
