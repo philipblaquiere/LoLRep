@@ -131,19 +131,17 @@ class Team_model extends MY_Model {
     return $result->row_array();
   }
 
-   public function get_teams_by_uid($uid, $esportid) 
+   public function get_teams_by_playerid($id, $esportid) 
    {
-    //Returns a list of the user's team's names, team id's, and their creation date.
+    //Returns a list of the players's team's names, team id's, and their creation date.
     $sql = "SELECT  t.teamid,
                     t.team_name,
                     t.created,
                     t.captainid
             FROM teams t
-            INNER JOIN player_teams l 
-              ON t.teamid = l.teamid
-            INNER JOIN user_players p 
-              ON p.playerid = l.playerid 
-            WHERE p.userid = '$uid' 
+            INNER JOIN player_teams pt 
+              ON t.teamid = pt.teamid
+            WHERE pt.playerid = '$id' 
               AND t.esportid = '$esportid'";
     $result = $this->db1->query($sql);
     return $result->result_array();

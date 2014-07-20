@@ -1,6 +1,7 @@
 <!-- Header -->
 <div class="page-header">
   <h1>Leagues</h1>
+  <h4>You're captain of team <?php echo $captain_team['team_name'] ?>, join a league below.</h4>
 </div>
 <!-- Header -->
 <div name="league_search_parameters_container">
@@ -116,7 +117,7 @@
 				              				<span class="glyphicon glyphicon-pencil"></span>
 				              			</a>
 				              			<?php if($league_info['can_join']) { ?>
-					              			<a href="<?php echo site_url('join_league/join/' . $league_info['leagueid']) ?>" type="button" class="btn btn-default" role="button">
+					              			<a href="<?php echo site_url('leagues/join/' . $league_info['leagueid']) ?>" type="button" class="btn btn-default" role="button">
 					              				<?php echo $league_info['join_status'] ?>
 					              			</a>
 				              			<?php }

@@ -24,21 +24,20 @@ class Leagues extends MY_Controller{
     public function index()
     {
         $this->require_login();
-        $leagues_info = $this->league_model->get_leagues($_SESSION['esportid']);
-        $league_teams = $this->league_model->get_active_league_teams($_SESSION['esportid']);
-        $captain_team = $this->team_model->get_team_by_captainid($this->get_userid(), $this->get_esportid());
-        $user_current_teams = $this->team_model->get_teams_by_uid($this->get_userid(), $this->get_esportid());
-        if(!empty($user_current_team))
+        $leagues = $this->league_model->get_leagues($this->get_esportid());
+        $leagueids = $this->_extract_values('leagueid', $leagues);
+        $league_teams = $this->league_model->get_league_teams($this->get_esportid(),$leagueids);
+        $player = $this->get_player();
+        $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
+        $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
+        print_r($leagues);
+        if(empty($player_teams))
         {
-            $current_league = $this->league_model->get_leagues_by_teamids($user_current_teams);
-        }
-        else
-        {
-            //user isn't part of a team, let the user know that he can't join a league
-            $this->system_message_model->set_message("You must be captain of your registered team to join a league!", MESSAGE_INFO);
+           //user isn't part of a team, let the user know that he can't join a league
+            $this->system_message_model->set_message("You must be part and captain of a team to join a league.", MESSAGE_WARNING);
         }
         
-        foreach ($leagues_info as $league_info)
+        foreach ($leagues as $league)
         {
             //Check if user can join league, can join if 
             /*  season is new
@@ -48,50 +47,51 @@ class Leagues extends MY_Controller{
             *   user is captain
             *   hasn't already changed league today
             */
-            $leagues_info[$league_info['league_name']]['num_teams'] = array_key_exists($league_info['league_name'], $league_teams) ? count($league_teams[$league_info['league_name']]['teams']) : 0 ;
+            $leagues[$league['leagueid']]['num_teams'] = array_key_exists($league['leagueid'], $league_teams) ? count($league_teams[$league['leagueid']]['teams']) : 0 ;
 
-            if(empty($user_current_teams))
+            if(empty($player_teams))
             {
                 //User not part of a team
-                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
-                $leagues_info[$league_info['league_name']]['join_status'] = "Join";
-                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You need to be part of a registered team to join this league";
+                $leagues[$league['leagueid']]['can_join'] = FALSE;
+                $leagues[$league['leagueid']]['join_status'] = "Join";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "You need to be part of a registered team to join this league";
             }
-            else if(!empty($current_league) && $current_league['leagueid'] == $leagues_info[$league_info['league_name']]['leagueid'])
+            else if(!empty($current_league) && $current_league['leagueid'] == $leagues[$league['leagueid']]['leagueid'])
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
-                $leagues_info[$league_info['league_name']]['join_status'] = "Current";
-                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You are currently part of this league";
+                $leagues[$league['leagueid']]['can_join'] = FALSE;
+                $leagues[$league['leagueid']]['join_status'] = "Current";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "You are currently part of this league";
             }
             else if(!$captain_team)
             {
                 //User is not a captain of any team
-                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
-                $leagues_info[$league_info['league_name']]['join_status'] = "Join";
-                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "You must be captain of your team to join this league";
+                $leagues[$league['leagueid']]['can_join'] = FALSE;
+                $leagues[$league['leagueid']]['join_status'] = "Join";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "You must be captain of your team to join this league";
             }
-            else if($league_info['invite'] == 1)
+            else if($league['invite'] == 1)
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
-                $leagues_info[$league_info['league_name']]['join_status'] = "Invite Only";
-                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "This league is invite only";
+                $leagues[$league['leagueid']]['can_join'] = FALSE;
+                $leagues[$league['leagueid']]['join_status'] = "Invite Only";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "This league is invite only";
             }
-            else if($leagues_info[$league_info['league_name']]['num_teams'] == $league_info['max_teams'])
+            else if($leagues[$league['leagueid']]['num_teams'] == $league['max_teams'])
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = FALSE;
-                $leagues_info[$league_info['league_name']]['join_status'] = "Join";
-                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "This league is full";
+                $leagues[$league['leagueid']]['can_join'] = FALSE;
+                $leagues[$league['leagueid']]['join_status'] = "Full";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "This league is full";
             }
             
             else
             {
-                $leagues_info[$league_info['league_name']]['can_join'] = TRUE;
-                $leagues_info[$league_info['league_name']]['join_status'] = "Join";
-                $leagues_info[$league_info['league_name']]['join_status_tooltip'] = "Join this league";
+                $leagues[$league['leagueid']]['can_join'] = TRUE;
+                $leagues[$league['leagueid']]['join_status'] = "Join";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "Join this league";
             }
         }
+        $data['captain_team'] = $captain_team;
         $data['league_teams'] = $league_teams;
-        $data['leagues_info'] = $leagues_info;
+        $data['leagues_info'] = $leagues;
         $data['current_league'] = empty($current_league) ? array() : $current_league;
         $data['max_league_count'] = $this->MAX_LEAGUE_COUNT;
         
@@ -169,6 +169,93 @@ class Leagues extends MY_Controller{
         }
     }
 
+    public function join($leagueid)
+    {
+        $player = $this->get_player();
+        $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
+        $team = $this->team_model->get_team_by_teamid($captain_team['teamid'], $this->get_esportid());
+
+        //$current_league = $this->league_model->get_current_league_by_teamid($team['teamid']);
+
+        if($team['league'])
+        {
+            //Team is already part of league, check if team joined the league sometime today.
+            $today_midnight = $this->get_default_epoch($this->get_local_datetime(strtotime('today midnight')));
+            $time_now = strtotime($this->get_local_datetime(time()));
+            $joined_date = strtotime($this->get_local_datetime(strtotime($current_league['joined'])));
+            if($time_now - $joined_date < $this->UNIX_DAY)
+            {
+                $time_remaining = $this->UNIX_DAY - ($time_now - $joined_date);
+                //joined today, ask to wait.
+                $this->system_message_model->set_message("You recently joined another league, you must wait 24h to switch league. You have until the registration period ends.", MESSAGE_INFO);
+                redirect('leagues', 'refresh');
+            }
+            else
+            {
+                //Remove from current league and join the other league
+                $this->league_model->leave_league($captain_team['teamid'], $team['league']['leagueid']);
+                $joined_league = $this->league_model->join_league($captain_team['teamid'],$leagueid);
+                $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
+                redirect('leagues', 'refresh');
+            }
+        }
+        else
+        {
+            //Join the league : Player is not part of team and is captain of his team, 
+            $joined_league = $this->league_model->join_league($leagueid, $captain_team['teamid']);
+            $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
+            redirect('leagues', 'refresh');
+        }
+    }
+
+    public function start_season($seasonid)
+    {
+        $this->require_login();
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('season_start_date', 'Season Start', 'required|callback_date_infuture');
+
+        $leagueid = $this->input->post('leagueid');
+
+        if($this->form_validation->run() == FALSE)
+        {
+            $this->system_message_model->set_message(validation_errors()  , MESSAGE_ERROR);
+            $this->view($leagueid);
+        }
+        else
+        {
+            $league = $this->league_model->get_league_details($leagueid);
+            $league_teams = $this->team_model->get_teams_byleagueid($leagueid,$_SESSION['esportid']);
+            $start_date = $this->input->post('season_start_date');
+
+            $this->load->library('schedule_maker');
+            $this->schedule_maker->set_num_teams(count($league_teams['teams']));
+
+            $this->schedule_maker->set_start_date($start_date);
+            $this->schedule_maker->set_duration($league['season_duration']);
+            $this->schedule_maker->set_matches($league['first_matches']);
+            $schedule = $this->schedule_maker->generate_schedule();
+
+            //Replace the teamporary teamids with actual teamid's in the schedule
+            $teams = array();
+            foreach ($league_teams['teams'] as $team)
+            {
+                array_push($teams, $team['teamid']);
+            }
+            $match_num = 0;
+            foreach ($schedule as $match) 
+            {
+                $schedule[$match_num]['teamaid'] = $teams[$match['teamaid']];
+                $schedule[$match_num]['teambid'] = $teams[$match['teambid']];
+                $match_num++;
+            }
+            
+            $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())));
+            $this->match_model->create_matches($leagueid, $schedule);
+            $this->view($leagueid);
+        }
+    }
+
     private function _get_first_match_datetime($dayofweek,$timeofday,$seasonstartdate)
     {
         $firstmidnight = $this->_get_next_dayofweek($dayofweek, $seasonstartdate);
@@ -193,14 +280,22 @@ class Leagues extends MY_Controller{
             $this->form_validation->set_message('day_selected','You must select as least one day and time to play!');
             return FALSE;
         }
-    }
-
-    
+    }    
 
     private function _owns_season($userid)
     {
         $user_seasons = $this->season_model->get_seasons_by_owner($this->get_userid(), $this->get_esportid());
         return $user_seasons;
+    }
+
+    private function _extract_values($value, $array)
+    {
+        $result = array();
+        foreach ($array as $array_item)
+        {
+            array_push($result, $array_item[$value]);
+        }
+        return $result;
     }
 
     public function unique_leaguename($new_league_name)
