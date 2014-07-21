@@ -1,8 +1,9 @@
 /**
- * All your custom CSS should go into this file
+ * All your custom CSS
  */
-
-body { padding-top: 71px; }
+ body {
+  padding-top: 50px;
+ }
 
 #system-messages {
   background-color: #fff;
@@ -82,13 +83,34 @@ body { padding-top: 71px; }
   background: rgba(158, 39, 255, 0.9);
 }
 
-
-.padded_10 {
-  padding: 10px;
-}
-.padded_top {
-  padding-top: 5px;
-}
 .region-list {
 
+}
+
+.profile-header {
+  height: 221px;
+  width:100%;
+  background-color: rgba(40, 38, 38, 0.9);
+}
+
+.profile-player-name {
+  /* For Safari 3.1 to 6.0 */
+    -webkit-transition-property: padding;
+    -webkit-transition-duration: 0.23s;
+    -webkit-transition-timing-function: exponential;
+    -webkit-transition-delay: 0s;
+    /* Standard syntax */
+    transition-property: padding;
+    transition-duration: 0.2s;
+    transition-timing-function: exponential;
+    transition-delay: 0s;
+  display: inline-block;
+  padding: 33px 20px 0px 100px;
+  font-size: 200px;
+  overflow: hidden;
+  color: #C6C6C6;
+  height: 220px;
+}
+.profile-player-name:hover {
+  padding: 0px 20px 0px 100px ;
 }

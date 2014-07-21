@@ -1,6 +1,3 @@
-<div class="profile-header">
-	<h1>Basic Profile Content to Display</h1>
-</div>
 <div class="profile">
 	<div class="row">
 		<div class="col-md-2">
@@ -19,6 +16,7 @@
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-8">
+				Content
 				<table class="table table-condensed">
 					<th></th>
 					<th>Team a</th>

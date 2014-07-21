@@ -20,6 +20,13 @@ class Profile extends MY_Controller
     public function index()
     {
         $this->require_login();
-        $this->view_wrapper('profile');
+        $data['player'] = $this->get_player();
+        $data['is_logged_in'] = $this->is_logged_in();
+        
+        $this->load->view('include/header', $data);
+        $this->load->view('profile_header', $data);
+        $this->load->view('include/navigation', $data);
+        $this->load->view('profile', $data);
+        $this->load->view('include/footer');
     }
 }

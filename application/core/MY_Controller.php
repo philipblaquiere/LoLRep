@@ -31,7 +31,6 @@ class MY_Controller extends CI_Controller  {
       $data['system_messages'] = $this->system_message_model->get_messages();
     }
     $data['is_logged_in'] = $this->is_logged_in();
-    //$data['is_admin_user'] = $this->is_admin_user();
     $this->load->view('include/header', $data);
 
     if (!isset($_SESSION['user']) && $data['is_logged_in']){
