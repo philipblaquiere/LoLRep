@@ -11,46 +11,25 @@
         <a class="navbar-brand" href="<?php echo site_url('home'); ?>">Juicy</a>
       </div>
       <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav navbar-right">
           <?php if ($is_logged_in): ?>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $_SESSION['user']['first_name']; ?><b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo site_url('add_esport'); ?>">Register</a></li>
+                  <li><a href="<?php echo site_url('add_esport'); ?>">Add eSport</a></li>
                   <li><a href="<?php echo site_url('profile'); ?>">My Profile</a></li>
                   <li><a href="<?php echo site_url('teams'); ?>">My Team</a></li>
                   <li><a href="<?php echo site_url('teams/create'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('leagues/create'); ?>">Create League</a></li>
                   <li><a href="<?php echo site_url('leagues'); ?>">View Leagues</a></li>
                   <li><a href="<?php echo site_url('market'); ?>">Market</a></li>
+                  <li role="presentation" class="divider"></li>
+                  <li><a href="<?php echo site_url('sign_in/sign_out'); ?>">Sign out</a></li>
                 </ul>
             </li>
-            <li class="active"><a href="#">Link</a></li>
-          <?php else: ?>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="<?php echo site_url('sign_in'); ?>">Select ESport</a></li>
-              <li><a href="#">Another action</a></li>
-              <li><a href="#">Something else here</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Nav header</li>
-              <li><a href="#">Separated link</a></li>
-              <li><a href="#">One more separated link</a></li>
-            </ul>
-          </li>
-          <?php endif; ?>
-          <li><a href="<?php echo site_url('admin') ?>">Admin</a></li>
-          <li><a href="<?php echo site_url('profile') ?>">Profile</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li class="divider-vertical"></li>
-          <?php if ($is_logged_in): ?>
-          <li><a href="<?php echo site_url('sign_in/sign_out'); ?>">Sign out</a></li>
           <?php else: ?>
           <li><a href="<?php echo site_url('register'); ?>">Register</a></li>
-          <li class="dropdown">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In<strong class="caret"></strong></a>
+            <li class="dropdown"><a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In<strong class="caret"></strong></a>
             <div class="dropdown-menu sign_in_mini">
               <?php echo form_open('sign_in', array('class' => 'form-horizontal', 'id' => 'signinform')); ?>
                 <div class="form-group">
@@ -69,14 +48,13 @@
                     <?php echo form_submit('submit', 'Sign In', "class='btn btn-default btn-sm pull-left'"); ?>
                   </div>
                 </div>
+              </li>
               <?php echo form_close(); ?>
             </div>
-          </li>
           <?php endif; ?>
-          <li><a href="#">About</a></li>
         </ul>
       </div>
     </div>
   </nav><!-- Static nav -->
-<div class="container">
+<div style="padding:20px 0 0 0" class="container">
 <!-- Content -->
