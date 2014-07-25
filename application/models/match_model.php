@@ -7,6 +7,8 @@ class Match_model extends MY_Model {
 		$this->db1 = $this->load->database('default', TRUE);
 	}
 
+	public function get_recent_matches($playerid, $)
+
 	public function create_matches($leagueid, $schedule) {
 		
 		$sql = "INSERT INTO matches (matchid, leagueid, teamaid, teambid, match_date) VALUES";
