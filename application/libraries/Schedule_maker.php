@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
-class Schedule_maker {
+class Schedule_maker
+{
 
 	private $num_teams;
 	private $start_date;

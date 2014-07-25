@@ -11,7 +11,7 @@ class Lol_api
 	const API_URL_2_3 = "http://prod.api.pvp.net/api/lol/{region}/v2.3/";
 	const API_URL_STATIC_1_2 = 'http://prod.api.pvp.net/api/lol/static-data/{region}/v1.2/';
 
-	const API_KEY = 'INSERT_API_KEY_HERE';
+	const API_KEY = 'ee9af537-a4f1-4a7a-9e7c-7ca19e4aa7a3';
 
 	// Rate limit for 10 minutes
 	const LONG_LIMIT_INTERVAL = 600;
@@ -23,7 +23,7 @@ class Lol_api
 
 	// Cache variables
 	const CACHE_LIFETIME_MINUTES = 60;
-	const CACHE_ENABLED = true;
+	const CACHE_ENABLED = false;
 	private $REGION;
 
 	public function __construct($region = 'na')
@@ -220,6 +220,7 @@ class Lol_api
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$result = curl_exec($ch);
 		curl_close($ch);
+		$result = json_decode($result,TRUE);
 
 		if(self::CACHE_ENABLED){
 			//create cache file
