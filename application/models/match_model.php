@@ -27,16 +27,7 @@ class Match_model extends MY_Model {
 		return $result->row_array();
 	}
 
-	public function get_match_by_matchid($matchid, $esportid)
-	{
-		$sql = "SELECT * FROM matches
-				WHERE matchid = '$matchid'
-				LIMIT 1";
-		$result = $this->db1->query($sql);
-		return $result->row_array();
-	}
-
-	public function get_match_details($matchids, $esportid)
+	public function get_matches($matchids, $esportid)
 	{
 		switch ($esportid) {
 			case '1':
