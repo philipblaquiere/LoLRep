@@ -2,6 +2,13 @@
 
 class Match_aggregator
 {
+    const LOL_PLAYERID_PREFIX = "summonerID";
+    const LOL_PLAYERID = "playerid";
+    const LOL_TEAMID_PREFIX ="teamId";
+    const LOL_GAMEID_PREFIX = "gameId";
+    const LOL_GAMEID = "matchid";
+    const LOL_GAMEDATE_PREFIX = "createDate";
+    const LOL_GAMEDATE = "match_date";
     const LOL_GAMETYPE_PREFIX = "gameType";
     const LOL_GAMEMODE_PREFIX = "gameMode";
     const LOL_MAPID_PREFIX = "mapId";
@@ -15,7 +22,6 @@ class Match_aggregator
 
 	public function __construct($params)
     {
-
         $this->esportid = $params['esportid'];
         $this->playerid = $params['playerid'];
         if(array_key_exists('region', $params))
@@ -39,19 +45,25 @@ class Match_aggregator
     }
 
     private function _update_lol()
-    {
+    {         
     	$CI =& get_instance();
         $CI->load->library('lol_api');
+        $CI->load->library('match_cache');
+
+        $loaded_matches = $CI->match_cache->get_loaded_matches(s$this->esportid);
         $recent_matches = $CI->lol_api->get_recent_matches($this->playerid);
 
         foreach ($recent_matches as $recent_match)
         {
-            if($recent_match[self::LOL_GAMETYPE_PREFIX] = self::LOL_GAMETYPE_TYPE
-                && $recent_match[self::LOL_GAMEMODE_PREFIX] = self::LOL_GAMEMODE_MODE
-                && $recent_match[self::LOL_MAPID_PREFIX] = self::LOL_MAPID_MAPID)
+            if(array_key_exists($recent_match[self::LOL_GAMEID_PREFIX], $loaded_matches))
             {
-                //Match is valid, check team composition
-                
+                if($recent_match[self::LOL_GAMETYPE_PREFIX] = self::LOL_GAMETYPE_TYPE
+                    && $recent_match[self::LOL_GAMEMODE_PREFIX] = self::LOL_GAMEMODE_MODE
+                    && $recent_match[self::LOL_MAPID_PREFIX] = self::LOL_MAPID_MAPID)
+                {
+                    //Match is valid, check team composition
+                    
+                }
             }
         }
 
