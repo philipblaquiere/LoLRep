@@ -22,13 +22,15 @@ class Profile extends MY_Controller
         $data['player'] = $this->get_player();
         $data['is_logged_in'] = $this->is_logged_in();
         $this->load->library('lol_api');
+
         $player = $this->get_player();
-        $params = array('esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
+        $teamids = $player['teams'];
+
+        $params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
         $this->load->library('match_aggregator',$params);
+        
         //$data['recent_matches'] = $this->match_aggregator->update();
-        $this->load->library('redis');
-        $this->redis->set('my','value');
-        print_r($data['recent_matches']);
+        print_r($player);
 
         $this->load->view('include/header', $data);
         $this->load->view('profile_header', $data);

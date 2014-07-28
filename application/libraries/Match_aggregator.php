@@ -19,9 +19,11 @@ class Match_aggregator
 	private $esportid;
 	private $playerid;
 	private $region;
+    private $teamids;
 
 	public function __construct($params)
     {
+        $this->teamids = $params['teamids'];
         $this->esportid = $params['esportid'];
         $this->playerid = $params['playerid'];
         if(array_key_exists('region', $params))
@@ -39,7 +41,7 @@ class Match_aggregator
     			break;
     		
     		default:
-    			return "No eSport corresponding to ID ".$this->esportid." found";
+    			return "No corresponding eSport found";
     			break;
     	}
     }
@@ -50,9 +52,9 @@ class Match_aggregator
         $CI->load->library('lol_api');
         $CI->load->library('match_cache');
 
-        /*$loaded_matches = $CI->match_cache->get_loaded_matches($this->esportid);
+        $loaded_matches = $CI->match_cache->get_loaded_matches($this->esportid);
         $recent_matches = $CI->lol_api->get_recent_matches($this->playerid);
-
+        /*
         foreach ($recent_matches as $recent_match)
         {
             if(array_key_exists($recent_match[self::LOL_GAMEID_PREFIX], $loaded_matches))

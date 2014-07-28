@@ -30,11 +30,30 @@ class Player_model extends MY_Model {
 				WHERE player_name = '$player_name'
 					AND esportid = '$esportid'
 				LIMIT 1";
+		$this->db1->trans_start();
 		$result = $this->db1->query($sql);
-		return $result->row_array();
+	    $player = $result->row_array();
+	    $playerid = $player['playerid'];
+
+		$sql = "SELECT 	pt.teamid AS teamid
+						FROM player_teams AS pt, teams AS t, league_teams as lt
+						WHERE pt.playerid = '$playerid'
+							AND t.teamid = pt.teamid
+							AND lt.teamid = t.teamid
+							AND lt.status = 'active'";
+		$result = $this->db1->query($sql);
+		$this->db1->trans_complete();
+		$result = $result->result_array();
+		$player['teams'] = array();
+		if($result)
+		{
+			$player['teams'] = $result[0];
+		}
+	    return $player;
 	}
 
-	public function get_player_by_userid($uid, $esportid) {
+	public function get_player_by_userid($uid, $esportid) 
+	{
 		$sql = "SELECT 	p.player_name as player_name,
 						p.playerid as playerid,
 						p.region as region,
@@ -44,22 +63,59 @@ class Player_model extends MY_Model {
 							AND p.playerid = up.playerid 
 							AND p.esportid = '$esportid'
 						LIMIT 1";
+		$this->db1->trans_start();
 		$result = $this->db1->query($sql);
-	    return $result->row_array();
+	    $player = $result->row_array();
+	    $playerid = $player['playerid'];
+
+		$sql = "SELECT 	pt.teamid AS teamid
+						FROM player_teams AS pt, teams AS t, league_teams as lt
+						WHERE pt.playerid = '$playerid'
+							AND t.teamid = pt.teamid
+							AND lt.teamid = t.teamid
+							AND lt.status = 'active'";
+		$result = $this->db1->query($sql);
+		$this->db1->trans_complete();
+		$result = $result->result_array();
+		$player['teams'] = array();
+		if($result)
+		{
+			$player['teams'] = $result[0];
+		}
+	    return $player;
 	}
 
-	public function get_player_by_email($email, $esportid) {
+	public function get_player_by_email($email, $esportid) 
+	{
 		$sql = "SELECT 	p.player_name as player_name,
 						p.playerid as playerid,
 						p.region as region,
 						p.icon as icon
-						FROM players AS p, users AS u, user_players AS up  
-						WHERE u.email = '$email' 
+						FROM players AS p, users AS u, user_players AS up
+						WHERE u.email = '$email'
 							AND u.userid = up.userid 
 							AND p.playerid = up.playerid 
 							AND p.esportid = '$esportid'
 						LIMIT 1";
+		$this->db1->trans_start();
 		$result = $this->db1->query($sql);
-	    return $result->row_array();
+	    $player = $result->row_array();
+	    $playerid = $player['playerid'];
+
+		$sql = "SELECT 	pt.teamid AS teamid
+						FROM player_teams AS pt, teams AS t, league_teams as lt
+						WHERE pt.playerid = '$playerid'
+							AND t.teamid = pt.teamid
+							AND lt.teamid = t.teamid
+							AND lt.status = 'active'";
+		$result = $this->db1->query($sql);
+		$this->db1->trans_complete();
+		$result = $result->result_array();
+		$player['teams'] = array();
+		if($result)
+		{
+			$player['teams'] = $result[0];
+		}
+	    return $player;
 	}
 }

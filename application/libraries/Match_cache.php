@@ -8,6 +8,8 @@ class Match_cache
 
 	public function __construct($params)
     {
+        $CI =& get_instance();
+        $CI->load->library('redis');
         $this->esportid = $params['esportid'];
         $this->playerid = $params['playerid'];
         $this->last_match_index = null;
@@ -22,8 +24,14 @@ class Match_cache
         }
         for ($i=$this->last_match_index; $i < $match_load_count; $i++)
         { 
-            
+            $match = $_SESSION['']
+            array_push($return_matches, )
         }
+    }
+
+    public function has_match($matchid)
+    {
+        $CI->$redis->
     }
 
     public function add_matches($new_matches)
