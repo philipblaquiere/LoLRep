@@ -123,6 +123,15 @@ $autoload['language'] = array();
 
 $autoload['model'] = array();
 
+/**
+ * Autoload for the Redis library for Sparks
+ *
+ * @see /application/libraries/Redis.php
+ */
+
+// Add autoload for Sparks
+$autoload['libraries'] = array('redis');
+
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

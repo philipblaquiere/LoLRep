@@ -1,0 +1,6 @@
+{
+    "require": {
+    	"illuminate/redis": "4.2.7",
+    	"predis/predis": "0.8.6"
+    }
+}

@@ -25,7 +25,9 @@ class Profile extends MY_Controller
         $player = $this->get_player();
         $params = array('esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
         $this->load->library('match_aggregator',$params);
-        $data['recent_matches'] = $this->match_aggregator->update();
+        //$data['recent_matches'] = $this->match_aggregator->update();
+        $this->load->library('redis');
+        $this->redis->set('my','value');
         print_r($data['recent_matches']);
 
         $this->load->view('include/header', $data);
