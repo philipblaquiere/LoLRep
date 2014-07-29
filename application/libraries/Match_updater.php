@@ -20,9 +20,11 @@ class Match_updater
 	private $playerid;
 	private $region;
     private $teamids;
+    private $CI;
 
 	public function __construct($params)
-    {
+    {      
+        
         $this->teamids = $params['teamids'];
         $this->esportid = $params['esportid'];
         $this->playerid = $params['playerid'];
@@ -30,50 +32,58 @@ class Match_updater
         {
             $this->region = $params['region'];            
         }
+        $this->CI =& get_instance();
+        $this->CI->load->library('lol_api');
+        $this->CI->load->model('match_model');
+        $params = array(self::LOL_PLAYERID => $this->playerid);
+        $this->CI->load->library('match_cache',$params);
+        $this->CI->load->library('match_validator', $params);
     }
 
     public function update()
     {
-    	switch ($this->esportid)
+        $scheduled_matchids = $this->_get_scheduled_matches();
+        $scheduled_matches = $CI->match_model->get_matches($scheduled_matchids,$this->esportid);
+        if($scheduled_matchids)
         {
-    		case '1':
-    			return $this->_update_lol();
-    			break;
-    		
-    		default:
-    			return "No corresponding eSport found";
-    			break;
-    	}
+            switch ($this->esportid)
+            {
+                case '1':
+                    return $this->_update_lol($scheduled_matches);
+                    break;
+                
+                default:
+                    return "No corresponding eSport found";
+                    break;
+            }
+        }
     }
 
-    private function _update_lol()
+    /*
+    |    Gets the matchids of matches that are scheduled, 
+    |    have not yet been updated in the db,
+    |    and might have been played
+    */
+    private function _get_scheduled_matches()
+    {
+        $scheduled_matchids = $this->->match_model->get_scheduled_matches($this->teamids, time(), $this->esportid);
+        return $scheduled_matchids;
+    }
+
+    private function _update_lol($scheduled_matches)
     {         
-    	$CI =& get_instance();
-        $CI->load->library('lol_api');
-        $CI->load->library('match_validator', $params);
-        $params = array(self::LOL_PLAYERID => $this->playerid);
-        $CI->load->library('match_cache',$params);
-
-        
-        $recent_matches = $CI->lol_api->get_recent_matches($this->playerid);
-        $recent_matches = $recent_matches['games'];
-        foreach ($recent_matches as $recent_match)
+        $recent_lol_matches = $this->CI->lol_api->get_recent_matches($this->playerid);
+        $match_results = array();
+        foreach ($scheduled_matches as $scheduled_match)
         {
-            /*if(array_key_exists($recent_match[self::LOL_GAMEID_PREFIX], $loaded_matches))
-            {
-                if($recent_match[self::LOL_GAMETYPE_PREFIX] == self::LOL_GAMETYPE_TYPE
-                    && $recent_match[self::LOL_GAMEMODE_PREFIX] == self::LOL_GAMEMODE_MODE
-                    && $recent_match[self::LOL_MAPID_PREFIX] == self::LOL_MAPID_MAPID)
-                {
-                    //Match is valid, check team composition
-                    
-                }
-
-
-            }*/
-            $CI->match_cache->add_match($recent_match);
+            array_push($match_results, $CI->match_validator->validate($scheduled_match, $recent_lol_matches, $this->esportid));
         }
-        //$loaded_matches = $CI->match_cache->get_loaded_matches($this->esportid);
+        return $match_results;
+
+        /*foreach ($recent_matches as $recent_match)
+        {
+            $CI->match_cache->add_match($recent_match);
+        }*/
     	//return $matches;
     }
 }

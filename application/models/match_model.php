@@ -23,9 +23,7 @@ class Match_model extends MY_Model {
 
 	public function get_scheduled_matches($teamids, $time_now, $esportid)
 	{
-		$sql = "SELECT 	m.matchid,
-						m.match_date,
-						m.status,
+		$sql = "SELECT 	m.matchid
 				FROM match AS m
 				WHERE m.esportid = '$esportid'
 					AND m.match_date < '$time_now'

@@ -27,21 +27,13 @@ class Profile extends MY_Controller
         $player = $this->get_player();
         $teamids = $player['teams'];
 
-        /*$params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
-        $this->load->library('match_aggregator',$params);*/
+        $params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
+        $this->load->library('match_updater',$params);
 
        
-        $this->load->library('redis');
-        $this->load->library('lol_api');
-        $info = $this->redis->info();
-        //$this->redis->hset('lakjsdf:100', array('sup'=>'yo'));
-        //$recent_matches = $this->match_aggregator->update();
-        $matches = $this->match_model->get_matches(array('03a54237-b5b8-587d-9dec-33331bf2b7dc','b719f12d-91e3-5229-a553-849918807849'),$this->get_esportid());
-        $recent_matches = $this->lol_api->get_recent_matches($player['playerid']);
-        $this->load->library('match_validator');
-
-        $result = $this->match_validator->validate($matches['03a54237-b5b8-587d-9dec-33331bf2b7dc'], $recent_matches, $this->get_esportid());
-        print_r($matches);
+        //$matches = $this->match_model->get_matches(array('03a54237-b5b8-587d-9dec-33331bf2b7dc','b719f12d-91e3-5229-a553-849918807849'),$this->get_esportid());
+        $recent_matches = $this->match_updater->update();
+        print_r($recent_matches);
 
         $this->load->view('include/header', $data);
         $this->load->view('profile_header', $data);
