@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
-class Match_aggregator
+class Match_updater
 {
     const LOL_PLAYERID_PREFIX = "summonerID";
     const LOL_PLAYERID = "playerid";
@@ -50,14 +50,16 @@ class Match_aggregator
     {         
     	$CI =& get_instance();
         $CI->load->library('lol_api');
-        $CI->load->library('match_cache');
+        $CI->load->library('match_validator', $params);
+        $params = array(self::LOL_PLAYERID => $this->playerid);
+        $CI->load->library('match_cache',$params);
 
-        $loaded_matches = $CI->match_cache->get_loaded_matches($this->esportid);
+        
         $recent_matches = $CI->lol_api->get_recent_matches($this->playerid);
-        /*
+        $recent_matches = $recent_matches['games'];
         foreach ($recent_matches as $recent_match)
         {
-            if(array_key_exists($recent_match[self::LOL_GAMEID_PREFIX], $loaded_matches))
+            /*if(array_key_exists($recent_match[self::LOL_GAMEID_PREFIX], $loaded_matches))
             {
                 if($recent_match[self::LOL_GAMETYPE_PREFIX] == self::LOL_GAMETYPE_TYPE
                     && $recent_match[self::LOL_GAMEMODE_PREFIX] == self::LOL_GAMEMODE_MODE
@@ -66,9 +68,12 @@ class Match_aggregator
                     //Match is valid, check team composition
                     
                 }
-            }
-        }
 
-    	return $matches;*/
+
+            }*/
+            $CI->match_cache->add_match($recent_match);
+        }
+        //$loaded_matches = $CI->match_cache->get_loaded_matches($this->esportid);
+    	//return $matches;
     }
 }
