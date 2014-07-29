@@ -17,6 +17,11 @@ class Match_cache
         $this->last_match_index = null;
     }
 
+    public function get_match($matchid)
+    {
+        return $this->_has_match($matchid);
+    }
+
     public function get_next_matches($match_load_count = 10)
     {
         $return_matches = array();
@@ -26,8 +31,7 @@ class Match_cache
         }
         for ($i=$this->last_match_index; $i < $match_load_count; $i++)
         { 
-            //$match = $_SESSION['']
-            //array_push($return_matches, )
+            
         }
     }
 
@@ -35,14 +39,14 @@ class Match_cache
     {
         $CI =& get_instance();
         $CI->load->library('redis');
-        $match = $CI->redis->HGET(array(self::MATCH_KEY, $matchid));
+        $match = $CI->redis->get($matchid));
         if($match)
         {
-            return TRUE;
+            return json_decode($match);
         }
         else
         {
-            return FALSE;
+            return NULL;
         }
     }
 
@@ -52,17 +56,11 @@ class Match_cache
         $CI->load->library('redis');
 
         //check if match is already set in redis db
-        $response = $CI->redis->get($new_match[self::MATCHID]);
-        $existing_match = json_decode($response);
-        if(!$existing_match)
+        $existing_match = $this->_has_match($new_match[self::MATCHID]);
+        if($existing_match == NULL)
         {
             //match doesn't exist
-            $CI->redis->set($new_match[self::MATCHID], $new_match);
+            $CI->redis->set($new_match[self::MATCHID], json_encode($new_match));
         }
-        
-        /*if(!$this->_has_match($new_match[self::GAMEID]))
-        {
-            $CI->redis->HSET(array(self::MATCH_KEY, $new_match[self::GAMEID]));
-        }*/
     }
 }

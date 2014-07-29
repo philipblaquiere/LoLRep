@@ -21,6 +21,21 @@ class Match_model extends MY_Model {
 		$this->db1->query($sql);
 	}
 
+	public function get_scheduled_matches($teamids, $time_now, $esportid)
+	{
+		$sql = "SELECT 	m.matchid,
+						m.match_date,
+						m.status,
+				FROM match AS m
+				WHERE m.esportid = '$esportid'
+					AND m.match_date < '$time_now'
+					AND m.status = 'scheduled'
+					AND ((m.teamaid IN ('" . implode("','", $teamids) . "') OR (m.teambid IN ('" . implode("','", $teamids) . "'))";
+		$result = $this->db1->query($sql);
+		$scheduled_matches = $result->result_array();
+		return $scheduled_matches;
+	}
+
 	public function get_matches($matchids, $esportid)
 	{
 		$sql = "SELECT 	m.matchid,
