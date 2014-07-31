@@ -5,21 +5,55 @@ class Match_cache
 	private $esportid;
 	private $playerid;
     private $last_match_index;
+    private $CI;
 
+    const SLEEP_AMOUNT = 1; //number of seconds thread will sleep in order to allow other thread to update matches.
+    const SLEEP_THRESHOLD = 4; //longest wait time before timeout
     const MATCHID = "matchid";
     const GAMEID = "gameId";
     const MATCH_KEY = "matches";
+    const MATCH_DETAILS = "match_details";
+    const IS_MATCH_COMPLETE = "complete";
 
 	public function __construct($params)
     {
-        
+        $this->CI =& get_instance();
+        $this->CI->load->library('redis');
         $this->playerid = $params['playerid'];
         $this->last_match_index = null;
     }
 
+    public function has_match($matchid)
+    {
+        return $this->CI->redis->exists($matchid);
+    }
+
     public function get_match($matchid)
     {
-        return $this->_has_match($matchid);
+        //dealing with concurrency
+        if($this->has_match($matchid))
+        {
+            if($this->CI->redis->hget($matchid, self::IS_MATCH_COMPLETE))
+            {
+                return json_decode($this->CI->redis->hget($matchid, self::MATCH_DETAILS), TRUE);
+            }
+            else
+            {
+                //allow thread to update match to complete status
+                $sleep_time = 0;
+                while(!$this->CI->redis->hget($matchid, self::IS_MATCH_COMPLETE))
+                {
+                    sleep(self::SLEEP_AMOUNT);
+                    $sleep_time += self::SLEEP_AMOUNT;
+                    if($sleep_time >= self::SLEEP_THRESHOLD)
+                    {
+                        return NULL;
+                    }
+                }
+                return json_decode($this->CI->redis->hget($matchid, self::MATCH_DETAILS), TRUE); 
+            }
+        }
+        return NULL;
     }
 
     public function get_next_matches($match_load_count = 10)
@@ -35,32 +69,9 @@ class Match_cache
         }
     }
 
-    private function _has_match($matchid)
+    public function add_match($match)
     {
-        $CI =& get_instance();
-        $CI->load->library('redis');
-        $match = $CI->redis->get($matchid));
-        if($match)
-        {
-            return json_decode($match);
-        }
-        else
-        {
-            return NULL;
-        }
-    }
-
-    public function add_match($new_match)
-    {
-        $CI =& get_instance();
-        $CI->load->library('redis');
-
-        //check if match is already set in redis db
-        $existing_match = $this->_has_match($new_match[self::MATCHID]);
-        if($existing_match == NULL)
-        {
-            //match doesn't exist
-            $CI->redis->set($new_match[self::MATCHID], json_encode($new_match));
-        }
+        $this->CI->redis->hset($match[self::MATCHID], array(self::IS_MATCH_COMPLETE => $match[self::IS_MATCH_COMPLETE]));
+        $this->CI->redis->hset($match[self::MATCHID], array(self::MATCH_DETAILS => json_encode($match)));
     }
 }

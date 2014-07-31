@@ -21,22 +21,44 @@ class Match_model extends MY_Model {
 		$this->db1->query($sql);
 	}
 
-	public function get_scheduled_matches($teamids, $time_now, $esportid)
+	public function get_scheduled_matches($teamids, $time_now)
 	{
-		$sql = "SELECT 	m.matchid
-				FROM match AS m
-				WHERE m.esportid = '$esportid'
-					AND m.match_date < '$time_now'
+		// 1406735003
+		$sqla = "SELECT m.matchid
+				FROM matches AS m
+				WHERE m.match_date < '$time_now'
 					AND m.status = 'scheduled'
-					AND ((m.teamaid IN ('" . implode("','", $teamids) . "') OR (m.teambid IN ('" . implode("','", $teamids) . "'))";
-		$result = $this->db1->query($sql);
-		$scheduled_matches = $result->result_array();
-		return $scheduled_matches;
+					AND m.gameid = ''
+					AND (m.teamaid IN ('" . implode("','", $teamids) . "'))";
+		$sqlb = "SELECT m.matchid
+				FROM matches AS m
+				WHERE m.match_date < '$time_now'
+					AND m.status = 'scheduled'
+					AND m.gameid = ''
+					AND (m.teambid IN ('" . implode("','", $teamids) . "'))";
+		$this->db1->trans_start();
+		$resulta = $this->db1->query($sqla);
+		$resultb = $this->db1->query($sqlb);
+		$this->db1->trans_complete();
+		$matchidsa = $resulta->result_array();
+		$matchidsb = $resultb->result_array();
+		
+		$matchids = array();
+		foreach ($matchidsa as $matchida)
+		{
+			array_push($matchids, $matchida['matchid']);
+		}
+		foreach ($matchidsb as $matchidb)
+		{
+			array_push($matchids, $matchidb['matchid']);
+		}
+		return $matchids;
 	}
 
 	public function get_matches($matchids, $esportid)
 	{
 		$sql = "SELECT 	m.matchid,
+						m.gameid,
 						m.match_date,
 						m.winnerid,
 						m.status,

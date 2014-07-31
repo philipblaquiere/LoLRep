@@ -7,6 +7,7 @@ class Match_validator
     const LOL_PLAYERID = "playerid";
     const LOL_GAMEID_PREFIX = "gameId";
     const LOL_GAMEID = "matchid";
+    const LOL_GAMES_PREFIX = "games";
     const LOL_GAMEDATE_PREFIX = "createDate";
     const LOL_GAMEDATE = "match_date";
     const LOL_GAMETYPE_PREFIX = "gameType";
@@ -17,8 +18,9 @@ class Match_validator
     const LOL_MAPID_MAPID = "1";
     const LOL_FELLOWPLAYERS_PREFIX = "fellowPlayers";
     const LOL_TEAMID_PREFIX = "teamId";
-    const LOL_TEAMAID = "100";
-    const LOL_TEAMBID = "200";
+    const LOL_CHAMPION_PREFIX = "championId";
+    const LOL_TEAMA = "100";
+    const LOL_TEAMB = "200";
 
     const LOL_ERROR_GAMEDATE = "Game created a later time than scheduled";
     const LOL_ERROR_GAMETYPE = "Game type does not match a valid game type";
@@ -34,6 +36,8 @@ class Match_validator
     const MATCH_INFO_ERROR_MSG = "error_message";
     const MATCH_INFO_ERROR_META = "error_meta";
     const MATCH_INFO_TIMESTAMP = "checked_timestamp";
+    const MATCH_PLAYERS_TEAMA = "teama_players";
+    const MATCH_PLAYERS_TEAMB = "teamb_players";
     const INVALID_MATCHES = "invalid_matches";
     const VALID_MATCHES = "valid_matches";
 
@@ -41,13 +45,13 @@ class Match_validator
 	{
     }
 
-    public function validate($match, $recent_games, $esportid)
+    public function validate($match, $recent_games, $include_invalid_results, $esportid)
     {
         if($match)
         {
             switch ($esportid) {
                 case '1':
-                    return $this->_validate_lol($match, $recent_games);
+                    return $this->_validate_lol($match, $recent_games, $include_invalid_results);
                     break;
                 
                 default:
@@ -66,28 +70,37 @@ class Match_validator
     *   Compares an array of recent games pulled from the LoL API to a scheduled match, 
     *   returns the corresponding valid LoL match details, if found
     */
-    private function _validate_lol($match, $recent_games)
+    private function _validate_lol($match, $recent_games, $include_invalid_results)
     {
         //League of Legends
         $match_infos[self::VALID_MATCHES] = array();
-        $match_infos[self::INVALID_MATCHES] = array();
-        $teama_roster = $match['teama']['roster'];
-        $teamb_roster = $match['teamb']['roster'];
-         
-        $teama_players = array();
-        $teamb_players = array();
-        foreach ($teama_roster as &$teama_player)
+        if($include_invalid_results)
         {
-            array_push($teama_players, $teama_player[self::LOL_PLAYERID]);
+            $match_infos[self::INVALID_MATCHES] = array();
         }
-        foreach ($teamb_roster as &$teamb_player)
+        $teama_player_info = $match['teama']['roster'];
+        $teamb_player_info = $match['teamb']['roster'];
+         
+        $teama_roster = array();
+        $teamb_roster = array();
+
+        
+        foreach ($teama_player_info as &$teama_player)
         {
-            array_push($teamb_players, $teamb_player[self::LOL_PLAYERID]);
+            array_push($teama_roster, $teama_player[self::LOL_PLAYERID]);
+        }
+        foreach ($teamb_player_info as &$teamb_player)
+        {
+            array_push($teamb_roster, $teamb_player[self::LOL_PLAYERID]);
         }
 
-        foreach ($recent_games['games'] as $game)
+        $current_playerid = $recent_games[self::LOL_PLAYERID_PREFIX];
+        
+        foreach ($recent_games[self::LOL_GAMES_PREFIX] as $game)
         {
-            $match_info[self::LOL_GAMEID] = $game[self::LOL_GAMEID_PREFIX];
+            $teama_players = array();
+            $teamb_players = array();
+            $match_info[self::LOL_PLAYERID_PREFIX] = $current_playerid;
             $match_info[self::MATCH_INFO_TEAMA_COMPLETE] = 0;
             $match_info[self::MATCH_INFO_TEAMB_COMPLETE] = 0;
             $match_info[self::MATCH_INFO_TIMESTAMP] = time();
@@ -95,8 +108,8 @@ class Match_validator
             $match_info[self::MATCH_INFO_ERROR_META] = "";
             $match_info[self::MATCH_DETAILS] = "";
 
-            if($this->_remove_last_three_digits($game[self::LOL_GAMEDATE_PREFIX]) <= 
-                ($match[self::LOL_GAMEDATE] + self::MATCH_CREATE_TIME_LEEWAY))
+            if($this->_remove_last_three_digits($game[self::LOL_GAMEDATE_PREFIX]) <= ($match[self::LOL_GAMEDATE] + self::MATCH_CREATE_TIME_LEEWAY)
+                && $this->_remove_last_three_digits($game[self::LOL_GAMEDATE_PREFIX]) >= ($match[self::LOL_GAMEDATE] - self::MATCH_CREATE_TIME_LEEWAY))
             {
                 if($game[self::LOL_GAMETYPE_PREFIX] == self::LOL_GAMETYPE_TYPE)
                 {
@@ -109,25 +122,27 @@ class Match_validator
                             $unmatcheda_players = 0;
                             $unmatchedb_players = 0;
                             $fellow_players = $game[self::LOL_FELLOWPLAYERS_PREFIX];
-                            $teama_fellow_players = array();
-                            $teamb_fellow_players = array();
+                            $teams[self::LOL_TEAMA] = array();
+                            $teams[self::LOL_TEAMB] = array();
 
-                            foreach ($fellow_players as $fellow_player) {
-                                if($fellow_player[self::LOL_TEAMID_PREFIX] == self::LOL_TEAMAID)
+                            foreach ($fellow_players as $fellow_player)
+                            {
+                                $teams[$fellow_player[self::LOL_TEAMID_PREFIX]][$fellow_player[self::LOL_PLAYERID_PREFIX]] = $fellow_player;
+                            }
+                            $current_player[self::LOL_TEAMID_PREFIX] = $game[self::LOL_TEAMID_PREFIX];
+                            $current_player[self::LOL_PLAYERID_PREFIX] = $current_playerid;
+                            $current_player[self::LOL_CHAMPION_PREFIX] = $game[self::LOL_CHAMPION_PREFIX];
+                            $teams[$current_player[self::LOL_TEAMID_PREFIX]][$current_player[self::LOL_PLAYERID_PREFIX]] = $current_player;
+
+                            foreach ($teams[self::LOL_TEAMA] as $teama_fellow_player)
+                            {
+                                if(!in_array($teama_fellow_player[self::LOL_PLAYERID_PREFIX], $teama_roster))
                                 {
-                                    array_push($teama_fellow_players, $fellow_player);
+                                    $unmatcheda_players += 1;
                                 }
                                 else
                                 {
-                                    array_push($teamb_fellow_players, $fellow_player);
-                                }
-                            }
-
-                            foreach ($teama_fellow_players as $teama_fellow_player)
-                            {
-                                if(!in_array($teama_fellow_player[self::LOL_PLAYERID_PREFIX], $teama_players))
-                                {
-                                    $unmatcheda_players += 1;
+                                    $teama_players[$teama_fellow_player[self::LOL_PLAYERID_PREFIX]] = $teama_fellow_player[self::LOL_PLAYERID_PREFIX];
                                 }
                             }
                             if ($unmatcheda_players == 0)
@@ -135,11 +150,15 @@ class Match_validator
                                 $match_info[self::MATCH_INFO_TEAMA_COMPLETE] = 1;
                             }
 
-                            foreach ($teamb_fellow_players as $teamb_fellow_player)
+                            foreach ($teams[self::LOL_TEAMB] as $teamb_fellow_player)
                             {
-                                if(!in_array($teamb_fellow_player[self::LOL_PLAYERID_PREFIX], $teamb_players))
+                                if(!in_array($teamb_fellow_player[self::LOL_PLAYERID_PREFIX], $teamb_roster))
                                 {
                                     $unmatchedb_players +=1;
+                                }
+                                else
+                                {
+                                    $teamb_players[$teamb_fellow_player[self::LOL_PLAYERID_PREFIX]] = $teamb_fellow_player[self::LOL_PLAYERID_PREFIX];
                                 }
                             }
 
@@ -151,6 +170,8 @@ class Match_validator
                             if($match_info[self::MATCH_INFO_TEAMA_COMPLETE] && $match_info[self::MATCH_INFO_TEAMB_COMPLETE])
                             {
                                 $match_info[self::MATCH_DETAILS] = $game;
+                                $match_info[self::LOL_TEAMA] = $teams[self::LOL_TEAMA];
+                                $match_info[self::LOL_TEAMB] = $teams[self::LOL_TEAMB];
                                 array_push($match_infos[self::VALID_MATCHES], $match_info);
                                 continue;
                                 //no need to iterate more match is found;
@@ -168,11 +189,17 @@ class Match_validator
                                 //check the case where teama fellow players could be teamb.
                                 $unmatcheda_players = 0;
                                 $unmatchedb_players = 0;
-                                foreach ($teama_fellow_players as $teama_fellow_player)
+                                $teama_players = array();
+                                $teamb_players = array();
+                                foreach ($teams[self::LOL_TEAMA] as $teama_fellow_player)
                                 {
-                                    if(!in_array($teama_fellow_player[self::LOL_PLAYERID_PREFIX], $teamb_players))
+                                    if(!in_array($teama_fellow_player[self::LOL_PLAYERID_PREFIX], $teamb_roster))
                                     {
                                         $unmatchedb_players +=1;
+                                    }
+                                    else
+                                    {
+                                        $teamb_players[$teama_fellow_player[self::LOL_PLAYERID_PREFIX]] = $teama_fellow_player[self::LOL_PLAYERID_PREFIX];
                                     }
                                 }
                                 if ($unmatchedb_players == 0)
@@ -180,11 +207,15 @@ class Match_validator
                                      $match_info[self::MATCH_INFO_TEAMB_COMPLETE] = 1;
                                 }
 
-                                foreach ($teamb_fellow_players as $teamb_fellow_player)
+                                foreach ($teams[self::LOL_TEAMB] as $teamb_fellow_player)
                                 {
-                                    if(!in_array($teamb_fellow_player[self::LOL_PLAYERID_PREFIX], $teama_players))
+                                    if(!in_array($teamb_fellow_player[self::LOL_PLAYERID_PREFIX], $teama_roster))
                                     {
                                         $unmatcheda_players +=1;
+                                    }
+                                    else
+                                    {
+                                        $teama_players[$teamb_fellow_player[self::LOL_PLAYERID_PREFIX]] = $teamb_fellow_player[self::LOL_PLAYERID_PREFIX];
                                     }
                                 }
                                 if ($unmatcheda_players == 0)
@@ -195,6 +226,8 @@ class Match_validator
                                 if($match_info[self::MATCH_INFO_TEAMA_COMPLETE] && $match_info[self::MATCH_INFO_TEAMB_COMPLETE])
                                 {
                                     $match_info[self::MATCH_DETAILS] = $game;
+                                    $match_info[self::LOL_TEAMA] = $teams[self::LOL_TEAMA];
+                                    $match_info[self::LOL_TEAMB] = $teams[self::LOL_TEAMB];
                                     array_push($match_infos[self::VALID_MATCHES], $match_info);
                                     continue;
                                     //no need to iterate more match is found;
@@ -210,6 +243,7 @@ class Match_validator
                                 }
                                 else
                                 {
+                                    
                                 }
                             }
                         }
@@ -236,7 +270,11 @@ class Match_validator
                 $match_info[self::MATCH_INFO_ERROR_MSG] = self::LOL_ERROR_GAMEDATE;
                 $match_info[self::MATCH_INFO_ERROR_META] = $this->_remove_last_three_digits($game[self::LOL_GAMEDATE_PREFIX]) . " scheduled : ". $match[self::LOL_GAMEDATE];
             }
-            array_push($match_infos[self::INVALID_MATCHES], $match_info);
+            if($include_invalid_results)
+            {
+                array_push($match_infos[self::INVALID_MATCHES], $match_info);
+            }
+            
         }
         return $match_infos;
     }

@@ -2,16 +2,16 @@
 
 class Lol_api
 {
-	const API_URL_1_1 = 'http://prod.api.pvp.net/api/lol/{region}/v1.1/';
-	const API_URL_1_2 = 'http://prod.api.pvp.net/api/lol/{region}/v1.2/';
-	const API_URL_1_3 = 'http://prod.api.pvp.net/api/lol/{region}/v1.3/';
-	const API_URL_1_4 = 'http://prod.api.pvp.net/api/lol/{region}/v1.4/';
-	const API_URL_2_1 = 'http://prod.api.pvp.net/api/lol/{region}/v2.1/';
-	const API_URL_2_2 = 'http://prod.api.pvp.net/api/lol/{region}/v2.2/';
-	const API_URL_2_3 = "http://prod.api.pvp.net/api/lol/{region}/v2.3/";
-	const API_URL_STATIC_1_2 = 'http://prod.api.pvp.net/api/lol/static-data/{region}/v1.2/';
+	const API_URL_1_1 = 'http://na.api.pvp.net/api/lol/{region}/v1.1/';
+	const API_URL_1_2 = 'http://na.api.pvp.net/api/lol/{region}/v1.2/';
+	const API_URL_1_3 = 'http://na.api.pvp.net/api/lol/{region}/v1.3/';
+	const API_URL_1_4 = 'http://na.api.pvp.net/api/lol/{region}/v1.4/';
+	const API_URL_2_1 = 'http://na.api.pvp.net/api/lol/{region}/v2.1/';
+	const API_URL_2_2 = 'http://na.api.pvp.net/api/lol/{region}/v2.2/';
+	const API_URL_2_3 = "http://na.api.pvp.net/api/lol/{region}/v2.3/";
+	const API_URL_STATIC_1_2 = 'http://na.api.pvp.net/api/lol/static-data/{region}/v1.2/';
 
-	const API_KEY = 'ee9af537-a4f1-4a7a-9e7c-7ca19e4aa7a3';
+	const API_KEY = 'ca862537-7979-4f59-82d3-8afa7fe2d93a';
 
 	// Rate limit for 10 minutes
 	const LONG_LIMIT_INTERVAL = 600;
@@ -194,7 +194,6 @@ class Lol_api
 
 		//format the full URL
 		$url = $this->format_url($call, $otherQueries);
-
 		//caching
 		if(self::CACHE_ENABLED){
 			$cacheFile = 'cache/' . md5($url);

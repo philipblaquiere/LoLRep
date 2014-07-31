@@ -8,7 +8,7 @@ class Riotapi_model extends CI_Model  {
 	const API_URL_1_4 = 'http://prod.api.pvp.net/api/lol/{region}/v1.4/';
 	const API_URL_2_1 = 'http://prod.api.pvp.net/api/lol/{region}/v2.2/';
 	const API_URL_2_3 = 'http://prod.api.pvp.net/api/lol/{region}/v2.3/';
-	const API_KEY = 'ee9af537-a4f1-4a7a-9e7c-7ca19e4aa7a3';
+	const API_KEY = 'ca862537-7979-4f59-82d3-8afa7fe2d93a';
 	const RATE_LIMIT_MINUTES = 500;
 	const RATE_LIMIT_SECONDS = 10;
 	const CACHE_LIFETIME_MINUTES = 60;
