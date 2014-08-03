@@ -30,20 +30,20 @@ class Profile extends MY_Controller
         //print_r($matches);
         //$matchids = $this->match_model->get_scheduled_matches($teamids, time());
         
-        //$response = $this->match_updater->update();
+        $response = $this->match_updater->update();
         /*$this->load->library('match_cache');
         $response = $this->match_cache->get_dirty_matches();*/
-        $dirty_matches = $this->match_cache->get_dirty_matches();
+        //$dirty_matches = $this->match_cache->get_dirty_matches();
         //$this->match_model->update_matches($dirty_matches);
         //$this->statistics_model->add_match_stats($dirty_matches,$this->get_esportid());
         //Update the dirty bit to FALSE
-        $dirty_matchids = array();
+        /*$dirty_matchids = array();
         foreach ($dirty_matches as $matchid => $match) 
         {
             array_push($dirty_matchids, $matchid);
-        }
-        print_r($dirty_matchids);
-        $this->match_cache->mark_dirty($dirty_matchids, FALSE);
+        }*/
+        print_r($response);
+        //$this->match_cache->mark_dirty($dirty_matchids, FALSE);
         //print_r($response);
         //$this->match_model->update_match($response);
         //print_r($this->statistics_model->add_match_stats($response, $this->get_esportid()));
