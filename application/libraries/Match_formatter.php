@@ -9,8 +9,8 @@ class Match_formatter
 	const LOL_SPELL2 = "spell2";
 	const LOL_LEVEL = "level";
 	const LOL_STATS = "stats";
-    const LOL_MATCH_TEAMA = "100";
-    const LOL_MATCH_TEAMB = "200";
+    const LOL_TEAM_100 = "100";
+    const LOL_TEAM_200 = "200";
 
 	const VALID_MATCHES_KEY = "valid_matches";
 	const MATCH_INFO_KEY = "match_info";
@@ -23,6 +23,9 @@ class Match_formatter
 	const MATCH_TEAMB = "teamb";
     const MATCH_COMPLETE = "complete";
     const MATCH_WINNER_ID = "winnerid";
+    const MATCH_PLAYERID = "playerid";
+
+    const TEAM_ROSTER = "roster";
 
 	private $esportid;
 
@@ -57,8 +60,8 @@ class Match_formatter
     		$game = $match[self::VALID_MATCHES_KEY][0][self::MATCH_DETAILS_KEY];
     		$match_info = $match[self::MATCH_INFO_KEY];
     		$stats = $match[self::VALID_MATCHES_KEY][0][self::MATCH_DETAILS_KEY][self::LOL_STATS];
-    		$teama = $match[self::VALID_MATCHES_KEY][0][self::LOL_MATCH_TEAMA];
-    		$teamb = $match[self::VALID_MATCHES_KEY][0][self::LOL_MATCH_TEAMB];
+    		$teama = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_100];
+    		$teamb = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_200];
     		if(array_key_exists($playerid, $teama))
     		{
     			$teama[$playerid][self::LOL_CHAMPIONID] = $game[self::LOL_CHAMPIONID];
@@ -75,14 +78,34 @@ class Match_formatter
     			$teamb[$playerid][self::LOL_LEVEL] = $game[self::LOL_LEVEL];
     			$teamb[$playerid][self::LOL_STATS] = $stats;
   			}
-  			$match_info[self::MATCH_TEAMA][self::MATCH_TEAMA_PLAYERS] = $teama;
-  			$match_info[self::MATCH_TEAMB][self::MATCH_TEAMB_PLAYERS] = $teamb;
+
+            $player_in_teama = FALSE;
+
+            foreach ($match_info[self::MATCH_TEAMA][self::TEAM_ROSTER] as $player)
+            {
+                if($player[self::MATCH_PLAYERID] == $playerid)
+                {
+                    $player_in_teama = TRUE;
+                    continue;
+                }
+            }
+            if($player_in_teama)
+            {
+                $match_info[self::MATCH_TEAMA][self::MATCH_TEAMA_PLAYERS] = $teama;
+                $match_info[self::MATCH_TEAMB][self::MATCH_TEAMB_PLAYERS] = $teamb;
+            }
+            else
+            {
+                $match_info[self::MATCH_TEAMA][self::MATCH_TEAMA_PLAYERS] = $teamb;
+                $match_info[self::MATCH_TEAMB][self::MATCH_TEAMB_PLAYERS] = $teama;
+            }
+  			
             //Signify that the match information is not complete, missing player stats
-            $match_info[self::MATCH_COMPLETE] = FALSE;
-    	}
+            $match_info[self::MATCH_COMPLETE] = FALSE;    	
+        }
     	else
     	{
-    		//Match is already formatted, addplayer stats to the player list
+    		//Match is already formatted, add player stats to the player list
     		if(array_key_exists($game[self::LOL_PLAYERID], $match[self::MATCH_TEAMA][self::MATCH_TEAMA_PLAYERS]))
     		{
     			//Player is in teama
@@ -107,17 +130,36 @@ class Match_formatter
     public function update_winner($match)
     {
         $teamaid = $match[self::MATCH_TEAMA][self::MATCH_TEAMA_ID];
+        $teambid = $match[self::MATCH_TEAMB][self::MATCH_TEAMB_ID];
         foreach ($match[self::MATCH_TEAMA][self::MATCH_TEAMA_PLAYERS] as $player)
         {
-            if($player[self::LOL_STATS]['win'] == 1)
+            if(array_key_exists(self::LOL_STATS, $player) && array_key_exists('win', $player[self::LOL_STATS]))
             {
-                $match[self::MATCH_WINNER_ID] = $teamaid;
+                if($player[self::LOL_STATS]['win'] == 1)
+                {
+                    $match[self::MATCH_WINNER_ID] = $teamaid;
+                }
+                else
+                {
+                    $match[self::MATCH_WINNER_ID] = $match[self::MATCH_TEAMB][self::MATCH_TEAMB_ID];
+                }
+                return $match;
             }
-            else
+        }
+        foreach ($match[self::MATCH_TEAMB][self::MATCH_TEAMB_PLAYERS] as $player)
+        {
+            if(array_key_exists(self::LOL_STATS, $player) && array_key_exists('win', $player[self::LOL_STATS]))
             {
-                $match[self::MATCH_WINNER_ID] = $match[self::MATCH_TEAMB][self::MATCH_TEAMB_ID];
+                if($player[self::LOL_STATS]['win'] == 1)
+                {
+                    $match[self::MATCH_WINNER_ID] = $teambid;
+                }
+                else
+                {
+                    $match[self::MATCH_WINNER_ID] = $match[self::MATCH_TEAMA][self::MATCH_TEAMA_ID];
+                }
+                return $match;
             }
-            return $match;
         }
     }
 }

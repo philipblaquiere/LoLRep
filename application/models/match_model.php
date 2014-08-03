@@ -11,7 +11,6 @@ class Match_model extends MY_Model {
 
 	public function create_matches($leagueid, $schedule)
 	{
-		
 		$sql = "INSERT INTO matches (matchid, leagueid, teamaid, teambid, match_date) VALUES";
 		foreach ($schedule as $match) {
 			$uniqueid = $this->generate_unique_key();
@@ -21,20 +20,47 @@ class Match_model extends MY_Model {
 		$this->db1->query($sql);
 	}
 
+	public function update_matches($matches)
+	{
+		//check for non-array
+		if(array_key_exists('matchid', $matches))
+		{
+			$matches = array($matches);
+		}
+
+		$sql = "INSERT INTO matches
+				VALUES ";
+		foreach ($matches as $match)
+		{
+			$matchid = $match['matchid'];
+			$gameid = $match['gameid'];
+			$leagueid = $match['leagueid'];
+			$teamaid = $match['teama']['teamaid'];
+			$teambid = $match['teamb']['teambid'];
+			$match_date = $match['match_date'];
+			$winnerid = $match['winnerid'];
+			$status = 'finished';
+			$sql .= "('" . $matchid. "','" .$gameid. "','" .$leagueid. "','".$teamaid. "','".$teambid."','".$match_date."','".$winnerid."','".$status."'),";
+		}
+		$sql = substr($sql, 0, -1);
+		$sql .= " ON DUPLICATE KEY UPDATE gameid=VALUES(gameid), winnerid=VALUES(winnerid), status=VALUES(status);";
+		$this->db1->query($sql);
+		return;
+	}
+
 	public function get_scheduled_matches($teamids, $time_now)
 	{
-		// 1406735003
 		$sqla = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
 					AND m.status = 'scheduled'
-					AND m.gameid = ''
+					AND (m.gameid = '' OR m.gameid IS NULL)
 					AND (m.teamaid IN ('" . implode("','", $teamids) . "'))";
 		$sqlb = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
 					AND m.status = 'scheduled'
-					AND m.gameid = ''
+					AND (m.gameid = '' OR m.gameid IS NULL)
 					AND (m.teambid IN ('" . implode("','", $teamids) . "'))";
 		$this->db1->trans_start();
 		$resulta = $this->db1->query($sqla);
@@ -94,7 +120,8 @@ class Match_model extends MY_Model {
 		//used to get players in the teams in next sql call
 		$teamids = array();
 
-		foreach ($match_results as $match) {
+		foreach ($match_results as $match)
+		{
 			if(!in_array($match['teamid'], $teamids))
 			{
 				array_push($teamids, $match['teamid']);
@@ -123,6 +150,7 @@ class Match_model extends MY_Model {
 				$temp_match['teama']['team_name'] = $match['team_name'];
 				unset($temp_match['teamid']);
 				unset($temp_match['team_name']);
+				$temp_match['complete'] = !($temp_match['gameid'] == NULL || $temp_match['gameid'] =='');
 				$matches[$match['matchid']] = $temp_match;
 			}
 		}
@@ -144,18 +172,89 @@ class Match_model extends MY_Model {
 			$teamid = $player['teamid'];
 			unset($player['teamid']);
 			$players[$teamid] = array();
-			array_push($players[$teamid], $player);
+			//array_push($players[$teamid], $player);
+			$players[$teamid][$player['playerid']] = $player;
 		}
 
 		foreach ($matches as &$match)
 		{
 			$match['teama']['roster'] = $players[$match['teama']['teamaid']];
 			$match['teamb']['roster'] = $players[$match['teamb']['teambid']];
-		}
+			
 
+			if($match['complete'] == 1)
+			{
+				//Match is complete, pull player stats from the correct table
+				$match['teama']['teama_players'] = array();
+				$match['teamb']['teamb_players'] = array();
+				switch ($esportid)
+				{
+					case '1':
+						$player_stats = $this->_get_lol_player_stats($match['matchid']);
+						
+					default:
+						foreach ($player_stats as $playerid => $player)
+						{
+							if(array_key_exists($playerid, $match['teama']['roster']))
+							{
+								$match['teama']['teama_players'][$playerid] = $player;
+							}
+							else
+							{
+								$match['teamb']['teamb_players'][$playerid] = $player;
+							}
+						}
+						break;
+				}
+			}
+		}
 		return $matches;
 	}
 	
+	private function _get_lol_player_stats($matchid)
+	{
+		$sql = "SELECT * FROM lol_statistics
+					WHERE matchid = '$matchid'";
+		$results = $this->db1->query($sql);
+		$result = $results->result_array();
+		foreach ($result as $player_stats)
+		{
+			$temp_stats = array();
+			$temp_stats['teamId'] = $player_stats['teamId'];
+			$temp_stats['summmonerId'] = $player_stats['playerid'];
+			$temp_stats['championId'] = $player_stats['championId'];
+			$temp_stats['spell1'] = $player_stats['spell1'];
+			$temp_stats['spell2'] = $player_stats['spell2'];
+			$temp_stats['level'] = $player_stats['level'];
+			unset($player_stats['teamId']);
+			unset($player_stats['playerid']);
+			unset($player_stats['championId']);
+			unset($player_stats['spell1']);
+			unset($player_stats['spell2']);
+			$stats = array();
+			$stats['win'] = $player_stats['win'];
+			$stats['assists'] = $player_stats['assists'];
+			$stats['championsKilled'] = $player_stats['championsKilled'];
+			$stats['numDeaths'] = $player_stats['numDeaths'];
+			$stats['minionsKilled'] = $player_stats['minionsKilled'];
+			unset($player_stats['win']);
+			unset($player_stats['assists']);
+			unset($player_stats['championsKilled']);
+			unset($player_stats['numDeaths']);
+			unset($player_stats['minionsKilled']);
+			foreach ($player_stats as $key => $value)
+			{
+				if($value != 0 && $value != '0' && $value != NULL)
+				{
+					$stats[$key] = $value;
+				}
+			}
+			$temp_stats['stats'] = $stats;
+			$players[$temp_stats['summmonerId']] = $temp_stats;
+		}
+		return $players;
+	}
+
 	public function get_matches_by_team($team) {
 		$season_start = $team['season']['start_date'];
 		$season_end = $team['season']['end_date'];

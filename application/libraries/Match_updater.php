@@ -81,17 +81,21 @@ class Match_updater
                 if(empty($recent_lol_matches))
                 {
                     $recent_lol_matches = $this->CI->lol_api->get_recent_matches($this->playerid);
+                    if(empty($recent_lol_matches))
+                    {
+                        return "Unable to process request, LoL API is not responding";
+                    }
                 }
 
                 $match_result = $this->CI->match_validator->validate($scheduled_match, $recent_lol_matches, $include_invalid_results, $this->esportid);
-                
+
                 if(count($match_result['valid_matches']) >= 1)
                 {
                     $match_results[$scheduled_match['matchid']] = $match_result;
                     $scheduled_match['gameid'] = $match_result['valid_matches'][0]['match_details']['gameId'];
                     $match_results[$scheduled_match['matchid']]['match_info'] = $scheduled_match;
-
                     $formatted_match = $this->_format_match($match_results[$scheduled_match['matchid']], null);
+                    
                     //Update Match Cache with a new, data incomplete match
                     $this->_add_match_to_cache($formatted_match);
                     $team_players = $this->_get_unified_team_array($formatted_match);
@@ -113,15 +117,14 @@ class Match_updater
                         }
                         else
                         {
-                            return "Unable to process request, LoL API not working";
+                            return "Unable to process request, LoL API is not responding";
                         }
                     }
+                    
                     $formatted_match = $this->CI->match_formatter->update_winner($formatted_match);
                     $formatted_match['complete'] = TRUE;
                     $this->_add_match_to_cache($formatted_match);
-
                 }
-
             }
             else
             {
