@@ -6,19 +6,16 @@ class Ajax extends MY_Controller
 	{
 	    parent::__construct();
 	    $this->load->model('user_model');
-	    $this->load->model('team_model');
-	    $this->load->model('lol_model');
-	    $this->load->model('riotapi_model');
 	    $this->load->model('system_message_model');
 	    $this->load->model('banned_model');
-	    $this->load->model('match_model');
-	    $this->load->model('league_model');
       $this->load->model('player_model');
+      $this->load->library('lol_api');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
 	{
 		  $region = urldecode($region);
+      $region = 'na';
 	    if($summonerinput== "-")
 	    {
 	       //user didn't enter anything, show error message and reload.
@@ -36,12 +33,13 @@ class Ajax extends MY_Controller
 	    {
   			//check riot servers to see if summoner actually exists.
   			$summonerinput = strtolower(str_replace(' ','', urldecode($summonerinput)));
-  			$riotsummoners = $this->riotapi_model->getSummonerByName($region, $summonerinput);
-  			$riotsummoners['region'] = trim($region);
+  			$riotsummoners = $this->lol_api->getSummonerByName($summonerinput);
+  			$riotsummoners['region'] = "na";
   			//contains Array ( [summonername] => Array ( [id] => 39895516 [name] => Summoner Name [profileIconId] => 0 [summonerLevel] => 6 [revisionDate] => 1383423931000 ) [region] => Region )
 			if(!array_key_exists($summonerinput, $riotsummoners))
 			{
-				$data['errormessage'] = "Error " . $riotsummoners['status']['status_code'] . " : " . $riotsummoners['status']['message'];
+				//data['errormessage'] = "Error " . $riotsummoners['status']['status_code'] . " : " . $riotsummoners['status']['message'];
+        $data['errormessage'] = implode(" ", $riotsummoners);
 				$this->load->view('messages/rune_page_verification_fail', $data);
 				return;
 			}
@@ -57,7 +55,7 @@ class Ajax extends MY_Controller
 					$this->load->view('messages/rune_page_verification_fail', $data);
 					return;
 				}*/
-				if(!$player)
+				if(empty($player))
 				{
 					//player doesn't exist in db yet. Generate a Rune Page Key
 					$_SESSION['runepagekey'] = $this->user_model->generate_rune_page_key();
@@ -67,7 +65,7 @@ class Ajax extends MY_Controller
           $_SESSION['player']['icon'] = $riotsummoners[$summonerinput]['profileIconId'];
           $_SESSION['player']['player_name'] = $riotsummoners[$summonerinput]['name'];
 					$_SESSION['player']['region'] = $riotsummoners['region'];
-			  	$runepages = $this->riotapi_model->getSummoner($_SESSION['player']['playerid'],"runes");
+			  	$runepages = $this->lol_api->getSummoner($_SESSION['player']['playerid'],"runes");
 					$this->load->view('ajax/authenticate_summoner',$data);
 					return;
 				}
@@ -86,7 +84,7 @@ class Ajax extends MY_Controller
   	{
   		$playerid = $_SESSION['player']['playerid'];
   		$runepagekey = $_SESSION['runepagekey'];
-  		$runepages = $this->riotapi_model->getSummoner($playerid,"runes");
+  		$runepages = $this->lol_api->getSummoner($playerid,"runes");
   		
   		$firstRunePageName = $runepages[$playerid]['pages']['0']['name'];
   		if($firstRunePageName == $runepagekey)
