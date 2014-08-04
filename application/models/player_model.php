@@ -44,7 +44,7 @@ class Player_model extends MY_Model {
 								AND lt.teamid = t.teamid
 								AND lt.status = 'active'";
 			$result = $this->db1->query($sql);
-			$this->db1->trans_complete();
+			
 			$result = $result->result_array();
 			$player['teams'] = array();
 			if($result)
@@ -52,7 +52,7 @@ class Player_model extends MY_Model {
 				$player['teams'] = $result[0];
 			}
 	    }
-	    
+	    $this->db1->trans_complete();
 	    return $player;
 	}
 
@@ -104,22 +104,24 @@ class Player_model extends MY_Model {
 		$this->db1->trans_start();
 		$result = $this->db1->query($sql);
 	    $player = $result->row_array();
-	    $playerid = $player['playerid'];
-
-		$sql = "SELECT 	pt.teamid AS teamid
-						FROM player_teams AS pt, teams AS t, league_teams as lt
-						WHERE pt.playerid = '$playerid'
-							AND t.teamid = pt.teamid
-							AND lt.teamid = t.teamid
-							AND lt.status = 'active'";
-		$result = $this->db1->query($sql);
-		$this->db1->trans_complete();
-		$result = $result->result_array();
-		$player['teams'] = array();
-		if($result)
-		{
-			$player['teams'] = $result[0];
-		}
+	    if(!empty($player))
+	    {
+	    	$playerid = $player['playerid'];
+			$sql = "SELECT 	pt.teamid AS teamid
+							FROM player_teams AS pt, teams AS t, league_teams as lt
+							WHERE pt.playerid = '$playerid'
+								AND t.teamid = pt.teamid
+								AND lt.teamid = t.teamid
+								AND lt.status = 'active'";
+			$result = $this->db1->query($sql);
+			$result = $result->result_array();
+			$player['teams'] = array();
+			if($result)
+			{
+				$player['teams'] = $result[0];
+			}
+	    }
+	    $this->db1->trans_complete();
 	    return $player;
 	}
 }

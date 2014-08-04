@@ -93,7 +93,6 @@ class Ajax extends MY_Controller
   			$player = $this->player_model->get_player_by_name($playerid, $this->get_esportid());
   			if(empty($player))
   			{
-  				//redirects to user/create_summoner
   				echo "success";
   			}
   			else 
