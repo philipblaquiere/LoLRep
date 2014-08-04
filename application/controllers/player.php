@@ -17,6 +17,12 @@ class Player extends MY_Controller{
     $this->load->model('trade_lol_model');
     $this->load->model('player_model');
   }
+  public function index()
+  {
+    $data['player'] = $this->get_player();
+    $data['is_logged_in'] = $this->is_logged_in();
+    $this->view_wrapper('profile', $data);
+  }
 
   public function create()
   {

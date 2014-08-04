@@ -34,6 +34,12 @@ class Match_updater
         $this->CI->load->library('match_validator', $params);
     }
 
+    /*
+    |   Gets players matches which may have occured in the past,
+    |   Verifies with the match_validator if the match is complete,
+    |   Pulls stats from corresponding esport's api and
+    |   Updates the Match Cache if the match is complete
+    */
     public function update($include_invalid_results = FALSE)
     {
         $scheduled_matchids = $this->_get_scheduled_matches();
@@ -73,7 +79,7 @@ class Match_updater
     {   
         $match_results = array();
         $recent_lol_matches = array();
-        $formatted_match = array();
+        $formatted_matches = array();
         foreach ($scheduled_matches as $scheduled_match)
         {
             if(!$this->CI->match_cache->has_match($scheduled_match['matchid']))
@@ -94,6 +100,7 @@ class Match_updater
                     $match_results[$scheduled_match['matchid']] = $match_result;
                     $scheduled_match['gameid'] = $match_result['valid_matches'][0]['match_details']['gameId'];
                     $match_results[$scheduled_match['matchid']]['match_info'] = $scheduled_match;
+                    $formatted_match = array();
                     $formatted_match = $this->_format_match($match_results[$scheduled_match['matchid']], null);
                     
                     //Update Match Cache with a new, data incomplete match
@@ -124,14 +131,15 @@ class Match_updater
                     $formatted_match = $this->CI->match_formatter->update_winner($formatted_match);
                     $formatted_match['complete'] = TRUE;
                     $this->_add_match_to_cache($formatted_match);
+                    array_push($formatted_matches, $formatted_match);
                 }
             }
             else
             {
-                return $this->CI->match_cache->get_match($scheduled_match['matchid']);
+                array_push($formatted_matches, $this->CI->match_cache->get_match($scheduled_match['matchid']));
             }
         }
-        return $formatted_match;
+        return $formatted_matches;
     }
 
     private function _format_match($match, $game)

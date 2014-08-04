@@ -1,6 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Match_model extends MY_Model {
+class Match_model extends MY_Model 
+{
+
+	const LOL_MAX_MATCH_DURATION = 8800; // 2:30hrs
+	const LOL_MIN_MATCH_DURATION = 1200; // 20 minutes
 
 	public function __construct()
 	{
@@ -55,13 +59,15 @@ class Match_model extends MY_Model {
 				WHERE m.match_date < '$time_now'
 					AND m.status = 'scheduled'
 					AND (m.gameid = '' OR m.gameid IS NULL)
-					AND (m.teamaid IN ('" . implode("','", $teamids) . "'))";
+					AND (m.teamaid IN ('" . implode("','", $teamids) . "'))
+				ORDER BY m.match_date DESC";
 		$sqlb = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
 					AND m.status = 'scheduled'
 					AND (m.gameid = '' OR m.gameid IS NULL)
-					AND (m.teambid IN ('" . implode("','", $teamids) . "'))";
+					AND (m.teambid IN ('" . implode("','", $teamids) . "'))
+				ORDER BY m.match_date DESC";
 		$this->db1->trans_start();
 		$resulta = $this->db1->query($sqla);
 		$resultb = $this->db1->query($sqlb);
@@ -77,6 +83,53 @@ class Match_model extends MY_Model {
 		foreach ($matchidsb as $matchidb)
 		{
 			array_push($matchids, $matchidb['matchid']);
+		}
+		return $matchids;
+	}
+
+	public function get_scheduled_matchids($time_now, $esportid)
+	{
+		$min_match_duration = $this->_get_min_match_length($esportid);
+		$max_match_duration = $this->_get_max_match_length($esportid);
+		$time_min_duration = $time_now - $min_match_duration;
+		$time_max_duration = $time_now - $max_match_duration;
+
+		$sql = "SELECT m.matchid
+				FROM matches m, leagues l
+				WHERE m.leagueid = l.leagueid
+					AND l.esportid = '$esportid'
+					AND m.match_date <= '$time_min_duration'
+					AND m.match_date <= '$time_max_duration'";
+		$result = $this->db1->query($sql);
+		$matchids_array = $result->result_array();
+		$matchids = array();
+		foreach ($matchids_array as $matchid)
+		{
+			array_push($matchids, $matchid['matchid']);
+		}
+		return $matchids;
+
+	}
+
+	public function get_finished_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
+	{
+		$sql = "SELECT m.matchid
+				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
+				WHERE p.playerid = '$playerid'
+					AND p.playerid = pt.playerid
+					AND pt.teamid = lt.teamid
+					AND l.leagueid = lt.leagueid
+					AND l.esportid = '$esportid'
+					AND lt.leagueid = m.leagueid
+					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
+					AND m.status = 'finished'
+				ORDER BY m.match_date DESC";
+		$result =$this->db1->query($sql);
+		$matchids_array = $result->result_array();
+		$matchids = array();
+		foreach ($matchids_array as $matchid)
+		{
+			array_push($matchids, $matchid['matchid']);
 		}
 		return $matchids;
 	}
@@ -211,6 +264,34 @@ class Match_model extends MY_Model {
 		return $matches;
 	}
 	
+	private function _get_min_match_length($esportid)
+	{
+		switch ($esportid)
+		{
+			case '1':
+				return self::LOL_MIN_MATCH_DURATION;
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+	}
+
+	private function _get_max_match_length($esportid)
+	{
+		switch ($esportid)
+		{
+			case '1':
+				return self::LOL_MAX_MATCH_DURATION;
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+	}
+
 	private function _get_lol_player_stats($matchid)
 	{
 		$sql = "SELECT * FROM lol_statistics

@@ -32,7 +32,6 @@ class Cron_match extends CI_Controller
         return self::SERVER_PATH_TO_PHP . " " . self::ABS_PATH_TO_CONTROLLER . " " . $controller . " " . $function;
     }
 
-
     /*
     |   Removes all match depricated or unused 
     |   instances from the Match cache, which are 
@@ -52,7 +51,7 @@ class Cron_match extends CI_Controller
         $dirty_matches = $this->match_cache->get_dirty_matches();
         $this->match_model->update_matches($dirty_matches);
         $this->statistics_model->add_match_stats($dirty_matches,$this->get_esportid());
-        //Update the dirty bit to FALSE
+        //Update dirty bit to FALSE
         $dirty_matchids = array();
         foreach ($dirty_matches as $matchid => $match) 
         {
@@ -60,5 +59,17 @@ class Cron_match extends CI_Controller
         }
         $this->match_cache->mark_dirty($dirty_matchids, FALSE);
 
+    }
+
+
+    /*
+    |   Gets all scheduled matches which
+    |   could be finished and updates them to
+    |   the cache 
+    */
+    public function update_match_cache($esportid)
+    {
+        $matchids = $this->match_model->get_scheduled_matchids(time(),$esportid);
+        //$this->match_cache->
     }
 }

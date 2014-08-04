@@ -95,16 +95,19 @@ class Match_cache
         $this->CI->redis->srem(self::MATCHIDS_KEY, $matchid);
     }
 
-    public function add_match($match, $is_dirty = TRUE)
+    public function add_matches($matches, $is_dirty = TRUE)
     {
-        if(!$this->has_match($match[self::MATCHID]))
+        foreach ($matches as $match)
         {
-            $this->CI->redis->sadd(self::MATCHIDS_KEY, $match[self::MATCHID]);
-            $this->mark_dirty(array($match[self::MATCHID]),$is_dirty);
-            $this->_update_access($match[self::MATCHID]);
-            $this->CI->redis->hset($match[self::MATCHID], array(self::IS_MATCH_COMPLETE => $match[self::IS_MATCH_COMPLETE]));
-            $this->CI->redis->hset($match[self::MATCHID], array(self::ACCESS_COUNT => 0));
-            $this->CI->redis->hset($match[self::MATCHID], array(self::MATCH_DETAILS => json_encode($match)));
+            if(!$this->has_match($match[self::MATCHID]))
+            {
+                $this->CI->redis->sadd(self::MATCHIDS_KEY, $match[self::MATCHID]);
+                $this->mark_dirty(array($match[self::MATCHID]),$is_dirty);
+                $this->_update_access($match[self::MATCHID]);
+                $this->CI->redis->hset($match[self::MATCHID], array(self::IS_MATCH_COMPLETE => $match[self::IS_MATCH_COMPLETE]));
+                $this->CI->redis->hset($match[self::MATCHID], array(self::ACCESS_COUNT => 0));
+                $this->CI->redis->hset($match[self::MATCHID], array(self::MATCH_DETAILS => json_encode($match)));
+            }
         }
     }
 

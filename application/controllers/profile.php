@@ -9,8 +9,7 @@ class Profile extends MY_Controller
     {
         parent::__construct();
         $this->load->model('system_message_model');
-        $this->load->model('match_model');
-        $this->load->model('statistics_model');
+        
     }
 
     public function index()
@@ -22,18 +21,14 @@ class Profile extends MY_Controller
 
         $player = $this->get_player();
         $teamids = $player['teams'];
-
         $params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
-        $this->load->library('match_updater',$params);
-       
-        //$matches = $this->match_model->get_matches(array('52a2f94f-56ae-5077-ae86-44f3cc7f4dbc'),$this->get_esportid());
-        //print_r($matches);
-        //$matchids = $this->match_model->get_scheduled_matches($teamids, time());
+        $this->load->library('match_aggregator', $params);
+        $matches = $this->match_aggregator->aggregate_matches();
+        print_r($matches);
         
-        $response = $this->match_updater->update();
-        /*$this->load->library('match_cache');
-        $response = $this->match_cache->get_dirty_matches();*/
-        //$dirty_matches = $this->match_cache->get_dirty_matches();
+        
+        
+        //$response = $this->match_updater->update();
         //$this->match_model->update_matches($dirty_matches);
         //$this->statistics_model->add_match_stats($dirty_matches,$this->get_esportid());
         //Update the dirty bit to FALSE
@@ -42,7 +37,7 @@ class Profile extends MY_Controller
         {
             array_push($dirty_matchids, $matchid);
         }*/
-        print_r($response);
+        //print_r($response);
         //$this->match_cache->mark_dirty($dirty_matchids, FALSE);
         //print_r($response);
         //$this->match_model->update_match($response);
