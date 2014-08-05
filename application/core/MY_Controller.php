@@ -44,6 +44,10 @@ class MY_Controller extends CI_Controller  {
     $this->load->view('include/footer');
   }
 
+  protected function is_player_registered()
+  {
+    return isset($_SESSION['player']) && isset($_SESSION['player']['player_name']);
+  }
   /**
    * Convinience function to determine if the user is logged in.
    * @returns
@@ -83,6 +87,7 @@ class MY_Controller extends CI_Controller  {
   protected function set_player($player)
   {
     $_SESSION['player'] = $player;
+    $_SESSION['player']['registered'] = 1;
   }
 
   protected function get_player()
@@ -92,7 +97,7 @@ class MY_Controller extends CI_Controller  {
 
   protected function player_exists()
   {
-    return isset($_SESSION['player']) && isset($_SESSION['player']['playerid']);
+    return isset($_SESSION['player']) && isset($_SESSION['player']['playerid']) && array_key_exists('registered', $_SESSION['player']);
   }
 
   protected function destroy_session() 

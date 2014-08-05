@@ -15,6 +15,7 @@ class Profile extends MY_Controller
     public function index()
     {
         $this->require_login();
+        $this->require_registered();
         $data['player'] = $this->get_player();
         $data['is_logged_in'] = $this->is_logged_in();
         $this->load->library('lol_api');

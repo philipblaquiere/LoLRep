@@ -10,14 +10,8 @@ class Sign_in extends MY_Controller
     parent::__construct();
     $this->load->model('user_model');
     $this->load->model('system_message_model');
-    $this->load->model('country_model');
-    $this->load->model('ip_log_model');
-    $this->load->model('esport_model');
     $this->load->model('player_model');
-    $this->load->model('team_model');
-    $this->load->model('league_model');
     $this->load->model('banned_model');
-    $this->load->model('season_model');
   }
 
   public function index()

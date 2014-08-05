@@ -1,7 +1,9 @@
 <!-- Header -->
 <div class="page-header">
   <h1>Leagues</h1>
+  <?php if(!empty($captain_team)) { ?>
   <h4>You're captain of team <?php echo $captain_team['team_name'] ?>, join a league below.</h4>
+  <?php } ?>
 </div>
 <!-- Header -->
 <div name="league_search_parameters_container">

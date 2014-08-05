@@ -7,11 +7,7 @@ class Add_esport extends MY_Controller{
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('user_model');
 		$this->load->model('system_message_model');
-		$this->load->model('esport_model');
-		$this->load->model('player_model');
-		$this->load->model('riotapi_model');
 	}
 	public function index()
 	{
