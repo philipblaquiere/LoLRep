@@ -93,7 +93,7 @@
   background-color: rgba(40, 38, 38, 0.9);
 }
 
-.profile-player-name {
+.banner-title-big {
   /* For Safari 3.1 to 6.0 */
     -webkit-transition-property: padding;
     -webkit-transition-duration: 0.23s;
@@ -111,6 +111,6 @@
   color: #C6C6C6;
   height: 220px;
 }
-.profile-player-name:hover {
+.banner-title-big:hover {
   padding: 0px 20px 0px 100px ;
 }

@@ -294,44 +294,65 @@ class Match_model extends MY_Model
 
 	private function _get_lol_player_stats($matchid)
 	{
-		$sql = "SELECT * FROM lol_statistics
-					WHERE matchid = '$matchid'";
+		$sql = "SELECT ls.*, lc.name AS champion_name, lc.iconPath AS champion_icon, lsp.spell_icon, lsp.spell_name
+				FROM lol_statistics ls, lol_champions lc, lol_spells lsp
+					WHERE 	ls.matchid = '$matchid'
+						AND	ls.championId = lc.championid
+						AND	(ls.spell1 = lsp.spellid OR ls.spell2 = lsp.spellid) ";
 		$results = $this->db1->query($sql);
 		$result = $results->result_array();
+		$players = array();
 		foreach ($result as $player_stats)
 		{
-			$temp_stats = array();
-			$temp_stats['teamId'] = $player_stats['teamId'];
-			$temp_stats['summmonerId'] = $player_stats['playerid'];
-			$temp_stats['championId'] = $player_stats['championId'];
-			$temp_stats['spell1'] = $player_stats['spell1'];
-			$temp_stats['spell2'] = $player_stats['spell2'];
-			$temp_stats['level'] = $player_stats['level'];
-			unset($player_stats['teamId']);
-			unset($player_stats['playerid']);
-			unset($player_stats['championId']);
-			unset($player_stats['spell1']);
-			unset($player_stats['spell2']);
-			$stats = array();
-			$stats['win'] = $player_stats['win'];
-			$stats['assists'] = $player_stats['assists'];
-			$stats['championsKilled'] = $player_stats['championsKilled'];
-			$stats['numDeaths'] = $player_stats['numDeaths'];
-			$stats['minionsKilled'] = $player_stats['minionsKilled'];
-			unset($player_stats['win']);
-			unset($player_stats['assists']);
-			unset($player_stats['championsKilled']);
-			unset($player_stats['numDeaths']);
-			unset($player_stats['minionsKilled']);
-			foreach ($player_stats as $key => $value)
+			$playerid = $player_stats['playerid'];
+			if(!array_key_exists($playerid, $players))
 			{
-				if($value != 0 && $value != '0' && $value != NULL)
+				$players[$playerid]['in_loop'] = 'yes';
+
+				$temp_stats = array();
+				$temp_stats['teamId'] = $player_stats['teamId'];
+				$temp_stats['summmonerId'] = $playerid;
+				$temp_stats['championId'] = $player_stats['championId'];
+				$temp_stats['champion_name'] = $player_stats['champion_name'];
+				$temp_stats['champion_icon'] = $player_stats['champion_icon'];
+				$temp_stats['spell1id'] = $player_stats['spell1'];
+				$temp_stats['spell1_name'] = $player_stats['spell_name'];
+				$temp_stats['spell1_icon'] = $player_stats['spell_icon'];
+				$temp_stats['spell2id'] = $player_stats['spell2'];
+
+				$temp_stats['level'] = $player_stats['level'];
+				unset($player_stats['teamId']);
+				unset($player_stats['playerid']);
+				unset($player_stats['championId']);
+				unset($player_stats['spell1']);
+				unset($player_stats['spell2']);
+				$stats = array();
+				$stats['win'] = $player_stats['win'];
+				$stats['assists'] = $player_stats['assists'];
+				$stats['championsKilled'] = $player_stats['championsKilled'];
+				$stats['numDeaths'] = $player_stats['numDeaths'];
+				$stats['minionsKilled'] = $player_stats['minionsKilled'];
+				unset($player_stats['win']);
+				unset($player_stats['assists']);
+				unset($player_stats['championsKilled']);
+				unset($player_stats['numDeaths']);
+				unset($player_stats['minionsKilled']);
+
+				foreach ($player_stats as $key => $value)
 				{
-					$stats[$key] = $value;
+					if($value != 0 && $value != '0' && $value != NULL)
+					{
+						$stats[$key] = $value;
+					}
 				}
+				$temp_stats['stats'] = $stats;
+				$players[$playerid] = $temp_stats;
 			}
-			$temp_stats['stats'] = $stats;
-			$players[$temp_stats['summmonerId']] = $temp_stats;
+			else
+			{
+				$players[$playerid]['spell2_icon'] = $player_stats['spell_icon'];
+				$players[$playerid]['spell2_name'] = $player_stats['spell_name'];
+			}
 		}
 		return $players;
 	}

@@ -83,6 +83,27 @@ $('#lolteamsearchform').submit(function(event) {
     });
 
 //used in profile page
+$("#view-recent-matches").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    /* Clear profile content*/
+    $("#profile-content").html('');
+
+    $.ajax({
+            url: '/LoLRep/ajax/profile_recent_matches/',
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#profile-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+            }
+        });
+});
+
+//used in profile page
 $("#view-profile-team").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();

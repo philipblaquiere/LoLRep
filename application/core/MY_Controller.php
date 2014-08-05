@@ -68,6 +68,20 @@ class MY_Controller extends CI_Controller  {
     }
     return FALSE;
   }
+  protected function get_esport_prefix()
+  {
+    switch ($this->get_esportid())
+    {
+      case '1':
+        //League of Legends
+        return "lol";
+        break;
+      
+      default:
+        return "";
+        break;
+    }
+  }
 
   /**
    * Convinience function to get the ID of the currently logged in user.

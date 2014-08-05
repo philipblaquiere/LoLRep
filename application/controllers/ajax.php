@@ -136,6 +136,22 @@ class Ajax extends MY_Controller
   		}
   	}
 
+    public function profile_recent_matches()
+    {
+      $player = $this->get_player();
+      $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+      $this->load->library('match_aggregator', $params);
+      $matches = $this->match_aggregator->aggregate_matches();
+      $data['matches'] = $matches;
+      $prefix = $this->get_esport_prefix();
+      if($prefix == "")
+      {
+        return NULL;
+      }
+      $view = "recent_matches_".$prefix;
+      $this->load->view($view, $data);
+    }
+
   	public function profile_view_team()
   	{
         $teamid = $_SESSION['user']['league_info']['teamid'];

@@ -16,13 +16,14 @@ class Profile extends MY_Controller
     {
         $this->require_login();
         $this->require_registered();
-        $data['player'] = $this->get_player();
+        $player = $this->get_player();
+        $data['banner']['title_big'] = $player['player_name'];
         $data['is_logged_in'] = $this->is_logged_in();
         $this->load->library('lol_api');
 
         $player = $this->get_player();
         $teamids = $player['teams'];
-        $params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' =>$player['region']);
+        $params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
         $this->load->library('match_aggregator', $params);
         $matches = $this->match_aggregator->aggregate_matches();
         print_r($matches);
@@ -49,7 +50,7 @@ class Profile extends MY_Controller
         print_r($recent_lol_matches);*/
 
         $this->load->view('include/header', $data);
-        $this->load->view('profile_header', $data);
+        $this->load->view('banner_header', $data);
         $this->load->view('include/navigation', $data);
         $this->load->view('profile', $data);
         $this->load->view('include/footer');
