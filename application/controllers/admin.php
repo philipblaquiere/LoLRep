@@ -11,6 +11,7 @@ class Admin extends MY_Controller{
         $this->load->model('lol_model');
         $this->load->model('riotapi_model');
         $this->load->model('banned_model');
+        $this->load->library('lol_api');
     }
 
     public function index()
@@ -21,7 +22,7 @@ class Admin extends MY_Controller{
 
     public function update_lol_champions()
     {
-        $champions = $this->riotapi_model->getChampions();
+        $champions = $this->lol_api->getChampions();
         $this->lol_model->update_lol_champions($champions);
         $this->system_message_model->set_message("Update League of Legends Champions Complete" , MESSAGE_INFO);
         $this->view_wrapper('admin_panel');
@@ -52,5 +53,20 @@ class Admin extends MY_Controller{
     private function _ban_summoner($user,$reason)
     {
         $this->banned_model->ban_summoner($user,$reason);
+    }
+    public function update_lol_items()
+    {
+        $items = $this->lol_api->getItems();
+        $this->lol_model->update_lol_items($items);
+        $this->system_message_model->set_message("Update League of Legends Items Complete" , MESSAGE_INFO);
+        $this->view_wrapper('admin_panel');
+    }
+
+     public function update_lol_spells()
+    {
+        $spells = $this->lol_api->getSummonerSpells();
+        $this->lol_model->update_lol_spells($spells);
+        $this->system_message_model->set_message("Update League of Legends Spells Complete" , MESSAGE_INFO);
+        $this->view_wrapper('admin_panel');
     }
 }

@@ -80,127 +80,143 @@ class Ajax extends MY_Controller
 		}
   	}//end function
 
-  	public function rune_page_verification()
-  	{
-  		$playerid = $_SESSION['player']['playerid'];
-  		$runepagekey = $_SESSION['runepagekey'];
-  		$runepages = $this->lol_api->getSummoner($playerid,"runes");
-  		
-  		$firstRunePageName = $runepages[$playerid]['pages']['0']['name'];
-  		if($firstRunePageName == $runepagekey)
-  		{
-  			//user runepage is validated, re-check absence in db
-  			$player = $this->player_model->get_player_by_name($playerid, $this->get_esportid());
-  			if(empty($player))
-  			{
-  				echo "success";
-  			}
-  			else 
-  			{
-  				//user was registered during verification phase (highly unlikely), display error
-	      	$data['errormessage'] = "The specified summoner is already registered";
-				  $this->load->view('messages/rune_page_verification_fail', $data);
-  			}
-  		}
-  		else
-  		{
-  			//user is invalid, display error message.
-  			$data['errormessage'] = "Incorrect Rune page name (" . $firstRunePageName . "), should be " . $runepagekey;
-  			$this->load->view('messages/rune_page_verification_fail', $data);
-  		}
-  	}
-
-  	public function find_team_lol($teamname)
-  	{
-  		$teamname = trim(urldecode($teamname));
-  		$data['team_lol_result'] = $this->team_model->get_team_lol_byname($teamname);
-  		if(!$data['team_lol_result'])
-  		{
-  			//user was registered during verification phase (highly unlikely), display error
-      		$data['errormessage'] = "Team couldn't be found, make sure the spelling is correct (including caps).";
+	public function rune_page_verification()
+	{
+		$playerid = $_SESSION['player']['playerid'];
+		$runepagekey = $_SESSION['runepagekey'];
+		$runepages = $this->lol_api->getSummoner($playerid,"runes");
+		
+		$firstRunePageName = $runepages[$playerid]['pages']['0']['name'];
+		if($firstRunePageName == $runepagekey)
+		{
+			//user runepage is validated, re-check absence in db
+			$player = $this->player_model->get_player_by_name($playerid, $this->get_esportid());
+			if(empty($player))
+			{
+				echo "success";
+			}
+			else 
+			{
+				//user was registered during verification phase (highly unlikely), display error
+      	$data['errormessage'] = "The specified summoner is already registered";
+			  $this->load->view('messages/rune_page_verification_fail', $data);
+			}
+		}
+		else
+		{
+			//user is invalid, display error message.
+			$data['errormessage'] = "Incorrect Rune page name (" . $firstRunePageName . "), should be " . $runepagekey;
 			$this->load->view('messages/rune_page_verification_fail', $data);
-  		}
-  		else
-  		{
-  			$team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'],$esportid);
-  			if($team['name'] == $teamname)
-  			{
-  				//user trying to trade with own team, deny him.
-	      		$data['errormessage'] = "You can't trade within your own team.";
-				$this->load->view('messages/rune_page_verification_fail', $data);
-  			}
-  			else
-  			{
-  				$this->load->view('ajax/team_lol_search_result',$data);
-  			}
-  		}
-  	}
+		}
+	}
 
-    public function profile_recent_matches()
+	public function find_team_lol($teamname)
+	{
+		$teamname = trim(urldecode($teamname));
+		$data['team_lol_result'] = $this->team_model->get_team_lol_byname($teamname);
+		if(!$data['team_lol_result'])
+		{
+			//user was registered during verification phase (highly unlikely), display error
+    		$data['errormessage'] = "Team couldn't be found, make sure the spelling is correct (including caps).";
+		$this->load->view('messages/rune_page_verification_fail', $data);
+		}
+		else
+		{
+			$team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'],$esportid);
+			if($team['name'] == $teamname)
+			{
+				//user trying to trade with own team, deny him.
+      		$data['errormessage'] = "You can't trade within your own team.";
+			$this->load->view('messages/rune_page_verification_fail', $data);
+			}
+			else
+			{
+				$this->load->view('ajax/team_lol_search_result',$data);
+			}
+		}
+	}
+
+  public function profile_recent_matches()
+  {
+    $player = $this->get_player();
+    $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+    $this->load->library('match_aggregator', $params);
+    $matches = $this->match_aggregator->get_recent_matches();
+    $data['matches'] = $matches;
+    $prefix = $this->get_esport_prefix();
+    if($prefix == "")
     {
-      $player = $this->get_player();
-      $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
-      $this->load->library('match_aggregator', $params);
-      $matches = $this->match_aggregator->aggregate_matches();
-      $data['matches'] = $matches;
-      $prefix = $this->get_esport_prefix();
-      if($prefix == "")
-      {
-        return NULL;
-      }
-      $view = "recent_matches_".$prefix;
-      $this->load->view($view, $data);
+      return NULL;
     }
+    $view = "recent_matches_".$prefix;
+    $this->load->view($view, $data);
+  }
 
-  	public function profile_view_team()
-  	{
-        $teamid = $_SESSION['user']['league_info']['teamid'];
-        $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
-        $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
-        $data['calendar'] = $this->calendar;
-        
-        $data['schedule'] = array();
-        $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
-        //get the league;
-        if($data['schedule'])
-        {
-            $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
-            $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
-        }
-  		$this->load->view('view_team', $data);
+  public function profile_upcoming_matches()
+  {
+    $player = $this->get_player();
+    $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+    $this->load->library('match_aggregator', $params);
+    $matches = $this->match_aggregator->get_upcoming_matches();
+    $data['matches'] = $matches;
+    $prefix = $this->get_esport_prefix();
+    if($prefix == "")
+    {
+      return NULL;
+    }
+    $view = "upcoming_matches_".$prefix;
+    $this->load->view($view, $data);
+  }
 
-  	}
+	public function profile_view_team()
+	{
+      $teamid = $_SESSION['user']['league_info']['teamid'];
+      $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
+      $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
+      $data['calendar'] = $this->calendar;
+      
+      $data['schedule'] = array();
+      $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
+      //get the league;
+      if($data['schedule'])
+      {
+          $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
+          $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
+      }
+		$this->load->view('view_team', $data);
 
-  	public function profile_view_league()
-  	{
-  		$this->require_login();
-  		$leagueid = $_SESSION['user']['league_info']['leagueid'];
-        $teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
+	}
 
-        if(!$teams)
-        {
-            $teams['teams'] = array();
-        }
-        
-        $league = $this->league_model->get_league_details($leagueid);
-        if($league['start_date'] != NULL)
-        {
-            //get the end date of the season
-            $league['end_date'] = $this->get_local_date($league['end_date']);
-            $league['start_date'] = $this->get_local_date($league['start_date']);
-        }
+	public function profile_view_league()
+	{
+		$this->require_login();
+		$leagueid = $_SESSION['user']['league_info']['leagueid'];
+      $teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
 
-        $schedule = array();
-        if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
-        {
-            $season['start_date'] = strtotime($league['start_date']);
-            $season['end_date'] = strtotime($league['end_date']);
-            $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
-        }
-        
-        $data['teams'] = $teams;
-        $data['league'] = $league;
-        $data['schedule'] = $schedule;
-        $this->load->view('view_league', $data);
-  	}
+      if(!$teams)
+      {
+          $teams['teams'] = array();
+      }
+      
+      $league = $this->league_model->get_league_details($leagueid);
+      if($league['start_date'] != NULL)
+      {
+          //get the end date of the season
+          $league['end_date'] = $this->get_local_date($league['end_date']);
+          $league['start_date'] = $this->get_local_date($league['start_date']);
+      }
+
+      $schedule = array();
+      if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+      {
+          $season['start_date'] = strtotime($league['start_date']);
+          $season['end_date'] = strtotime($league['end_date']);
+          $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+      }
+      
+      $data['teams'] = $teams;
+      $data['league'] = $league;
+      $data['schedule'] = $schedule;
+      $this->load->view('view_league', $data);
+	}
 }

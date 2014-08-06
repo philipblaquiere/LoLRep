@@ -119,6 +119,25 @@ class MY_Model extends CI_Model  {
 	/*
 	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
 	*/
+	protected function local_to_gmt($local_time)
+	{
+		return unix_to_human(local_to_gmt($local_time));
+	}
+
+	protected function gmt_to_local($gmt_time)
+	{
+		$daylight_savings = TRUE;
+		if($_SESSION['user']) {
+		  $time_zone = $_SESSION['user']['time_zone'];
+		}
+		else
+		{
+			$time_zone = "UM5";
+		}
+		return unix_to_human(gmt_to_local($gmt_time, $time_zone, date("I",$gmt_time)));
+	}
+
+
 	protected function get_local_datetime($epoch, $format='F j, Y H:i:s') {
 		$date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
 		if($_SESSION['user']) {

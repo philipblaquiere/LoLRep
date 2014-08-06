@@ -55,6 +55,24 @@ class Lol_api
 
 		return $this->request($call);
 	}
+	
+	public function getChampions()
+	{
+		$call = self::API_URL_STATIC_1_2 . "champion?champData=image";
+		return $this->request($call, TRUE);
+	}
+
+	public function getSummonerSpells()
+	{
+		$call = self::API_URL_STATIC_1_2 . "summoner-spell?spellData=image";
+		return $this->request($call, TRUE);
+	}
+
+	public function getItems()
+	{
+		$call = self::API_URL_STATIC_1_2 . "item?itemListData=image";
+		return $this->request($call, TRUE);
+	}
 
 	public function get_recent_matches($id){
 		$call = 'game/by-summoner/' . $id . '/recent';
@@ -224,7 +242,7 @@ class Lol_api
 		if(self::CACHE_ENABLED){
 			//create cache file
 			file_put_contents($cacheFile, time() . "\n" . $result);
-		}	
+		}
 		return $result;
 	}
 

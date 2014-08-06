@@ -32,19 +32,17 @@ class Match_cache
         $this->CI->redis->hincrby($matchid, array(self::ACCESS_COUNT => 1));
         $this->CI->redis->hset($matchid, array(self::LAST_ACCESS_KEY => time()));
     }
-    public function get_match($matchid)
+    public function get_match($matchid, $wait_for_complete = TRUE)
     {
         //dealing with concurrency
+        $can_return = TRUE;
         if($this->has_match($matchid))
         {
-            if($this->CI->redis->hget($matchid, self::IS_MATCH_COMPLETE))
-            {
-                $this->_update_access($matchid);
-            }
-            else
-            {
+            if(!$this->CI->redis->hget($matchid, self::IS_MATCH_COMPLETE) && $wait_for_complete)
+            {   
                 //allow thread to update match to complete status
                 $sleep_time = 0;
+                $can_return = FALSE;
                 while(!$this->CI->redis->hget($matchid, self::IS_MATCH_COMPLETE))
                 {
                     sleep(self::SLEEP_AMOUNT);
@@ -54,9 +52,13 @@ class Match_cache
                         return NULL;
                     }
                 }
-                $this->_update_access($matchid);
+                $can_return = TRUE;
             }
-            return json_decode($this->CI->redis->hget($matchid, self::MATCH_DETAILS), TRUE);
+            if($can_return)
+            {
+                $this->_update_access($matchid);
+                return json_decode($this->CI->redis->hget($matchid, self::MATCH_DETAILS), TRUE);
+            }
         }
         return NULL;
     }

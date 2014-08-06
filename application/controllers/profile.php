@@ -25,8 +25,8 @@ class Profile extends MY_Controller
         $teamids = $player['teams'];
         $params = array('teamids' => $teamids, 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
         $this->load->library('match_aggregator', $params);
-        $matches = $this->match_aggregator->aggregate_matches();
-        print_r($matches);
+        //$matches = $this->match_aggregator->aggregate_matches();
+        //print_r($matches);
         
         
         

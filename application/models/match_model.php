@@ -2,14 +2,16 @@
 
 class Match_model extends MY_Model 
 {
-
+	const LOL_IMAGE_URL = "ddragon.leagueoflegends.com/cdn/4.13.1/img/sprite/";
 	const LOL_MAX_MATCH_DURATION = 8800; // 2:30hrs
 	const LOL_MIN_MATCH_DURATION = 1200; // 20 minutes
+	const DATE_FORMAT = "DATE_RSS";
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->db1 = $this->load->database('default', TRUE);
+		$this->load->library('lol_image_formatter');
 	}
 
 
@@ -111,6 +113,31 @@ class Match_model extends MY_Model
 
 	}
 
+	public function get_upcoming_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
+	{
+		$time_now = time();
+		$sql = "SELECT m.matchid
+				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
+				WHERE p.playerid = '$playerid'
+					AND p.playerid = pt.playerid
+					AND pt.teamid = lt.teamid
+					AND l.leagueid = lt.leagueid
+					AND l.esportid = '$esportid'
+					AND lt.leagueid = m.leagueid
+					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
+					AND m.status = 'scheduled'
+					AND m.match_date > '$time_now'
+				ORDER BY m.match_date";
+		$result =$this->db1->query($sql);
+		$matchids_array = $result->result_array();
+		$matchids = array();
+		foreach ($matchids_array as $matchid)
+		{
+			array_push($matchids, $matchid['matchid']);
+		}
+		return $matchids;
+	}
+
 	public function get_finished_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
 	{
 		$sql = "SELECT m.matchid
@@ -190,7 +217,7 @@ class Match_model extends MY_Model
 			{
 				$temp_match = $match;
 				$temp_match['matchid'] = $match['matchid'];
-				$temp_match['match_date'] = $match['match_date'];
+				$temp_match['match_date'] = $this->gmt_to_local($match['match_date']);
 				$temp_match['status'] = $match['status'];
 				$temp_match['leagueid'] = $match['leagueid'];
 				$temp_match['league_name'] = $match['league_name'];
@@ -294,8 +321,14 @@ class Match_model extends MY_Model
 
 	private function _get_lol_player_stats($matchid)
 	{
-		$sql = "SELECT ls.*, lc.name AS champion_name, lc.iconPath AS champion_icon, lsp.spell_icon, lsp.spell_name
-				FROM lol_statistics ls, lol_champions lc, lol_spells lsp
+		$sql = "SELECT 	ls.*, 
+						lc.name AS champion_name, 
+						lc.sprite AS champion_icon, 
+						lsp.sprite AS spell_icon, 
+						lsp.spell_name
+				FROM 	lol_statistics ls, 
+						lol_champions lc, 
+						lol_spells lsp
 					WHERE 	ls.matchid = '$matchid'
 						AND	ls.championId = lc.championid
 						AND	(ls.spell1 = lsp.spellid OR ls.spell2 = lsp.spellid) ";
@@ -314,10 +347,10 @@ class Match_model extends MY_Model
 				$temp_stats['summmonerId'] = $playerid;
 				$temp_stats['championId'] = $player_stats['championId'];
 				$temp_stats['champion_name'] = $player_stats['champion_name'];
-				$temp_stats['champion_icon'] = $player_stats['champion_icon'];
+				$temp_stats['champion_icon'] = $this->lol_image_formatter->to_image_url($player_stats['champion_icon'],'champion');
 				$temp_stats['spell1id'] = $player_stats['spell1'];
 				$temp_stats['spell1_name'] = $player_stats['spell_name'];
-				$temp_stats['spell1_icon'] = $player_stats['spell_icon'];
+				$temp_stats['spell1_icon'] = $this->lol_image_formatter->to_image_url($player_stats['spell_icon'],'spell');
 				$temp_stats['spell2id'] = $player_stats['spell2'];
 
 				$temp_stats['level'] = $player_stats['level'];
@@ -345,12 +378,27 @@ class Match_model extends MY_Model
 						$stats[$key] = $value;
 					}
 				}
+				for ($i=0; $i < 7; $i++)
+				{ 
+					$item_key = 'item'.$i;
+					if(!array_key_exists($item_key, $stats))
+					{
+
+						$stats[$item_key] = 0;
+					}
+					else
+					{
+						$sprite = $stats[$item_key] . ".png";
+						$img_url = $this->lol_image_formatter->to_image_url($sprite,'item');
+						$stats[$item_key] = $img_url;
+					}
+				}
 				$temp_stats['stats'] = $stats;
 				$players[$playerid] = $temp_stats;
 			}
 			else
 			{
-				$players[$playerid]['spell2_icon'] = $player_stats['spell_icon'];
+				$players[$playerid]['spell2_icon'] = $this->lol_image_formatter->to_image_url($player_stats['spell_icon'],'spell');
 				$players[$playerid]['spell2_name'] = $player_stats['spell_name'];
 			}
 		}

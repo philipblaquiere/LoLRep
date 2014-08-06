@@ -69,7 +69,7 @@ class User_Model extends MY_Model {
   {
     $uniqueid = $this->generate_unique_key();
     $sql = "INSERT INTO users (userid, password, email, first_name, last_name, time_zone)
-            VALUES ('" . $uniqueid . "', '" . $user['password'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['timezone'] . "')";
+            VALUES ('" . $uniqueid . "', '" . $user['password'] . "', '" . $user['email'] . "', '" . $user['fname'] . "', '" . $user['lname'] . "', '" . $user['timezones'] . "')";
     
     $query = $this->db1->query($sql);
 

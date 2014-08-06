@@ -74,18 +74,8 @@ foreach ($regions as $name => $mask)
   <div class="form-group">
     <?php echo form_label('Time Zone', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php
-      print '<select class="form-control" name="timezone" >';
-      foreach($timezones as $region => $list)
-      {
-        print '<optgroup label="' . $region . '">' . "\n";
-        foreach($list as $timezone => $name)
-        {
-          print '<option value="' . $timezone . '">' . $name . '</option>' . "\n";
-        }
-        print '<optgroup>' . "\n";
-      }
-      print '</select>';
+      <?php echo timezone_menu('UM8', 'form-control')
+      
       ?>
     </div>
   </div>

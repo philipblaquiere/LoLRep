@@ -1,4 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+
+
 class Lol_model extends CI_Model {
 
 	public function __construct() {
@@ -37,46 +40,51 @@ class Lol_model extends CI_Model {
 	    return $result->row_array();
 	}
 
-	public function update_summoner_ranking($summoner) {
-		
-	}
-
-	public function create_summoner($uid, $summoner) {
-
-		$SummonerId = $summoner['id'];
-	    $SummonerName = $summoner['name'];
-	    $region = $summoner['region'];
-	    $ProfileIconId = $summoner['profileIconId'];
-	    $RevisionDate = $summoner['revisionDate'];
-	    $SummonerLevel = $summoner['summonerLevel'];
-	    $summonertier = $summoner['summonerrank'][$SummonerId]['tier'];
-	    if($summonertier) {
-		    foreach ($summoner['summonerrank'][$SummonerId]['entries'] as $entry) {
-		     	if($entry['playerOrTeamId'] == $SummonerId)
-		     		$summonerrank = $entry['rank'];
-		    }
-	    } 
-	   else {
-	    	$summonerrank = "unranked";
-	    	$summonertier = "unranked";
-	    }
-	    $sql = "INSERT INTO summoners (UserId, SummonerId, SummonerName, region, ProfileIconId, RevisionDate, SummonerLevel, rank, tier) 
-	            VALUES ('" . $uid . "','" . $SummonerId . "', '" . $SummonerName . "',  '" . $region . "','" . $ProfileIconId . "', '" . $RevisionDate . "', '" . $SummonerLevel . "', '" . $summonertier . "', '" . $summonerrank . "')";
-		$result = $this->db1->query($sql);
-		return;
-	}
-
-	public function update_lol_champions($champions) {
-        $sql = "DELETE FROM champions_lol";
+	public function update_lol_spells($spells)
+	{
+		$sql = "DELETE FROM lol_spells";
         //clear db table
         $this->db1->query($sql);
 
-        $sql = "INSERT INTO champions_lol (championid,rankedPlayEnabled, name, active, freeToPlay) VALUES ";
-        foreach ($champions['champions'] as $champion) {
-            $sql .= "('" . $champion['id'] . "','" . $champion['rankedPlayEnabled'] . "','" . $champion['name'] . "','" . $champion['active'] . "','" . $champion['freeToPlay'] . "'),";
+        $sql = "INSERT INTO lol_spells (spellid, spell_name, sprite) VALUES ";
+		foreach ($spells['data'] as $spells) {
+			if(count($spells) > 2)
+			{
+				$sql .= "('" . $spells['id'] . "','" . rawurlencode($spells['name']) . "','" . $spells['image']['full'] . "'),";
+			}
         }
         $this->db1->query(trim($sql, ","));
+	}
 
+	public function update_lol_champions($champion)
+	{
+        $sql = "DELETE FROM lol_champions";
+        //clear db table
+        $this->db1->query($sql);
+
+        $sql = "INSERT INTO lol_champions (championid, name, sprite) VALUES ";
+		foreach ($champion['data'] as $champion) {
+			if(count($champion) > 2)
+			{
+				$sql .= "('" . $champion['id'] . "','" . rawurlencode($champion['name']) . "','" . $champion['image']['full'] . "'),";
+			}
+        }
+        $this->db1->query(trim($sql, ","));
+	}
+
+	public function update_lol_items($items)
+	{
+		$sql = "INSERT INTO lol_items (itemid, name, sprite) VALUES ";
+		foreach ($items['data'] as $item) {
+			if(count($item) > 2)
+			{
+				$sql .= "('" . $item['id'] . "','" . rawurlencode($item['name']) . "','" . $item['image']['full'] . "'),";
+			}
+        }
+
+        $sql = trim($sql, ",");
+        $sql .= " ON DUPLICATE KEY UPDATE name=VALUES(name), sprite=VALUES(sprite);";
+        $this->db1->query($sql);
 	}
 	
 }

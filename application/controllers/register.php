@@ -25,7 +25,7 @@ class Register extends MY_Controller
     $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email');
     $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
     $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
-    $this->form_validation->set_rules('timezone', 'Time Zone', 'required');
+    $this->form_validation->set_rules('timezones', 'Time Zone', 'required');
 
     if($this->form_validation->run() == FALSE)
     {
