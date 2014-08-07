@@ -2,14 +2,16 @@
 
 class Match_model extends MY_Model 
 {
-
+	const LOL_IMAGE_URL = "ddragon.leagueoflegends.com/cdn/4.13.1/img/sprite/";
 	const LOL_MAX_MATCH_DURATION = 8800; // 2:30hrs
 	const LOL_MIN_MATCH_DURATION = 1200; // 20 minutes
+	const DATE_FORMAT = "DATE_RSS";
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->db1 = $this->load->database('default', TRUE);
+		$this->load->library('lol_image_formatter');
 	}
 
 
@@ -54,6 +56,7 @@ class Match_model extends MY_Model
 
 	public function get_scheduled_matches($teamids, $time_now)
 	{
+
 		$sqla = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
@@ -109,6 +112,31 @@ class Match_model extends MY_Model
 		}
 		return $matchids;
 
+	}
+
+	public function get_upcoming_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
+	{
+		$time_now = time();
+		$sql = "SELECT m.matchid
+				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
+				WHERE p.playerid = '$playerid'
+					AND p.playerid = pt.playerid
+					AND pt.teamid = lt.teamid
+					AND l.leagueid = lt.leagueid
+					AND l.esportid = '$esportid'
+					AND lt.leagueid = m.leagueid
+					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
+					AND m.status = 'scheduled'
+					AND m.match_date > '$time_now'
+				ORDER BY m.match_date";
+		$result =$this->db1->query($sql);
+		$matchids_array = $result->result_array();
+		$matchids = array();
+		foreach ($matchids_array as $matchid)
+		{
+			array_push($matchids, $matchid['matchid']);
+		}
+		return $matchids;
 	}
 
 	public function get_finished_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
@@ -294,44 +322,86 @@ class Match_model extends MY_Model
 
 	private function _get_lol_player_stats($matchid)
 	{
-		$sql = "SELECT * FROM lol_statistics
-					WHERE matchid = '$matchid'";
+		$sql = "SELECT 	ls.*, 
+						lc.name AS champion_name, 
+						lc.sprite AS champion_icon, 
+						lsp.sprite AS spell_icon, 
+						lsp.spell_name
+				FROM 	lol_statistics ls, 
+						lol_champions lc, 
+						lol_spells lsp
+					WHERE 	ls.matchid = '$matchid'
+						AND	ls.championId = lc.championid
+						AND	(ls.spell1 = lsp.spellid OR ls.spell2 = lsp.spellid) ";
 		$results = $this->db1->query($sql);
 		$result = $results->result_array();
+		$players = array();
 		foreach ($result as $player_stats)
 		{
-			$temp_stats = array();
-			$temp_stats['teamId'] = $player_stats['teamId'];
-			$temp_stats['summmonerId'] = $player_stats['playerid'];
-			$temp_stats['championId'] = $player_stats['championId'];
-			$temp_stats['spell1'] = $player_stats['spell1'];
-			$temp_stats['spell2'] = $player_stats['spell2'];
-			$temp_stats['level'] = $player_stats['level'];
-			unset($player_stats['teamId']);
-			unset($player_stats['playerid']);
-			unset($player_stats['championId']);
-			unset($player_stats['spell1']);
-			unset($player_stats['spell2']);
-			$stats = array();
-			$stats['win'] = $player_stats['win'];
-			$stats['assists'] = $player_stats['assists'];
-			$stats['championsKilled'] = $player_stats['championsKilled'];
-			$stats['numDeaths'] = $player_stats['numDeaths'];
-			$stats['minionsKilled'] = $player_stats['minionsKilled'];
-			unset($player_stats['win']);
-			unset($player_stats['assists']);
-			unset($player_stats['championsKilled']);
-			unset($player_stats['numDeaths']);
-			unset($player_stats['minionsKilled']);
-			foreach ($player_stats as $key => $value)
+			$playerid = $player_stats['playerid'];
+			if(!array_key_exists($playerid, $players))
 			{
-				if($value != 0 && $value != '0' && $value != NULL)
+				$players[$playerid]['in_loop'] = 'yes';
+
+				$temp_stats = array();
+				$temp_stats['teamId'] = $player_stats['teamId'];
+				$temp_stats['summmonerId'] = $playerid;
+				$temp_stats['championId'] = $player_stats['championId'];
+				$temp_stats['champion_name'] = $player_stats['champion_name'];
+				$temp_stats['champion_icon'] = $this->lol_image_formatter->to_image_url($player_stats['champion_icon'],'champion');
+				$temp_stats['spell1id'] = $player_stats['spell1'];
+				$temp_stats['spell1_name'] = $player_stats['spell_name'];
+				$temp_stats['spell1_icon'] = $this->lol_image_formatter->to_image_url($player_stats['spell_icon'],'spell');
+				$temp_stats['spell2id'] = $player_stats['spell2'];
+
+				$temp_stats['level'] = $player_stats['level'];
+				unset($player_stats['teamId']);
+				unset($player_stats['playerid']);
+				unset($player_stats['championId']);
+				unset($player_stats['spell1']);
+				unset($player_stats['spell2']);
+				$stats = array();
+				$stats['win'] = $player_stats['win'];
+				$stats['assists'] = $player_stats['assists'];
+				$stats['championsKilled'] = $player_stats['championsKilled'];
+				$stats['numDeaths'] = $player_stats['numDeaths'];
+				$stats['minionsKilled'] = $player_stats['minionsKilled'];
+				unset($player_stats['win']);
+				unset($player_stats['assists']);
+				unset($player_stats['championsKilled']);
+				unset($player_stats['numDeaths']);
+				unset($player_stats['minionsKilled']);
+
+				foreach ($player_stats as $key => $value)
 				{
-					$stats[$key] = $value;
+					if($value != 0 && $value != '0' && $value != NULL)
+					{
+						$stats[$key] = $value;
+					}
 				}
+				for ($i=0; $i < 7; $i++)
+				{ 
+					$item_key = 'item'.$i;
+					if(!array_key_exists($item_key, $stats))
+					{
+
+						$stats[$item_key] = 0;
+					}
+					else
+					{
+						$sprite = $stats[$item_key] . ".png";
+						$img_url = $this->lol_image_formatter->to_image_url($sprite,'item');
+						$stats[$item_key] = $img_url;
+					}
+				}
+				$temp_stats['stats'] = $stats;
+				$players[$playerid] = $temp_stats;
 			}
-			$temp_stats['stats'] = $stats;
-			$players[$temp_stats['summmonerId']] = $temp_stats;
+			else
+			{
+				$players[$playerid]['spell2_icon'] = $this->lol_image_formatter->to_image_url($player_stats['spell_icon'],'spell');
+				$players[$playerid]['spell2_name'] = $player_stats['spell_name'];
+			}
 		}
 		return $players;
 	}
@@ -353,7 +423,7 @@ class Match_model extends MY_Model
 			$match['leagueid'] = $result['leagueid'];
 			$match['teamaid'] = $result['teamaid'];
 			$match['teambid'] = $result['teambid'];
-			$match['match_date'] = $this->get_local_datetime($result['match_date']);
+			$match['match_date'] = $result['match_date'];
 			$match['winnerid'] = $result['winnerid'];
 			$match['status'] = $result['status'];
 			array_push($matches, $match);
@@ -378,7 +448,7 @@ class Match_model extends MY_Model
 			$match['leagueid'] = $result['leagueid'];
 			$match['teamaid'] = $result['teamaid'];
 			$match['teambid'] = $result['teambid'];
-			$match['match_date'] = $this->get_local_datetime($result['match_date']);
+			$match['match_date'] = $result['match_date'];
 			$match['winnerid'] = $result['winnerid'];
 			$match['status'] = $result['status'];
 			array_push($matches, $match);

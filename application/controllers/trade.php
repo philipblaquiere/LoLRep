@@ -8,14 +8,8 @@ class Trade extends MY_Controller
 	public function __construct()
     {
         parent::__construct();
-        $this->load->model('user_model');
         $this->load->model('system_message_model');
-        $this->load->model('country_model');
-        $this->load->model('ip_log_model');
-        $this->load->model('esport_model');
         $this->load->model('team_model');
-        $this->load->model('lol_model');
-        $this->load->model('trade_lol_model');
     }
 
     public function lol() 
@@ -29,7 +23,7 @@ class Trade extends MY_Controller
             //user is captain, proceed
             $data['team'] = $team;
             $data['team_lol'] = $this->team_model->get_team_lol($team['teamid']);
-            $this->view_wrapper('team_trade_lol',$data);
+            $this->view_wrapper('team_trade_lol',$data, false);
         }
         else
         {

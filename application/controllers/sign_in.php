@@ -10,14 +10,8 @@ class Sign_in extends MY_Controller
     parent::__construct();
     $this->load->model('user_model');
     $this->load->model('system_message_model');
-    $this->load->model('country_model');
-    $this->load->model('ip_log_model');
-    $this->load->model('esport_model');
     $this->load->model('player_model');
-    $this->load->model('team_model');
-    $this->load->model('league_model');
     $this->load->model('banned_model');
-    $this->load->model('season_model');
   }
 
   public function index()
@@ -32,7 +26,7 @@ class Sign_in extends MY_Controller
       redirect('home', 'location');
     }
     $data = array('page_title' => 'Sign In');
-    $this->view_wrapper('user/sign_in', $data);
+    $this->view_wrapper('user/sign_in', $data, false);
   }
 
   public function sign_in()
@@ -46,7 +40,7 @@ class Sign_in extends MY_Controller
 
     if($this->form_validation->run() == FALSE)
     {
-        $this->view_wrapper('sign_in');
+        $this->view_wrapper('sign_in', array(), false);
     } 
     else
     {
@@ -58,14 +52,14 @@ class Sign_in extends MY_Controller
       if(!$user)
       {
         $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
-        $this->view_wrapper('sign_in');
+        $this->view_wrapper('sign_in', array(), false);
       }
 
       else if($user['validated'] == 0)
       {
         //user did not validate themselves, prompt them to resend the validation email.
         $this->system_message_model->set_message('Hey! This account was never validated. Check your emails for an email we sent you!', MESSAGE_INFO);
-        $this->view_wrapper('sign_in');
+        $this->view_wrapper('sign_in', array(), false);
       }
       else if($this->_validate_password($user,$password)) 
       {
@@ -74,7 +68,7 @@ class Sign_in extends MY_Controller
         if($banned_user)
         {
           $this->system_message_model->set_message('You have been banned from our website. Reason : ' . $banned_user['reason'], MESSAGE_INFO);
-          $this->view_wrapper('sign_in');
+          $this->view_wrapper('sign_in', array(), false);
           return;
         }
         //user validated, proced with login
@@ -91,7 +85,7 @@ class Sign_in extends MY_Controller
       else
       {
         $this->system_message_model->set_message('There is an error in your email or password', MESSAGE_INFO);
-        $this->view_wrapper('sign_in');
+        $this->view_wrapper('sign_in', array(), false);
       }
     }
   }

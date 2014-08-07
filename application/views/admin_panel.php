@@ -18,21 +18,14 @@
 		<td><button type="submit">Ban</button><?php echo form_close(); ?><td>
 	</tr>
 	<tr>
+		<td>Update LoL Items</td>
 		<td></td>
-		<td><?php echo form_open('admin/ban_summoner_by_summonername', array('class' => 'form-horizontal')); ?>
-				<input name="ban_summonername" type="text" value="" placeholder="Summoner Name"/>
-				<input name="ban_reason" type="text" value="" placeholder="Reason"/>
-		</td>
-		<td><button type="submit">Ban</button><?php echo form_close(); ?><td>
+		<td><a href="<?php echo site_url('admin/update_lol_items') ?>" role="button">Update Items</a><td>
 	</tr>
 	<tr>
-		<td>Create a Season</td>
-		<td><?php echo form_open('admin/create_season', array('class' => 'form-horizontal')); ?>
-				<input name="name" type="text" placeholder="Season Name"/>
-				<input name="registration_start" type="text" class="datepicker" placeholder="Registration Begins" />
-				<input name="enddate" type="text" class="datepicker" placeholder="End Date"/>
-		</td>
-		<td><button type="submit">Create Season</button><?php echo form_close(); ?><td>
+		<td>Update LoL Spells</td>
+		<td></td>
+		<td><a href="<?php echo site_url('admin/update_lol_spells') ?>" role="button">Update Spells</a><td>
 	</tr>
 	<tr>
 		<td>"Open" a Season</td>

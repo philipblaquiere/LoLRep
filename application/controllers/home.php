@@ -11,6 +11,6 @@ class Home extends MY_Controller {
 
 	public function index()
 	{
-		$this->view_wrapper('home');
+		$this->view_wrapper('home', array(), false);
 	}
 }

@@ -20,6 +20,47 @@ class Player_model extends MY_Model {
 		return;
 	}
 
+	public function get_player($playerid, $esportid)
+	{
+		$sql = "SELECT p.*, t.teamid
+				FROM players p, teams t, player_teams pt
+				WHERE p.playerid = '$playerid'
+					AND p.esportid = '$esportid'
+					AND p.playerid = pt.playerid
+					AND pt.teamid = t.teamid";
+		$result = $this->db1->query($sql);
+		$results = $result->result_array();
+
+		$player = array();
+
+		if(!empty($results))
+		{
+			foreach ($results as $player_result)
+			{
+				if(empty($player))
+				{
+					$player['playerid'] = $player_result['playerid'];
+					$player['player_name'] = $player_result['player_name'];
+					$player['region'] = $player_result['region'];
+					$player['icon'] = $player_result['icon'];
+					$player['teams'] = array();
+
+					if(array_key_exists('teamid', $player_result))
+					{
+
+						array_push($player['teams'], $player_result['teamid']);
+					}
+					$player['registered'] = TRUE;
+				}
+				else
+				{
+					array_push($player['teams'], $player_result['teamid']);
+				}
+			}
+		}
+		return $player;
+	}
+
 	public function get_player_by_name($player_name, $esportid)
 	{
 		$sql = "SELECT 	p.player_name as player_name,

@@ -10,8 +10,6 @@ class Register extends MY_Controller
         parent::__construct();
         $this->load->model('user_model');
         $this->load->model('system_message_model');
-        $this->load->model('country_model');
-        $this->load->model('ip_log_model');
         $this->load->model('banned_model');
   }
   
@@ -27,11 +25,11 @@ class Register extends MY_Controller
     $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email|callback_unique_email');
     $this->form_validation->set_rules('password1', 'Password', 'required|xss_clean|callback_password_match');
     $this->form_validation->set_rules('password2', 'Re-Password', 'required|xss_clean');
-    $this->form_validation->set_rules('timezone', 'Time Zone', 'required');
+    $this->form_validation->set_rules('timezones', 'Time Zone', 'required');
 
     if($this->form_validation->run() == FALSE)
     {
-      $this->view_wrapper('register');
+      $this->view_wrapper('register', array(), false);
     } 
 
     else
@@ -45,7 +43,7 @@ class Register extends MY_Controller
 
       $this->system_message_model->set_message('We sent you a confirmation email, follow the link to complete your registration.', MESSAGE_INFO);
 
-      $this->view_wrapper('pending_validation');
+      $this->view_wrapper('pending_validation', array(), false);
     }
   }
 
@@ -84,7 +82,7 @@ class Register extends MY_Controller
     if($this->user_model->validate_user($key, $uid))
     {
       //user validation succeeded, proceed with asking user to sign in to continue
-      $this->view_wrapper('user/user_validated');
+      $this->view_wrapper('user/user_validated', array(), false);
     }
   }
 

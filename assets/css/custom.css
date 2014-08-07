@@ -3,8 +3,14 @@
  */
  body {
   padding-top: 50px;
- }
 
+ }
+#wrap {
+  margin: 0 auto -251px;
+  padding: 0 0 311px;
+  height: auto;
+
+}
 #system-messages {
   background-color: #fff;
 }
@@ -58,42 +64,13 @@
   width: 320px;
 }
 
-.match-results-lol {
-  width: 500px;
-  text-align: center;
-  background: rgba(0,255,0,0.2);
-}
-
-.match-results-lol .items-lol {
-  width: 80px;
-}
-
-.match-result-lol .left {
-  text-align: left;
-}
-
-.match-result-lol .right {
-  text-align: right;
-}
-
-.match-result-lol .blue-side {
-  background-color: rgba(48, 32, 255, 0.9);
-}
-.match-result-lol .purple-side {
-  background: rgba(158, 39, 255, 0.9);
-}
-
-.region-list {
-
-}
-
 .profile-header {
   height: 221px;
   width:100%;
-  background-color: rgba(40, 38, 38, 0.9);
+  background-color: #2c2c2c;  
 }
 
-.profile-player-name {
+.banner-title-big {
   /* For Safari 3.1 to 6.0 */
     -webkit-transition-property: padding;
     -webkit-transition-duration: 0.23s;
@@ -101,16 +78,64 @@
     -webkit-transition-delay: 0s;
     /* Standard syntax */
     transition-property: padding;
-    transition-duration: 0.2s;
+    transition-duration: 0.23s;
     transition-timing-function: exponential;
     transition-delay: 0s;
   display: inline-block;
-  padding: 33px 20px 0px 100px;
+  padding: 33px 0px 0px 0px;
   font-size: 200px;
   overflow: hidden;
-  color: #C6C6C6;
+  color: #cbcbcd;
   height: 220px;
 }
-.profile-player-name:hover {
-  padding: 0px 20px 0px 100px ;
+
+.banner-title-big:hover {
+  padding: 0px 0px 0px 0px ;
+}
+
+
+.lol-match-player-name {
+
+}
+.lol-match-icon {
+  height: 28px;
+  width: 28px;
+  display: inline-block;
+  box-shadow: 0px 0px 1px #949494;
+}
+.lol-match {
+  padding: 20px 0px 0px 0px;
+}
+.lol-match-player-level {
+  font-size: 10px;
+  display: inline-block;
+}
+
+.lol-match-item-group {
+  vertical-align: middle;
+}
+
+.main_content{
+  background-color: #cbcbcd;
+}
+
+.open_sans{
+  font-family: 'Open Sans', sans-serif;
+}
+
+.spinner{
+  text-align: center;
+  padding-top: 10px;
+  display: inline-block;
+  position: absolute;
+}
+
+.color-pallette{
+  #0ba89c teal
+  #7c1c22 red
+  #2b382b dark green
+  #2c2c2c dark grey
+  #949494 grey
+  #cbcbcd light grey
+  #060708 black
 }

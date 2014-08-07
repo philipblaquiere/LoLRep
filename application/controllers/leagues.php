@@ -27,13 +27,20 @@ class Leagues extends MY_Controller{
         $leagues = $this->league_model->get_leagues($this->get_esportid());
         $leagueids = $this->_extract_values('leagueid', $leagues);
         $league_teams = $this->league_model->get_league_teams($this->get_esportid(),$leagueids);
-        $player = $this->get_player();
-        $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
-        $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
+
+        $player_teams = array();
+        $captain_team = array();
+        if($this->is_player_registered())
+        {
+            $player = $this->get_player();
+            $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
+            $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
+        }
+        
         if(empty($player_teams))
         {
            //user isn't part of a team, let the user know that he can't join a league
-            $this->system_message_model->set_message("You must be part and captain of a team to join a league.", MESSAGE_WARNING);
+            $this->system_message_model->set_message("You must be part and captain of a team to join a league", MESSAGE_WARNING);
         }
         
         foreach ($leagues as $league)
@@ -94,7 +101,7 @@ class Leagues extends MY_Controller{
         $data['current_league'] = empty($current_league) ? array() : $current_league;
         $data['max_league_count'] = $this->MAX_LEAGUE_COUNT;
         
-        $this->view_wrapper('view_leagues', $data);
+        $this->view_wrapper('view_leagues', $data, false);
     }
 
     public function create()
@@ -117,7 +124,7 @@ class Leagues extends MY_Controller{
 
         if($this->form_validation->run() == FALSE)
         {
-            $this->view_wrapper('create_league', $data);
+            $this->view_wrapper('create_league', $data, false);
         }
 
         else
@@ -159,7 +166,7 @@ class Leagues extends MY_Controller{
             $league['invite'] = in_array("inviteonly", $input) ? 1 : 0;
             $league['privateleague'] = in_array("private", $input) ? 1 : 0;
             $league['league_meta'] = $leagues_meta;
-            $this->view_wrapper('create_league', $data);
+            $this->view_wrapper('create_league', $data, false);
             if($this->league_model->create_league($league,$season))
             {
                 $this->system_message_model->set_message('The League has been created.', MESSAGE_INFO);
@@ -245,7 +252,7 @@ class Leagues extends MY_Controller{
         $data['teams'] = $league_teams;
         $data['league'] = $league;
         $data['schedule'] = $schedule;
-        $this->view_wrapper('view_league', $data);
+        $this->view_wrapper('view_league', $data, false);
 
     }
 

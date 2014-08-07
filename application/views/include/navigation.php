@@ -18,8 +18,9 @@
                 <ul class="dropdown-menu">
                   <?php if(empty($_SESSION['player'])){ ?>
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add eSport</a></li>
-                <?php } ?>
+                  <?php } else { ?>
                   <li><a href="<?php echo site_url('profile'); ?>"><?php echo $_SESSION['player']['player_name']; ?></a></li>
+                  <?php } ?>
                   <li><a href="<?php echo site_url('teams'); ?>">My Team</a></li>
                   <li><a href="<?php echo site_url('teams/create'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('leagues/create'); ?>">Create League</a></li>
@@ -58,5 +59,3 @@
       </div>
     </div>
   </nav><!-- Static nav -->
-<div style="padding:20px 0 0 0" class="container">
-<!-- Content -->
