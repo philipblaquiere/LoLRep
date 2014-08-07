@@ -25,14 +25,13 @@ class Lol_image_formatter
 			$this->version = $result['v'];
 			$this->api_url = $result['cdn'];
 		}
-		
 	}
 
 	public function to_image_url($sprite, $type)
 	{
 		switch ($type) {
 			case 'item':
-				return $this->api_url . "/" . $this->version . self::ITEM_IMAGE_URL . "/" .$sprite;
+				return $this->api_url . "/" . $this->version . self::ITEM_IMAGE_URL . "/" . $sprite;
 				break;
 			case 'champion':
 				return $this->api_url . "/" . $this->version . self::CHAMPION_IMAGE_URL . "/" .$sprite;
@@ -44,6 +43,5 @@ class Lol_image_formatter
 				# code...
 				break;
 		}
-		
 	}
 }

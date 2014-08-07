@@ -17,7 +17,7 @@ class Admin extends MY_Controller{
     public function index()
     {
         $data['result'] = array();
-        $this->view_wrapper('admin_panel',$data);
+        $this->view_wrapper('admin_panel',$data, false);
     }
 
     public function update_lol_champions()
@@ -25,7 +25,7 @@ class Admin extends MY_Controller{
         $champions = $this->lol_api->getChampions();
         $this->lol_model->update_lol_champions($champions);
         $this->system_message_model->set_message("Update League of Legends Champions Complete" , MESSAGE_INFO);
-        $this->view_wrapper('admin_panel');
+        $this->view_wrapper('admin_panel', array(), false);
     }
 
     public function ban_summoner_byemail()
@@ -36,7 +36,7 @@ class Admin extends MY_Controller{
         $user = $this->banned_model->get_summoner_byemail($email);
         $this->banned_model->_ban_summoner($user,$reason);
         $this->system_message_model->set_message("User has been banned" , MESSAGE_INFO);
-        $this->view_wrapper('admin_panel');
+        $this->view_wrapper('admin_panel', array(), false);
     }
 
     public function ban_summoner_by_summonername()
@@ -47,7 +47,7 @@ class Admin extends MY_Controller{
         $user = $this->banned_model->get_summoner_by_summonername($summonername);
         $this->banned_model->_ban_summoner($user,$reason);
         $this->system_message_model->set_message("User has been banned" , MESSAGE_INFO);
-        $this->view_wrapper('admin_panel');
+        $this->view_wrapper('admin_panel', array(), false);
     }
 
     private function _ban_summoner($user,$reason)
@@ -59,7 +59,7 @@ class Admin extends MY_Controller{
         $items = $this->lol_api->getItems();
         $this->lol_model->update_lol_items($items);
         $this->system_message_model->set_message("Update League of Legends Items Complete" , MESSAGE_INFO);
-        $this->view_wrapper('admin_panel');
+        $this->view_wrapper('admin_panel', array(), false);
     }
 
      public function update_lol_spells()
@@ -67,6 +67,6 @@ class Admin extends MY_Controller{
         $spells = $this->lol_api->getSummonerSpells();
         $this->lol_model->update_lol_spells($spells);
         $this->system_message_model->set_message("Update League of Legends Spells Complete" , MESSAGE_INFO);
-        $this->view_wrapper('admin_panel');
+        $this->view_wrapper('admin_panel', array(), false);
     }
 }

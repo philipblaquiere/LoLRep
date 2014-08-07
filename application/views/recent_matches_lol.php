@@ -1,3 +1,6 @@
+<?php if(empty($matches)) { ?>
+<span class="open_sans">No matches have been played</span>
+<?php } ?>
 <?php foreach ($matches as $match) { ?>
 
 <div class="lol-match row">

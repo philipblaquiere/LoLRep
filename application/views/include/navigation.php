@@ -59,5 +59,3 @@
       </div>
     </div>
   </nav><!-- Static nav -->
-<div style="padding:20px 0 0 0" class="container">
-<!-- Content -->

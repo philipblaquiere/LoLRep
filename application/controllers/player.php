@@ -10,11 +10,25 @@ class Player extends MY_Controller{
     $this->load->model('system_message_model');
     $this->load->model('player_model');
   }
-  public function index()
+
+  function _remap($playerid)
   {
-    $data['player'] = $this->get_player();
+    $this->index($playerid);
+  }
+
+  public function index($playerid)
+  {
+    $this->require_login();
+    $this->require_registered();
+    $player = $this->player_model->get_player($playerid,$this->get_esportid());
+    $data['player'] = $player;
+    $data['banner']['title_big'] = $player['player_name'];
     $data['is_logged_in'] = $this->is_logged_in();
-    $this->view_wrapper('profile', $data);
+    $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+    /*$this->load->library('match_aggregator', $params);
+    $matches = $this->match_aggregator->get_recent_matches();
+    print_r($matches);*/
+    $this->view_wrapper('profile',$data);
   }
 
   public function create()

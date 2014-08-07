@@ -101,7 +101,7 @@ class Leagues extends MY_Controller{
         $data['current_league'] = empty($current_league) ? array() : $current_league;
         $data['max_league_count'] = $this->MAX_LEAGUE_COUNT;
         
-        $this->view_wrapper('view_leagues', $data);
+        $this->view_wrapper('view_leagues', $data, false);
     }
 
     public function create()
@@ -124,7 +124,7 @@ class Leagues extends MY_Controller{
 
         if($this->form_validation->run() == FALSE)
         {
-            $this->view_wrapper('create_league', $data);
+            $this->view_wrapper('create_league', $data, false);
         }
 
         else
@@ -166,7 +166,7 @@ class Leagues extends MY_Controller{
             $league['invite'] = in_array("inviteonly", $input) ? 1 : 0;
             $league['privateleague'] = in_array("private", $input) ? 1 : 0;
             $league['league_meta'] = $leagues_meta;
-            $this->view_wrapper('create_league', $data);
+            $this->view_wrapper('create_league', $data, false);
             if($this->league_model->create_league($league,$season))
             {
                 $this->system_message_model->set_message('The League has been created.', MESSAGE_INFO);
@@ -252,7 +252,7 @@ class Leagues extends MY_Controller{
         $data['teams'] = $league_teams;
         $data['league'] = $league;
         $data['schedule'] = $schedule;
-        $this->view_wrapper('view_league', $data);
+        $this->view_wrapper('view_league', $data, false);
 
     }
 

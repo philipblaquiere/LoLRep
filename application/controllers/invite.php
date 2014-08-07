@@ -36,7 +36,7 @@ class Invite extends MY_Controller
 
         if($this->form_validation->run() == FALSE)
         {
-            $this->view_wrapper('team_invite_lol',$data);
+            $this->view_wrapper('team_invite_lol',$data, false);
         }
         else
         {

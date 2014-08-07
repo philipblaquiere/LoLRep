@@ -36,7 +36,7 @@ class Add_esport extends MY_Controller{
 		}
 		else
 		{
-			$this->view_wrapper('register_lol');
+			$this->view_wrapper('register_lol', array(), false);
 		}
 	}
 }

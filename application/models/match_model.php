@@ -56,6 +56,7 @@ class Match_model extends MY_Model
 
 	public function get_scheduled_matches($teamids, $time_now)
 	{
+
 		$sqla = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
@@ -217,7 +218,7 @@ class Match_model extends MY_Model
 			{
 				$temp_match = $match;
 				$temp_match['matchid'] = $match['matchid'];
-				$temp_match['match_date'] = $this->gmt_to_local($match['match_date']);
+				$temp_match['match_date'] = $match['match_date'];
 				$temp_match['status'] = $match['status'];
 				$temp_match['leagueid'] = $match['leagueid'];
 				$temp_match['league_name'] = $match['league_name'];
@@ -422,7 +423,7 @@ class Match_model extends MY_Model
 			$match['leagueid'] = $result['leagueid'];
 			$match['teamaid'] = $result['teamaid'];
 			$match['teambid'] = $result['teambid'];
-			$match['match_date'] = $this->get_local_datetime($result['match_date']);
+			$match['match_date'] = $result['match_date'];
 			$match['winnerid'] = $result['winnerid'];
 			$match['status'] = $result['status'];
 			array_push($matches, $match);
@@ -447,7 +448,7 @@ class Match_model extends MY_Model
 			$match['leagueid'] = $result['leagueid'];
 			$match['teamaid'] = $result['teamaid'];
 			$match['teambid'] = $result['teambid'];
-			$match['match_date'] = $this->get_local_datetime($result['match_date']);
+			$match['match_date'] = $result['match_date'];
 			$match['winnerid'] = $result['winnerid'];
 			$match['status'] = $result['status'];
 			array_push($matches, $match);

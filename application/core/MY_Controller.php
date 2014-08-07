@@ -7,7 +7,7 @@
  */
 class MY_Controller extends CI_Controller  {
 
-  private $TIMEZONE_DEFAULT = "UTC";
+  const TIMEZONE_DEFAULT = "UM5";
 
   public function __construct()
   {
@@ -25,7 +25,7 @@ class MY_Controller extends CI_Controller  {
    * Load the specified View, automatically wrapping it between the site's
    * header and footer.
    */
-  public function view_wrapper($template, $data = array(), $display_messages = TRUE) {
+  public function view_wrapper($template, $data = array(), $display_banner = TRUE, $display_messages = TRUE) {
     $data['system_messages'] = array();
     if ($display_messages) {
       $data['system_messages'] = $this->system_message_model->get_messages();
@@ -39,6 +39,11 @@ class MY_Controller extends CI_Controller  {
     }
 
     $this->load->view('include/navigation', $data);
+    if($display_banner)
+    {
+      $this->load->view('banner_header', $data);
+    }
+    $this->load->view('include/container', $data);
     $this->load->view('include/system_messages', $data);
     $this->load->view($template, $data);
     $this->load->view('include/footer');
@@ -189,7 +194,7 @@ class MY_Controller extends CI_Controller  {
   */
   protected function get_local_date($epoch, $format = 'F j, Y')
   {
-    $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
+    $date = new DateTime("@$epoch", new DateTimeZone(self::TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
       $date->setTimezone(new DateTimeZone($_SESSION['user']['time_zone']));
     }
@@ -201,7 +206,7 @@ class MY_Controller extends CI_Controller  {
   */
   protected function get_local_datetime($epoch, $format='F j, Y H:i:s')
   {
-    $date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
+    $date = new DateTime("@$epoch", new DateTimeZone(self::TIMEZONE_DEFAULT));
     if($_SESSION['user']) {
       $date->setTimezone(new DateTimeZone($_SESSION['user']['time_zone']));
     }
@@ -213,8 +218,8 @@ class MY_Controller extends CI_Controller  {
     date_default_timezone_set($_SESSION['user']['time_zone']);
     $epoch = strtotime($date);
     $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['time_zone']));
-    $defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
-    date_default_timezone_set($this->TIMEZONE_DEFAULT);
+    $defdate->setTimezone(new DateTimeZone(self::TIMEZONE_DEFAULT));
+    date_default_timezone_set(self::TIMEZONE_DEFAULT);
     return $defdate->getTimestamp();;
   }
 
@@ -235,6 +240,23 @@ class MY_Controller extends CI_Controller  {
   protected function get_salt()
   {
     return "LF98af2kF4K2kjL!dB";
+  }
+
+  protected function local_to_gmt($local_time)
+  {
+    return unix_to_human(local_to_gmt($local_time));
+  }
+
+  protected function gmt_to_local($gmt_time)
+  {
+    if($_SESSION['user']) {
+      $time_zone = $_SESSION['user']['time_zone'];
+    }
+    else
+    {
+      $time_zone = self::TIMEZONE_DEFAULT;
+    }
+    return unix_to_human(gmt_to_local($gmt_time, $time_zone, date("I",$gmt_time)));
   }
 
 }

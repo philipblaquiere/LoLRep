@@ -46,7 +46,6 @@ class Match_updater
         if($scheduled_matchids)
         {
             $scheduled_matches = $this->CI->match_model->get_matches($scheduled_matchids, $this->esportid);
-
             switch ($this->esportid)
             {
                 case '1':
@@ -80,23 +79,25 @@ class Match_updater
         $match_results = array();
         $recent_lol_matches = array();
         $formatted_matches = array();
+        if($include_invalid_results)
+        {
+            $formatted_matches['invalid'] = array();
+        }
         foreach ($scheduled_matches as $scheduled_match)
         {
             if(!$this->CI->match_cache->has_match($scheduled_match['matchid']))
             {
+                $recent_lol_matches = $this->CI->lol_api->get_recent_matches($this->playerid);
                 if(empty($recent_lol_matches))
                 {
-                    $recent_lol_matches = $this->CI->lol_api->get_recent_matches($this->playerid);
-                    if(empty($recent_lol_matches))
-                    {
-                        return "Unable to process request, LoL API is not responding";
-                    }
+                    return "Unable to process request, LoL API is not responding";
                 }
 
                 $match_result = $this->CI->match_validator->validate($scheduled_match, $recent_lol_matches, $include_invalid_results, $this->esportid);
-
+                
                 if(count($match_result['valid_matches']) >= 1)
                 {
+
                     $match_results[$scheduled_match['matchid']] = $match_result;
                     $scheduled_match['gameid'] = $match_result['valid_matches'][0]['match_details']['gameId'];
                     $match_results[$scheduled_match['matchid']]['match_info'] = $scheduled_match;
@@ -133,6 +134,10 @@ class Match_updater
                     $this->_add_match_to_cache($formatted_match);
                     array_push($formatted_matches, $formatted_match);
                 }
+                elseif($include_invalid_results)
+                {
+                    array_push($formatted_matches['invalid'], $match_result);
+                }
             }
             else
             {
@@ -149,7 +154,7 @@ class Match_updater
 
     private function _add_match_to_cache($match)
     {
-        $this->CI->match_cache->add_match($match);
+        $this->CI->match_cache->add_matches(array($match));
     }
 
     private function _get_unified_team_array($match)

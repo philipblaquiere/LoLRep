@@ -56,70 +56,44 @@ $(document).on('submit','#rune_page_verification',function(event) {
     });
 });
 
-$('#lolteamsearchform').submit(function(event) {
-        /* Stop form from submitting normally */
-        event.preventDefault();
-
-        /* Clear rune page div*/
-        $("#team_lol_search_result").html('');
-
-        /* Get some values from elements on the page: */
-       var teamname = document.getElementById("teamname").value;
-       if(teamname == "")
-        teamname = "-";
-        
-        /* Send the data using post and put the results in a div */
-        $.ajax({
-            url: '/LoLRep/ajax/find_team_lol/' + teamname.trim(),
-            type: "post",
-            data: teamname,
-            success: function(data){
-                $("#team_lol_search_result").html(data);
-            },
-            error:function(jqXHR, textStatus, errorThrown){
-                $("#team_lol_search_result").html(summonername + " error " + textStatus + " " + errorThrown );
-            }
-        });
-    });
-
 //used in profile page
-$("#view-recent-matches").click(function(event) {
+$("#view-player-recent-matches").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
-
+    var playerid = $(event.currentTarget).attr('data-id');
     /* Clear profile content*/
-    $("#profile-content").html('');
+    $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
 
     $.ajax({
-            url: '/LoLRep/ajax/profile_recent_matches/',
+            url: '/LoLRep/ajax/player_recent_matches/'+ playerid,
             type: "post",
             data: {},
             success: function(data){
-                $("#profile-content").html(data);
+                $("#main-content").html(data);
             },
             error:function(jqXHR, textStatus, errorThrown){
-                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+                $("#main-content").html("error while loading matches " + textStatus + " " + errorThrown );
             }
         });
 });
 
 //used in profile page
-$("#view-upcoming-matches").click(function(event) {
+$("#view-player-upcoming-matches").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
-
+    var playerid = $(event.currentTarget).attr('data-id');
     /* Clear profile content*/
-    $("#profile-content").html('');
+    $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
 
     $.ajax({
-            url: '/LoLRep/ajax/profile_upcoming_matches/',
+            url: '/LoLRep/ajax/player_upcoming_matches/' + playerid,
             type: "post",
             data: {},
             success: function(data){
-                $("#profile-content").html(data);
+                $("#main-content").html(data);
             },
             error:function(jqXHR, textStatus, errorThrown){
-                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+                $("#main-content").html("error while loading team " + textStatus + " " + errorThrown );
             }
         });
 });

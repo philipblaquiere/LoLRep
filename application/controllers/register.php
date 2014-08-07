@@ -29,7 +29,7 @@ class Register extends MY_Controller
 
     if($this->form_validation->run() == FALSE)
     {
-      $this->view_wrapper('register');
+      $this->view_wrapper('register', array(), false);
     } 
 
     else
@@ -43,7 +43,7 @@ class Register extends MY_Controller
 
       $this->system_message_model->set_message('We sent you a confirmation email, follow the link to complete your registration.', MESSAGE_INFO);
 
-      $this->view_wrapper('pending_validation');
+      $this->view_wrapper('pending_validation', array(), false);
     }
   }
 
@@ -82,7 +82,7 @@ class Register extends MY_Controller
     if($this->user_model->validate_user($key, $uid))
     {
       //user validation succeeded, proceed with asking user to sign in to continue
-      $this->view_wrapper('user/user_validated');
+      $this->view_wrapper('user/user_validated', array(), false);
     }
   }
 

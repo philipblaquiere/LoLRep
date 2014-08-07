@@ -17,7 +17,7 @@ class Esport extends MY_Controller{
     public function register_LoL()
     {
         $this->require_login();
-        $this->view_wrapper('user/register_LoL');
+        $this->view_wrapper('user/register_LoL', array(), false);
     }
     
 }

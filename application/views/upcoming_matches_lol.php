@@ -1,3 +1,7 @@
+<?php if(empty($matches)) { ?>
+<span class="open_sans">No scheduled matches</span>
+<?php } ?>
+
 <?php foreach ($matches as $match) { ?>
 
 <div class="lol-match row">

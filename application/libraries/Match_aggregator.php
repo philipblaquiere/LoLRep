@@ -26,16 +26,14 @@ class Match_aggregator
 
         //Get matches which may by in the db;
         $new_matches = $this->CI->match_updater->update();
-        if(!array_key_exists('error', $new_matches))
+        if(!array_key_exists('error', $new_matches) && !empty($new_matches))
         {
             foreach ($new_matches as $new_match)
             {
                 $aggregated_matches[$new_match[self::MATCHID]] = $new_match;
             }
         }
-        
         $finished_matchids = $this->_get_finished_matches($this->params[self::PLAYERID], $this->params[self::ESPORTID]);
-
 
         //Get already cached matches associated to finished match.
         foreach ($finished_matchids as $finished_matchid )
@@ -56,7 +54,10 @@ class Match_aggregator
         //Add NON_DIRTY matches to match_cache;
         foreach ($matches as $match)
         {
-            $aggregated_matches[$match[self::MATCHID]] = $match;
+            if(!empty($match))
+            {
+                $aggregated_matches[$match[self::MATCHID]] = $match;
+            }
         }
         $this->CI->match_cache->add_matches($matches, self::NON_DIRTY);
         return $aggregated_matches;
@@ -87,6 +88,7 @@ class Match_aggregator
             $upcoming_matches[$match[self::MATCHID]] = $match;
         }
         $this->CI->match_cache->add_matches($matches, self::NON_DIRTY);
+
         return $upcoming_matches;
     }
 

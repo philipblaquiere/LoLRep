@@ -14,8 +14,8 @@ class Ajax extends MY_Controller
 
 	public function authenticate_summoner($region, $summonerinput)
 	{
-		  $region = urldecode($region);
-      $region = 'na';
+		 $region = urldecode($region);
+      	$region = 'na';
 	    if($summonerinput== "-")
 	    {
 	       //user didn't enter anything, show error message and reload.
@@ -61,11 +61,11 @@ class Ajax extends MY_Controller
 					$_SESSION['runepagekey'] = $this->user_model->generate_rune_page_key();
 					$data['runepagekey'] = $_SESSION['runepagekey'];
 					$_SESSION['player']['player_name'] = $riotsummoners[$summonerinput]['name'];
-          $_SESSION['player']['playerid'] = $riotsummoners[$summonerinput]['id'];
-          $_SESSION['player']['icon'] = $riotsummoners[$summonerinput]['profileIconId'];
-          $_SESSION['player']['player_name'] = $riotsummoners[$summonerinput]['name'];
+					$_SESSION['player']['playerid'] = $riotsummoners[$summonerinput]['id'];
+					$_SESSION['player']['icon'] = $riotsummoners[$summonerinput]['profileIconId'];
+					$_SESSION['player']['player_name'] = $riotsummoners[$summonerinput]['name'];
 					$_SESSION['player']['region'] = $riotsummoners['region'];
-			  	$runepages = $this->lol_api->getSummoner($_SESSION['player']['playerid'],"runes");
+			  		$runepages = $this->lol_api->getSummoner($_SESSION['player']['playerid'],"runes");
 					$this->load->view('ajax/authenticate_summoner',$data);
 					return;
 				}
@@ -78,7 +78,8 @@ class Ajax extends MY_Controller
 				}
 			}
 		}
-  	}//end function
+		//end function
+  	}
 
 	public function rune_page_verification()
 	{
@@ -136,87 +137,88 @@ class Ajax extends MY_Controller
 		}
 	}
 
-  public function profile_recent_matches()
-  {
-    $player = $this->get_player();
-    $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
-    $this->load->library('match_aggregator', $params);
-    $matches = $this->match_aggregator->get_recent_matches();
-    $data['matches'] = $matches;
-    $prefix = $this->get_esport_prefix();
-    if($prefix == "")
-    {
-      return NULL;
-    }
-    $view = "recent_matches_".$prefix;
-    $this->load->view($view, $data);
-  }
+	public function player_recent_matches($playerid)
+	{
+		$player = $this->player_model->get_player($playerid, $this->get_esportid());
+		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+		$this->load->library('match_aggregator', $params);
+		$matches = array_filter($this->match_aggregator->get_recent_matches());
+		$data['matches'] = $matches;
+		//print_r($matches);
+		$prefix = $this->get_esport_prefix();
+		if($prefix == "")
+		{
+		  return NULL;
+		}
+		$view = "recent_matches_".$prefix;
+		$this->load->view($view, $data);
+	}
 
-  public function profile_upcoming_matches()
-  {
-    $player = $this->get_player();
-    $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
-    $this->load->library('match_aggregator', $params);
-    $matches = $this->match_aggregator->get_upcoming_matches();
-    $data['matches'] = $matches;
-    $prefix = $this->get_esport_prefix();
-    if($prefix == "")
-    {
-      return NULL;
-    }
-    $view = "upcoming_matches_".$prefix;
-    $this->load->view($view, $data);
-  }
+	public function player_upcoming_matches($playerid)
+	{
+		$player = $this->player_model->get_player($playerid, $this->get_esportid());
+		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+		$this->load->library('match_aggregator', $params);
+		$matches = array_filter($this->match_aggregator->get_upcoming_matches());
+		$data['matches'] = $matches;
+		$prefix = $this->get_esport_prefix();
+		if($prefix == "")
+		{
+		  return NULL;
+		}
+		$view = "upcoming_matches_".$prefix;
+		$this->load->view($view, $data);
+	}
 
 	public function profile_view_team()
 	{
-      $teamid = $_SESSION['user']['league_info']['teamid'];
-      $data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
-      $data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
-      $data['calendar'] = $this->calendar;
-      
-      $data['schedule'] = array();
-      $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
-      //get the league;
-      if($data['schedule'])
-      {
-          $league_details = $this->league_model->get_league_details($data['team']['leagueid']);
-          $data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
-      }
+		$teamid = $_SESSION['user']['league_info']['teamid'];
+		$data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
+		$data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
+		$data['calendar'] = $this->calendar;
+
+		$data['schedule'] = array();
+		$data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
+		//get the league;
+		if($data['schedule'])
+		{
+			$league_details = $this->league_model->get_league_details($data['team']['leagueid']);
+			$data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
+		}
 		$this->load->view('view_team', $data);
 
 	}
 
 	public function profile_view_league()
 	{
-		$this->require_login();
-		$leagueid = $_SESSION['user']['league_info']['leagueid'];
-      $teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
+	$this->require_login();
+	$leagueid = $_SESSION['user']['league_info']['leagueid'];
+	$teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
 
-      if(!$teams)
-      {
-          $teams['teams'] = array();
-      }
-      
-      $league = $this->league_model->get_league_details($leagueid);
-      if($league['start_date'] != NULL)
-      {
-          //get the end date of the season
-          $league['end_date'] = $this->get_local_date($league['end_date']);
-          $league['start_date'] = $this->get_local_date($league['start_date']);
-      }
+	if(!$teams)
+	{
+		$teams['teams'] = array();
+	}
 
-      $schedule = array();
-      if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
-      {
-          $season['start_date'] = strtotime($league['start_date']);
-          $season['end_date'] = strtotime($league['end_date']);
-          $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
-      }
-      
-      $data['teams'] = $teams;
-      $data['league'] = $league;
-      $data['schedule'] = $schedule;
-      $this->load->view('view_league', $data);
+	$league = $this->league_model->get_league_details($leagueid);
+	if($league['start_date'] != NULL)
+	{
+		//get the end date of the season
+		$league['end_date'] = $this->get_local_date($league['end_date']);
+		$league['start_date'] = $this->get_local_date($league['start_date']);
+	}
+
+	$schedule = array();
+	if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+	{
+		$season['start_date'] = strtotime($league['start_date']);
+		$season['end_date'] = strtotime($league['end_date']);
+		$schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+	}
+
+	$data['teams'] = $teams;
+	$data['league'] = $league;
+	$data['schedule'] = $schedule;
+	$this->load->view('view_league', $data);
 	}
 }

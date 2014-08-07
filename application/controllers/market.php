@@ -15,7 +15,7 @@ class Market extends MY_Controller
     public function index()
     {
         $this->require_login();
-        $this->view_wrapper('market');
+        $this->view_wrapper('market', array(), false);
     }
 
 }

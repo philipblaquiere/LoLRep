@@ -23,7 +23,7 @@ class Trade extends MY_Controller
             //user is captain, proceed
             $data['team'] = $team;
             $data['team_lol'] = $this->team_model->get_team_lol($team['teamid']);
-            $this->view_wrapper('team_trade_lol',$data);
+            $this->view_wrapper('team_trade_lol',$data, false);
         }
         else
         {

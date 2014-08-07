@@ -33,7 +33,7 @@ class Teams extends MY_Controller{
         {
             $this->invite_model->mark_invites_read($this->get_userid(), $this->get_esportid());
         }
-        $this->view_wrapper('teams', $data);
+        $this->view_wrapper('teams', $data, false);
     }
 
     public function create()
@@ -44,7 +44,7 @@ class Teams extends MY_Controller{
         $this->form_validation->set_rules('teamname', 'Team Name', 'trim|required|xss_clean|callback_unique_teamname');
         if($this->form_validation->run() == FALSE)
         {
-            $this->view_wrapper('create_team');
+            $this->view_wrapper('create_team', array(), false);
         }
         else
         {
@@ -82,7 +82,7 @@ class Teams extends MY_Controller{
                 $data['teams'] = $this->team_model->get_teams_byleagueid($team['league']['leagueid'],$this->get_esportid());
             }
         }
-        $this->view_wrapper('view_team',$data);
+        $this->view_wrapper('view_team',$data, false);
     }
 
     public function invite_lol($team)
@@ -96,7 +96,7 @@ class Teams extends MY_Controller{
 
         if($this->form_validation->run() == FALSE)
         {
-            $this->view_wrapper('team_invite_lol',$data);
+            $this->view_wrapper('team_invite_lol',$data, false);
         }
         else
         {
