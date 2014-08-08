@@ -22,12 +22,19 @@ class Player_model extends MY_Model {
 
 	public function get_player($playerid, $esportid)
 	{
-		$sql = "SELECT p.*, t.teamid
-				FROM players p, teams t, player_teams pt
+		$sql = "SELECT p.*, lt.teamid, t.team_name, l.leagueid, l.league_name, s.seasonid, s.season_status, s.start_date,s.end_date
+				FROM players p,  player_teams pt, teams t, leagues l, league_teams lt, seasons s, season_teams st, season_leagues sl
 				WHERE p.playerid = '$playerid'
 					AND p.esportid = '$esportid'
 					AND p.playerid = pt.playerid
-					AND pt.teamid = t.teamid";
+					AND pt.teamid = st.teamid
+                    AND pt.teamid = lt.teamid 
+                    AND st.teamid = lt.teamid
+                    AND st.seasonid = sl.seasonid
+                    AND sl.leagueid = lt.leagueid
+                    AND l.leagueid = lt.leagueid
+                    AND s.seasonid = st.seasonid
+                    AND t.teamid = pt.teamid";
 		$result = $this->db1->query($sql);
 		$results = $result->result_array();
 
@@ -44,19 +51,49 @@ class Player_model extends MY_Model {
 					$player['region'] = $player_result['region'];
 					$player['icon'] = $player_result['icon'];
 					$player['teams'] = array();
+					$player['teams_meta'] = array();
+				}
 
-					if(array_key_exists('teamid', $player_result))
+				if(array_key_exists('teamid', $player_result))
+				{
+					if(!array_key_exists($player_result['teamid'], $player['teams_meta']))
 					{
-
 						array_push($player['teams'], $player_result['teamid']);
 					}
-					$player['registered'] = TRUE;
 				}
-				else
+				if(array_key_exists('leagueid', $player_result))
 				{
-					array_push($player['teams'], $player_result['teamid']);
+					if(!array_key_exists($player_result['teamid'], $player['teams_meta']))
+					{
+						$player['teams_meta'][$player_result['teamid']]['team'] = $player_result['teamid'];
+						$player['teams_meta'][$player_result['teamid']]['team_name'] = $player_result['team_name'];
+					}
+					$league['leagueid'] = $player_result['leagueid'];
+					$league['league_name'] = $player_result['league_name'];
+					$league['seasons'] = array();
+					if(array_key_exists('seasonid', $player_result))
+					{
+						if($player_result['season_status'] == 'active')
+						{
+							$player['teams_meta'][$player_result['teamid']]['current_league'] = $player_result['leagueid'];
+							$player['teams_meta'][$player_result['teamid']]['current_season'] = $player_result['seasonid'];
+						}
+						$league['seasons'][$player_result['seasonid']]['seasonid'] = $player_result['seasonid'];
+						$league['seasons'][$player_result['seasonid']]['start_date'] = $player_result['start_date'];
+						$league['seasons'][$player_result['seasonid']]['end_date'] = $player_result['end_date'];
+					}
+					if(array_key_exists('leagues', $player['teams_meta'][$player_result['teamid']]) && array_key_exists($player_result['leagueid'], $player['teams_meta'][$player_result['teamid']]['leagues']))
+					{
+						$player['teams_meta'][$player_result['teamid']]['leagues'][$player_result['leagueid']]['seasons'][$player_result['seasonid']] = $league['seasons'][$player_result['seasonid']];
+					}
+					else
+					{
+						$player['teams_meta'][$player_result['teamid']]['leagues'][$player_result['leagueid']] = $league;
+					}
+					
 				}
 			}
+			$player['registered'] = TRUE;
 		}
 		return $player;
 	}

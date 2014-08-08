@@ -23,7 +23,6 @@ class Leagues extends MY_Controller{
 
     public function index()
     {
-        $this->require_login();
         $leagues = $this->league_model->get_leagues($this->get_esportid());
         $leagueids = $this->_extract_values('leagueid', $leagues);
         $league_teams = $this->league_model->get_league_teams($this->get_esportid(),$leagueids);
@@ -216,7 +215,6 @@ class Leagues extends MY_Controller{
 
     public function view($leagueid) 
     {
-        $this->require_login();
         $league = $this->league_model->get_league($leagueid);
         $league = $league[$leagueid];
         $league_teams = $this->league_model->get_league_teams($this->get_esportid(),array($leagueid));
@@ -236,8 +234,8 @@ class Leagues extends MY_Controller{
         if($season['start_date'] != NULL)
         {
             //get the end date of the season
-            $season['end_date'] = $this->get_local_date($season['end_date']);
-            $season['start_date'] = $this->get_local_date($season['start_date']);
+            $season['end_date'] = $this->gmt_to_local($season['end_date']);
+            $season['start_date'] = $this->gmt_to_local($season['start_date']);
         }
 
         $schedule = array();
@@ -300,8 +298,8 @@ class Leagues extends MY_Controller{
                 $match_num++;
             }
             
-            $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())));
-            $this->match_model->create_matches($leagueid, $schedule);
+            $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())), $teams);
+            $this->match_model->create_matches($leagueid, $seasonid, $schedule);
             redirect('leagues/view/'.$leagueid,'refresh');
         }
     }

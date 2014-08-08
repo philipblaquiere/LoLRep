@@ -61,42 +61,50 @@ class Team_model extends MY_Model {
     //Get the League
     $sql = "SELECT  l.league_name as league_name,
                     l.leagueid as leagueid,
-                    l.invite as invite,
-                    l.private as private,
-                    lt.joined as joined
-            FROM leagues l
-            INNER JOIN league_teams lt
-            WHERE lt.teamid = '$teamid' 
-              AND lt.status = 'active'
+                    s.seasonid,
+                    s.season_status,
+                    s.start_date,
+                    s.end_date
+            FROM leagues l, seasons s, season_teams st, league_teams lt, season_leagues sl
+            WHERE lt.teamid = '$teamid'
               AND lt.leagueid = l.leagueid
-            LIMIT 1";
+              AND lt.leagueid = sl.leagueid
+              AND sl.seasonid = s.seasonid
+              AND s.seasonid = st.seasonid
+              AND st.teamid = '$teamid'
+              AND lt.status = 'active'";
 
     $result = $this->db1->query($sql);
-    $league = $result->row_array();
-
-    //Get the season
-    if(!empty($league))
+    $results = $result->result_array();
+    $leagues = array();
+    if(!empty($results))
     {
-      $team['league'] = $league;
-      $leagueid = $league['leagueid'];
-      $sql = "SELECT  s.start_date as start_date,
-                      s.end_date as end_date,
-                      s.season_status as season_status,
-                      s.season_duration as season_duration
-              FROM seasons s
-              INNER JOIN season_leagues sl ON sl.seasonid = s.seasonid
-              WHERE sl.leagueid = '$leagueid'
-              LIMIT 1";
-
-      $result = $this->db1->query($sql);
-      $this->db1->trans_complete();
-
-      $season = $result->row_array();
-      if(!empty($season))
+      foreach ($results as $result)
       {
-        $team['season'] = $season;
+        if($result['season_status'] == 'active')
+        {
+          $leagues['current_league'] = $result['leagueid'];
+          $leagues['current_season'] = $result['seasonid'];
+        }
+        if(!array_key_exists($result['leagueid'], $leagues))
+        {
+          $league['leagueid'] = $result['leagueid'];
+          $league['league_name'] = $result['league_name'];
+          $league['seasons'] = array();
+          $leagues[$result['leagueid']] = $league;
+        }
+        if(array_key_exists('seasonid', $result))
+        {
+          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['seasonid'] = $result['seasonid'];
+          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['start_date'] = $result['start_date'];
+          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['end_date'] = $result['end_date'];
+          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['season_status'] = $result['season_status'];
+        }
       }
+      $team['leagues'] = $leagues;
     }
+    
+    
     return $team;
   }
 

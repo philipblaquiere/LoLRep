@@ -51,7 +51,7 @@ class Match_aggregator
         }
 
         $matches =  $this->CI->match_model->get_matches($matchids_to_get, $this->params[self::ESPORTID]);
-        //Add NON_DIRTY matches to match_cache;
+        
         foreach ($matches as $match)
         {
             if(!empty($match))
@@ -59,6 +59,7 @@ class Match_aggregator
                 $aggregated_matches[$match[self::MATCHID]] = $match;
             }
         }
+        //Add NON_DIRTY matches to match_cache;
         $this->CI->match_cache->add_matches($matches, self::NON_DIRTY);
         return $aggregated_matches;
     }
@@ -94,6 +95,6 @@ class Match_aggregator
 
     private function _get_finished_matches($playerid, $esportid)
     {
-    	return $this->CI->match_model->get_finished_matchids($playerid, $esportid);
+    	return $this->CI->match_model->get_finished_matchids($playerid,$this->params['seasonids'], $esportid);
     }
 }

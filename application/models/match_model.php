@@ -15,15 +15,16 @@ class Match_model extends MY_Model
 	}
 
 
-	public function create_matches($leagueid, $schedule)
+	public function create_matches($leagueid, $seasonid, $schedule)
 	{
-		$sql = "INSERT INTO matches (matchid, leagueid, teamaid, teambid, match_date) VALUES";
+		$sql = "INSERT INTO matches (matchid, leagueid, seasonid, teamaid, teambid, match_date) VALUES";
 		foreach ($schedule as $match) {
 			$uniqueid = $this->generate_unique_key();
-			$sql .=	"('" . $uniqueid . "','" . $leagueid . "','" . $match['teamaid'] . "','" . $match['teambid'] . "','" . $match['match_date'] . "'),";
+			$sql .=	"('" . $uniqueid . "','" . $leagueid . "','" . $seasonid . "','" . $match['teamaid'] . "','" . $match['teambid'] . "','" . $match['match_date'] . "'),";
 		}
 		$sql = substr($sql, 0, -1);
 		$this->db1->query($sql);
+		return;
 	}
 
 	public function update_matches($matches)
@@ -41,12 +42,13 @@ class Match_model extends MY_Model
 			$matchid = $match['matchid'];
 			$gameid = $match['gameid'];
 			$leagueid = $match['leagueid'];
+			$seasonid = $match['seasonid'];
 			$teamaid = $match['teama']['teamaid'];
 			$teambid = $match['teamb']['teambid'];
 			$match_date = $match['match_date'];
 			$winnerid = $match['winnerid'];
 			$status = 'finished';
-			$sql .= "('" . $matchid. "','" .$gameid. "','" .$leagueid. "','".$teamaid. "','".$teambid."','".$match_date."','".$winnerid."','".$status."'),";
+			$sql .= "('" . $matchid. "','" .$gameid. "','" .$leagueid. "','".$seasonid. "','".$teamaid. "','".$teambid."','".$match_date."','".$winnerid."','".$status."'),";
 		}
 		$sql = substr($sql, 0, -1);
 		$sql .= " ON DUPLICATE KEY UPDATE gameid=VALUES(gameid), winnerid=VALUES(winnerid), status=VALUES(status);";
@@ -139,7 +141,7 @@ class Match_model extends MY_Model
 		return $matchids;
 	}
 
-	public function get_finished_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
+	public function get_finished_matchids($playerid, $seasonids, $esportid, $limit = 50, $pointer = 0)
 	{
 		$sql = "SELECT m.matchid
 				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
@@ -151,6 +153,7 @@ class Match_model extends MY_Model
 					AND lt.leagueid = m.leagueid
 					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
 					AND m.status = 'finished'
+					AND (m.seasonid IN ('" . implode("','", $seasonids) . "'))
 				ORDER BY m.match_date DESC";
 		$result =$this->db1->query($sql);
 		$matchids_array = $result->result_array();
@@ -406,53 +409,28 @@ class Match_model extends MY_Model
 		return $players;
 	}
 
-	public function get_matches_by_team($team) {
-		$season_start = $team['season']['start_date'];
-		$season_end = $team['season']['end_date'];
+	public function get_matches_by_team($team)
+	{
+		$seasonid = $team['leagues']['current_season'];
 		$teamid = $team['teamid'];
 
-		$sql = "SELECT * FROM matches
+		$sql = "SELECT m.* FROM matches m
 				WHERE (teamaid = '$teamid' OR teambid = '$teamid')
-				AND match_date > '$season_start' AND match_date < '$season_end'";
+				AND m.seasonid = '$seasonid'";
 		$results = $this->db1->query($sql);
 		$results = $results->result_array();
-		$matches = array();
-		foreach ($results as $result) {
-			$match = array();
-			$match['matchid'] = $result['matchid'];
-			$match['leagueid'] = $result['leagueid'];
-			$match['teamaid'] = $result['teamaid'];
-			$match['teambid'] = $result['teambid'];
-			$match['match_date'] = $result['match_date'];
-			$match['winnerid'] = $result['winnerid'];
-			$match['status'] = $result['status'];
-			array_push($matches, $match);
-		}
-		return $matches;
+		return $results;
 
 	}
 
 	public function get_matches_by_leagueid($leagueid, $season) {
-		$season_start = $season['start_date'];
-		$season_end = $season['end_date'];
+		$seasonid = $season['seasonid'];
 
 		$sql = "SELECT * FROM matches
 				WHERE leagueid = '$leagueid'
-				AND match_date >= '$season_start' AND match_date < '$season_end'";
+				AND seasonid = '$seasonid'";
 		$results = $this->db1->query($sql);
 		$results = $results->result_array();
-		$matches = array();
-		foreach ($results as $result) {
-			$match = array();
-			$match['matchid'] = $result['matchid'];
-			$match['leagueid'] = $result['leagueid'];
-			$match['teamaid'] = $result['teamaid'];
-			$match['teambid'] = $result['teambid'];
-			$match['match_date'] = $result['match_date'];
-			$match['winnerid'] = $result['winnerid'];
-			$match['status'] = $result['status'];
-			array_push($matches, $match);
-		}
-		return $matches;
+		return $results;
 	}
 }
