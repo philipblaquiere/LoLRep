@@ -10,11 +10,8 @@
 					<li><a href="/Team" id="view-profile-team">Team</a></li>
 					<li><a href="/League" id="view-profile-league">League</a></li>
 				</ul>
-			<div>
+			</div>
 			<div id="main-content">
-				<!--<i class="fa-li fa fa-spinner fa-spin fa-2x"></i>-->
-				<span class="open_sans">
-					After you get up and running, you can place Font Awesome icons just about anywhere with the  tag. Some examples appreciatively re-used from the Bootstrap documentation.</span>
 			</div>
 		</div>
 	</div>

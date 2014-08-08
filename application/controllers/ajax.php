@@ -10,6 +10,7 @@ class Ajax extends MY_Controller
 	    $this->load->model('banned_model');
 		$this->load->model('player_model');
 		$this->load->library('lol_api');
+		$this->load->model('team_model');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
@@ -158,6 +159,7 @@ class Ajax extends MY_Controller
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_recent_matches());
 		$data['matches'] = $matches;
+		print_r($matches);
 		//print_r($matches);
 		$prefix = $this->get_esport_prefix();
 		if($prefix == "")
@@ -205,34 +207,55 @@ class Ajax extends MY_Controller
 
 	public function profile_view_league()
 	{
-	$this->require_login();
-	$leagueid = $_SESSION['user']['league_info']['leagueid'];
-	$teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
+		$this->require_login();
+		$leagueid = $_SESSION['user']['league_info']['leagueid'];
+		$teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
 
-	if(!$teams)
+		if(!$teams)
+		{
+			$teams['teams'] = array();
+		}
+
+		$league = $this->league_model->get_league_details($leagueid);
+		if($league['start_date'] != NULL)
+		{
+			//get the end date of the season
+			$league['end_date'] = $this->get_local_date($league['end_date']);
+			$league['start_date'] = $this->get_local_date($league['start_date']);
+		}
+
+		$schedule = array();
+		if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+		{
+			$season['start_date'] = strtotime($league['start_date']);
+			$season['end_date'] = strtotime($league['end_date']);
+			$schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+		}
+
+		$data['teams'] = $teams;
+		$data['league'] = $league;
+		$data['schedule'] = $schedule;
+		$this->load->view('view_league', $data);
+	}
+
+
+	public function team_recent_matches()
 	{
-		$teams['teams'] = array();
-	}
 
-	$league = $this->league_model->get_league_details($leagueid);
-	if($league['start_date'] != NULL)
+	}
+	public function team_schedule()
 	{
-		//get the end date of the season
-		$league['end_date'] = $this->get_local_date($league['end_date']);
-		$league['start_date'] = $this->get_local_date($league['start_date']);
-	}
 
-	$schedule = array();
-	if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+	}
+	public function team_roster($teamid)
 	{
-		$season['start_date'] = strtotime($league['start_date']);
-		$season['end_date'] = strtotime($league['end_date']);
-		$schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+		$team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
+		$data['team'] = $team;
+		$this->load->view('team_roster',$data);
+	}
+	public function team_standings()
+	{
+
 	}
 
-	$data['teams'] = $teams;
-	$data['league'] = $league;
-	$data['schedule'] = $schedule;
-	$this->load->view('view_league', $data);
-	}
-}
+}	
