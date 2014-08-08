@@ -159,7 +159,6 @@ class Ajax extends MY_Controller
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_recent_matches());
 		$data['matches'] = $matches;
-		print_r($matches);
 		//print_r($matches);
 		$prefix = $this->get_esport_prefix();
 		if($prefix == "")

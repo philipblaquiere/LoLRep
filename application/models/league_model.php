@@ -149,7 +149,8 @@ class League_model extends MY_Model {
         if(array_key_exists($result['leagueid'], $leagues))
         {
           //League array already created, add first game time only.
-          array_push($leagues[$result['leagueid']]['seasons'][$result['seasonid']]['first_matches'], $this->get_local_datetime($result['first_matches']));
+
+          array_push($leagues[$result['leagueid']]['seasons'][$result['seasonid']]['first_matches'], $this->gmt_to_local($result['first_matches']));
         }
         else
         {
@@ -172,7 +173,7 @@ class League_model extends MY_Model {
           $season['season_status'] = $result['season_status'];
           $season['seasonid'] = $result['seasonid'];
           $season['first_matches'] = array();
-          array_push($season['first_matches'], $this->get_local_datetime($result['first_matches']));
+          array_push($season['first_matches'], $this->gmt_to_local($result['first_matches']));
 
           $leagues[$result['leagueid']]['seasons'][$season['seasonid']] = $season;
           
