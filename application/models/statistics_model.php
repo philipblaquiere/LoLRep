@@ -10,6 +10,48 @@ class Statistics_model extends MY_Model
 		$this->db1 = $this->load->database('default', TRUE);
 	}
 
+	public function lol_team_stats($teamid, $leagueid, $seasonid)
+	{
+		$sql = "SELECT 	ls.goldEarned, 
+						ls.numDeaths, 
+						ls.assists, 
+						ls.championsKilled,
+						ls.timePlayed,
+						pt.playerid
+				FROM lol_statistics ls, matches m, player_teams pt
+				WHERE (m.teamaid = '$teamid' OR m.teambid = '$teamid')
+					AND pt.teamid = '$teamid'
+					AND m.leagueid = '$leagueid'
+					AND m.seasonid = '$seasonid'
+					AND m.matchid = ls.matchid
+					AND pt.playerid = ls.playerid
+					AND m.status = 'finished'";
+
+		$result = $this->db1->query($sql);
+		$result = $result->result_array();
+
+		$team_stats = array();
+		$team_stats['teamid'] = $teamid;
+		$team_stats['leagueid'] = $leagueid;
+		$team_stats['seasonid'] = $seasonid;
+
+		foreach ($result as $stats)
+		{
+			$game = array();
+			$game['numDeaths'] = $stats['numDeaths'];
+			$game['assists'] = $stats['assists'];
+			$game['championsKilled'] = $stats['championsKilled'];
+			$game['timePlayed'] = $stats['timePlayed'];
+			$game['goldEarned'] = $stats['goldEarned'];
+			if(!array_key_exists($stats['playerid'], $team_stats))
+			{
+				$team_stats[$stats['playerid']] = array();
+			}
+			array_push($team_stats[$stats['playerid']]['games'], $game);
+		}
+		return $team_stats;
+	}
+
 	public function add_match_stats($matches, $esportid)
 	{
 		switch ($esportid) {

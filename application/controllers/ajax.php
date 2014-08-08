@@ -8,13 +8,13 @@ class Ajax extends MY_Controller
 	    $this->load->model('user_model');
 	    $this->load->model('system_message_model');
 	    $this->load->model('banned_model');
-      $this->load->model('player_model');
-      $this->load->library('lol_api');
+		$this->load->model('player_model');
+		$this->load->library('lol_api');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
 	{
-		 $region = urldecode($region);
+		$region = urldecode($region);
       	$region = 'na';
 	    if($summonerinput== "-")
 	    {
@@ -137,10 +137,24 @@ class Ajax extends MY_Controller
 		}
 	}
 
+	private function _get_seasonids($player)
+	{
+		$seasonids = array();
+		foreach ($player['teams'] as $teamid)
+		{
+			if(isset($player['teams_meta'][$teamid]['current_season']))
+			{
+				array_push($seasonids, $player['teams_meta'][$teamid]['current_season']);
+			}
+		}
+		return $seasonids;
+	}
+
 	public function player_recent_matches($playerid)
 	{
 		$player = $this->player_model->get_player($playerid, $this->get_esportid());
-		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+		$seasonids = $this->_get_seasonids($player);
+		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'seasonids' => $seasonids, 'region' => $player['region']);
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_recent_matches());
 		$data['matches'] = $matches;

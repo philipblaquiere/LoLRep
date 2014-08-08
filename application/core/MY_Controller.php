@@ -249,7 +249,7 @@ class MY_Controller extends CI_Controller  {
 
   protected function gmt_to_local($gmt_time)
   {
-    if($_SESSION['user']) {
+    if(isset($_SESSION['user'])) {
       $time_zone = $_SESSION['user']['time_zone'];
     }
     else

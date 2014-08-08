@@ -11,6 +11,10 @@
         <a class="navbar-brand" href="<?php echo site_url('home'); ?>">Juicy</a>
       </div>
       <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="<?php echo site_url('leagues'); ?>">Leagues</a></li>
+          <li><a href="<?php echo site_url('market'); ?>">Market</a></li>
+       </ul>
         <ul class="nav navbar-nav navbar-right">
           <?php if ($is_logged_in): ?>
             <li class="dropdown">
@@ -19,13 +23,11 @@
                   <?php if(empty($_SESSION['player'])){ ?>
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add eSport</a></li>
                   <?php } else { ?>
-                  <li><a href="<?php echo site_url('profile'); ?>"><?php echo $_SESSION['player']['player_name']; ?></a></li>
+                  <li><a href="<?php echo site_url('players') . "/" . $_SESSION['player']['playerid']; ?>"><?php echo $_SESSION['player']['player_name']; ?></a></li>
                   <?php } ?>
                   <li><a href="<?php echo site_url('teams'); ?>">My Team</a></li>
                   <li><a href="<?php echo site_url('teams/create'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('leagues/create'); ?>">Create League</a></li>
-                  <li><a href="<?php echo site_url('leagues'); ?>">View Leagues</a></li>
-                  <li><a href="<?php echo site_url('market'); ?>">Market</a></li>
                   <li role="presentation" class="divider"></li>
                   <li><a href="<?php echo site_url('sign_in/sign_out'); ?>">Sign out</a></li>
                 </ul>

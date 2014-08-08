@@ -1,9 +1,10 @@
 <!-- Header -->
 <div class="page-header">
 	  <h1><?php echo $team['team_name'] ?></h1>
-	  <p>Current League: <a href="<?php echo site_url('leagues/view/' . $team['league']['leagueid']) ?>" ><?php echo $team['league']['league_name'] ?></a></p>
-	  <p>Joined: <?php echo $team['league']['joined'] ?></p>
-	  <p><?php if($team['season']['season_status'] == "new")
+	  <?php if(isset($team['leagues']['current_league'])) { ?>
+	  	<p>Current League: <a href="<?php echo site_url('leagues/view/' . $team['leagues']['current_league']) ?>" ><?php echo $team['leagues'][$team['leagues']['current_league']]['league_name'] ?></a></p>
+	  <?php } ?>
+	  <p><?php if(!isset($team['leagues']['current_season']))
 	  {?>
 	  	Season not started
 	  <?php } ?>
@@ -18,7 +19,7 @@
 				<?php foreach($team['players'] as $player):?>
 				<tr>
 					<td></td>
-					<td><?php echo $player['player_name'] ?></td>
+					<td><a href="<?php echo site_url('players/'.$player['playerid']) ?>"><?php echo $player['player_name'] ?></a></td>
 					<td>K/D/A</td>
 				</tr>
 				<?php endforeach; ?>
@@ -26,7 +27,7 @@
 
 <hr>
 
-<?php if(array_key_exists('season', $team) && $team['season']['season_status'] == 'active') { ?>
+<?php if(isset($team['leagues']['current_season'])) { ?>
 <div class="panel-group" id="accordion">
 	<div class="panel panel-default">
 		<div class="panel-heading">

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Player extends MY_Controller{
+class Players extends MY_Controller{
 	/**
 	 * Constructor: initialize required libraries.
 	 */
@@ -18,18 +18,21 @@ class Player extends MY_Controller{
 
   public function index($playerid)
   {
-    $this->require_login();
-    $this->require_registered();
     $player = $this->player_model->get_player($playerid,$this->get_esportid());
     $data['player'] = $player;
+    //$team_stats = $this->statistics_model->lol_team_stats($teamid, $leagueid, $seasonid)
     $data['banner']['title_big'] = $player['player_name'];
     $data['is_logged_in'] = $this->is_logged_in();
-    $params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
-    /*$this->load->library('match_aggregator', $params);
+
+    /*$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+    $this->load->library('match_aggregator', $params);
     $matches = $this->match_aggregator->get_recent_matches();
     print_r($matches);*/
     $this->view_wrapper('profile',$data);
   }
+
+
+
 
   public function create()
   {

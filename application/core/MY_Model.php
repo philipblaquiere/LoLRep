@@ -140,7 +140,7 @@ class MY_Model extends CI_Model  {
 
 	protected function get_local_datetime($epoch, $format='F j, Y H:i:s') {
 		$date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
-		if($_SESSION['user']) {
+		if(array_key_exists('user', $_SESSION)) {
 		  $date->setTimezone(new DateTimeZone($_SESSION['user']['time_zone']));
 		}
 		return $date->format($format);

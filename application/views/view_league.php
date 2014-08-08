@@ -10,7 +10,7 @@
  		<p>Starts: <?php echo $season['start_date'] ?></p>
  		<p>Ends: <?php echo $season['end_date'] ?></p>
  	<?php } ?>
- 	<?php if($league['ownerid'] == $_SESSION['userid'] && $season['start_date'] == NULL) { ?>
+ 	<?php if(isset($_SESSION['userid']) && $league['ownerid'] == $_SESSION['userid'] && $season['start_date'] == NULL) { ?>
         <?php echo form_open('leagues/start_season/' . $season['seasonid']  , array('class' => 'form-horizontal')); ?>
  			<p><input type="hidden" name="leagueid" value="<?php echo $league['leagueid'] ?>"></p>
  			<p>Start Date: <input name="season_start_date" id="season_start_date" type="text" class="datepicker" value id="season_start_date" /></p>

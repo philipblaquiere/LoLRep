@@ -7,33 +7,22 @@ class Teams extends MY_Controller{
 	public function __construct()
     {
         parent::__construct();
-        $this->load->model('user_model');
         $this->load->model('system_message_model');
-        $this->load->model('country_model');
         $this->load->model('ip_log_model');
         $this->load->model('esport_model');
         $this->load->model('team_model');
         $this->load->model('lol_model');
-        $this->load->model('trade_lol_model');
-        $this->load->model('invite_model');
-        $this->load->model('season_model');
         $this->load->model('match_model');
-        $this->load->model('riotapi_model');
         $this->load->model('league_model');
-
     }
 
-    public function index()
+    function _remap($teamid)
     {
-        $this->require_login();
-        $data['teams'] = $this->team_model->get_teams_by_uid($this->get_userid(), $this->get_esportid());
-        $data['invites'] = $this->invite_model->get_invites_by_uid($this->get_userid(), $this->get_esportid());
-        $data['player'] = $this->get_player();
-        if($data['invites'])
-        {
-            $this->invite_model->mark_invites_read($this->get_userid(), $this->get_esportid());
-        }
-        $this->view_wrapper('teams', $data, false);
+        $this->index($playerid);
+    }
+    public function index($teamid)
+    {
+
     }
 
     public function create()
@@ -67,19 +56,18 @@ class Teams extends MY_Controller{
 
     public function view($teamid)
     {
-        $this->require_login();
         $team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
         $data['team'] = $team;
 
         //Verify if season started
-        if($team['season']['season_status'] == 'active')
+        if(isset($team['leagues']['current_season']))
         {
             $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
             //get the league;
             if(!empty($data['schedule']))
             {
-                $league_details = $this->league_model->get_league_details($team['league']['leagueid']);
-                $data['teams'] = $this->team_model->get_teams_byleagueid($team['league']['leagueid'],$this->get_esportid());
+                $league_details = $this->league_model->get_league_details($team['leagues']['current_league']);
+                $data['teams'] = $this->team_model->get_teams_byleagueid($team['leagues']['current_league'],$this->get_esportid());
             }
         }
         $this->view_wrapper('view_team',$data, false);
