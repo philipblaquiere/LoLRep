@@ -36,4 +36,5 @@
 		</div>
 	</div>
 </div>
+<a href="<?php echo site_url('market/join'); ?>" role="button" >Join the Market</a>
 

@@ -9,12 +9,12 @@ class Player_model extends MY_Model {
 
 	public function create($userid, $player, $esportid)
 	{
-	    $sql = "INSERT INTO players (playerid, player_name, esportid, region, icon) 
+	    $sql = "INSERT INTO players (playerid, player_name, esportid, region, icon)
 	            VALUES ('" . $player['playerid'] . "','" . $player['player_name'] . "', '" . $esportid . "',  '" . $player['region'] . "','" . $player['icon'] . "')";
 		$result = $this->db1->query($sql);
 
 		//relate the playerid to the userid in the user_players table
-	    $sql = "INSERT INTO user_players (userid, playerid) 
+	    $sql = "INSERT INTO user_players (userid, playerid)
 	            VALUES ('" . $userid . "','" . $player['playerid'] . "')";
 	    $result = $this->db1->query($sql);
 		return;
@@ -28,7 +28,7 @@ class Player_model extends MY_Model {
 					AND p.esportid = '$esportid'
 					AND p.playerid = pt.playerid
 					AND pt.teamid = st.teamid
-                    AND pt.teamid = lt.teamid 
+                    AND pt.teamid = lt.teamid
                     AND st.teamid = lt.teamid
                     AND st.seasonid = sl.seasonid
                     AND sl.leagueid = lt.leagueid
@@ -90,7 +90,7 @@ class Player_model extends MY_Model {
 					{
 						$player['teams_meta'][$player_result['teamid']]['leagues'][$player_result['leagueid']] = $league;
 					}
-					
+
 				}
 			}
 			$player['registered'] = TRUE;
@@ -122,7 +122,7 @@ class Player_model extends MY_Model {
 								AND lt.teamid = t.teamid
 								AND lt.status = 'active'";
 			$result = $this->db1->query($sql);
-			
+
 			$result = $result->result_array();
 			$player['teams'] = array();
 			if($result)
@@ -134,7 +134,7 @@ class Player_model extends MY_Model {
 	    return $player;
 	}
 
-	public function get_player_by_userid($uid, $esportid) 
+	public function get_player_by_userid($uid, $esportid)
 	{
 		$sql = "SELECT 	p.player_name as player_name,
 						p.playerid as playerid,
@@ -142,7 +142,7 @@ class Player_model extends MY_Model {
 						p.icon as icon
 						FROM players p, user_players up
 						WHERE up.userid = '$uid'
-							AND p.playerid = up.playerid 
+							AND p.playerid = up.playerid
 							AND p.esportid = '$esportid'
 						LIMIT 1";
 		$this->db1->trans_start();
@@ -167,7 +167,7 @@ class Player_model extends MY_Model {
 	    return $player;
 	}
 
-	public function get_player_by_email($email, $esportid) 
+	public function get_player_by_email($email, $esportid)
 	{
 		$sql = "SELECT 	p.player_name as player_name,
 						p.playerid as playerid,
@@ -175,8 +175,8 @@ class Player_model extends MY_Model {
 						p.icon as icon
 						FROM players AS p, users AS u, user_players AS up
 						WHERE u.email = '$email'
-							AND u.userid = up.userid 
-							AND p.playerid = up.playerid 
+							AND u.userid = up.userid
+							AND p.playerid = up.playerid
 							AND p.esportid = '$esportid'
 						LIMIT 1";
 		$this->db1->trans_start();
@@ -201,5 +201,20 @@ class Player_model extends MY_Model {
 	    }
 	    $this->db1->trans_complete();
 	    return $player;
+	}
+
+	public function get_roles($esportid)
+	{
+		$sql="SELECT r.roleid, r.role_name
+					FROM roles r
+					WHERE r.esportid = '$esportid'";
+		$result = $this->db1->query($sql);
+		$results = $result->result_array();
+		$roles = array();
+		foreach ($results as $role)
+		{
+			$roles[$role['roleid']] = $role['role_name'];
+		}
+		return $roles;
 	}
 }
