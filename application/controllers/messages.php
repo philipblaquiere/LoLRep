@@ -10,6 +10,7 @@ class Messages extends MY_Controller{
         $this->load->model('user_model');
         $this->load->model('message_model');
         $this->load->model('system_message_model');
+        $this->load->library('Message_test');
     }
 
 
