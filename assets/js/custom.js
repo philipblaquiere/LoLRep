@@ -119,7 +119,7 @@ $("#view-profile-team").click(function(event) {
         });
 });
 
-//used in profile page
+//used in player page
 $("#view-profile-league").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
@@ -136,6 +136,28 @@ $("#view-profile-league").click(function(event) {
             },
             error:function(jqXHR, textStatus, errorThrown){
                 $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+            }
+        });
+});
+
+//used in profile page
+$("#view-team-roster").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    var teamid = $(event.currentTarget).attr('data-id');
+    /* Clear profile content*/
+    $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+            url: '/LoLRep/ajax/team_roster/' + teamid,
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#main-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#main-content").html("error while loading team roster " + jqXHR + textStatus + " " + errorThrown );
             }
         });
 });

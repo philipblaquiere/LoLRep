@@ -14,7 +14,7 @@ class Market_model extends MY_Model {
 				# League of Legends
 				$sql = "SELECT * FROM summoners"
 				break;
-			
+
 			default:
 				# code...
 				break;
