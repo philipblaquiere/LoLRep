@@ -5,7 +5,7 @@ class Leagues extends MY_Controller{
 	 * Constructor: initialize required libraries.
 	 */
     private $MAX_LEAGUE_COUNT = 20;
-    
+
 	public function __construct()
     {
         parent::__construct();
@@ -21,21 +21,22 @@ class Leagues extends MY_Controller{
         $this->load->model('season_model');
         $this->load->model('match_model');
     }
-
     public function index()
     {
-        $leagues = $this->league_model->get_leagues($this->get_esportid());
-        $leagueids = $this->_extract_values('leagueid', $leagues);
-        $league_teams = $this->league_model->get_league_teams($this->get_esportid(),$leagueids);
+        $leagues = $this->league_model->get_all_leagues($this->get_esportid());
+        $league = $this->league_model->get_leagues(array('784d79ec-8461-57dc-b8ee-cb30c062bbb8'));
 
         $player_teams = array();
         $captain_team = array();
-        if($this->is_player_registered())
+        $player = array();
+        if($this->player_exists())
         {
             $player = $this->get_player();
+            print_r($player);
             $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
             $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
         }
+       
         
         if(empty($player_teams))
         {
@@ -53,14 +54,13 @@ class Leagues extends MY_Controller{
             *   user is captain
             *   hasn't already changed league today
             */
-            $leagues[$league['leagueid']]['num_teams'] = array_key_exists($league['leagueid'], $league_teams) ? count($league_teams[$league['leagueid']]['teams']) : 0 ;
 
-            if(empty($player_teams))
+            if(empty($player))
             {
-                //User not part of a team
+                //User not signed in
                 $leagues[$league['leagueid']]['can_join'] = FALSE;
                 $leagues[$league['leagueid']]['join_status'] = "Join";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "You need to be part of a registered team to join this league";
+                $leagues[$league['leagueid']]['join_status_tooltip'] = "Register your game account before joining leagues.";
             }
             else if(!empty($current_league) && $current_league['leagueid'] == $leagues[$league['leagueid']]['leagueid'])
             {
@@ -81,7 +81,7 @@ class Leagues extends MY_Controller{
                 $leagues[$league['leagueid']]['join_status'] = "Invite Only";
                 $leagues[$league['leagueid']]['join_status_tooltip'] = "This league is invite only";
             }
-            else if($leagues[$league['leagueid']]['num_teams'] == $league['max_teams'])
+            else if(count($league['seasons'][$league['current_season']]['teams']) == $league['max_teams'])
             {
                 $leagues[$league['leagueid']]['can_join'] = FALSE;
                 $leagues[$league['leagueid']]['join_status'] = "Full";
@@ -96,7 +96,6 @@ class Leagues extends MY_Controller{
             }
         }
         $data['captain_team'] = $captain_team;
-        $data['league_teams'] = $league_teams;
         $data['leagues'] = $leagues;
         $data['current_league'] = empty($current_league) ? array() : $current_league;
         $data['max_league_count'] = $this->MAX_LEAGUE_COUNT;
@@ -180,8 +179,7 @@ class Leagues extends MY_Controller{
         $player = $this->get_player();
         $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
         $team = $this->team_model->get_team_by_teamid($captain_team['teamid'], $this->get_esportid());
-
-        //$current_league = $this->league_model->get_current_league_by_teamid($team['teamid']);
+        $league = $this->league_model->get_league($leagueid);
 
         if($team['league'])
         {
@@ -199,8 +197,8 @@ class Leagues extends MY_Controller{
             else
             {
                 //Remove from current league and join the other league
-                $this->league_model->leave_league($captain_team['teamid'], $team['league']['leagueid']);
-                $joined_league = $this->league_model->join_league($captain_team['teamid'],$leagueid);
+                $this->league_model->leave_league($captain_team['teamid'], $team['league']['leagueid'], $league['current_season']);
+                $joined_league = $this->league_model->join_league($leagueid, $captain_team['teamid']);
                 $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
                 redirect('leagues', 'refresh');
             }
@@ -208,7 +206,7 @@ class Leagues extends MY_Controller{
         else
         {
             //Join the league : Player is not part of team and is captain of his team, 
-            $joined_league = $this->league_model->join_league($leagueid, $captain_team['teamid']);
+            $joined_league = $this->league_model->join_league($captain_team['teamid'], $leagueid, $league['current_season'] );
             $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
             redirect('leagues', 'refresh');
         }
@@ -216,10 +214,9 @@ class Leagues extends MY_Controller{
 
     public function view($leagueid) 
     {
-        $league = $this->league_model->get_league($leagueid);
+        $league = $this->league_model->get_leagues(array($leagueid));
         $league = $league[$leagueid];
-        $league_teams = $this->league_model->get_league_teams($this->get_esportid(),array($leagueid));
-        $league_teams = $league_teams[$leagueid];
+        $league_teams = isset($league['seasons'][$league['current_season']]['teams']) ? $league['seasons'][$league['current_season']]['teams'] : array();
         $player = $this->get_player();
 
         $season = array();

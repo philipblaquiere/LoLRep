@@ -274,3 +274,7 @@ function switchButtonToRegister(){
     form.setAttribute('id','create');
     form.setAttribute('action', 'player/create');
 }
+
+$("#search_leagues").hideseek({
+    navigation: true
+});
