@@ -249,7 +249,7 @@ class Ajax extends MY_Controller
 	}
 	public function team_roster($teamid)
 	{
-		$team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
+		$team = $this->team_model->get_team($teamid, $this->get_esportid());
 		$data['team'] = $team;
 		$this->load->view('team_roster',$data);
 	}
