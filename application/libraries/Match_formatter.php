@@ -74,8 +74,17 @@ class Match_formatter
     		$game = $match[self::VALID_MATCHES_KEY][0][self::MATCH_DETAILS_KEY];
     		$match_info = $match[self::MATCH_INFO_KEY];
     		$stats = $match[self::VALID_MATCHES_KEY][0][self::MATCH_DETAILS_KEY][self::LOL_STATS];
-    		$teama = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_100];
-    		$teamb = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_200];
+            if(array_key_exists($playerid, $match_info[self::MATCH_TEAMA][self::TEAM_ROSTER]))
+            {
+                $teama = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_100];
+                $teamb = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_200];
+            }
+            else
+            {
+                $teamb = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_100];
+                $teama = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_200];
+            }
+    		
     		if(array_key_exists($playerid, $teama))
     		{
     			$teama[$playerid][self::LOL_CHAMPIONID] = $game[self::LOL_CHAMPIONID];
