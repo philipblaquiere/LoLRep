@@ -7,6 +7,7 @@ class Match_updater
     const ERROR_LOL_API = "The League of Legends API isn't responding";
     const ERROR_ESPORTID = "No corresponding eSport has been found";
     const TEAM = "team";
+    const TEAMIDS = "teamids";
 
 	private $esportid;
 	private $playerid;
@@ -16,7 +17,7 @@ class Match_updater
 
 	public function __construct($params)
     {
-        $this->team = $params[self::TEAM];
+        $this->team = isset($params[self::TEAM]) ? $params[self::TEAM] : $params[self::TEAMIDS];
         $this->esportid = $params['esportid'];
         $this->playerid = isset($params[self::PLAYERID]) ? $params[self::PLAYERID] : NULL;
         if(array_key_exists('region', $params))
@@ -69,8 +70,17 @@ class Match_updater
     */
     private function _get_scheduled_matches()
     {
-        $scheduled_matchids = $this->CI->match_model->get_scheduled_matches(array($this->team['teamid']), time());
-        return $scheduled_matchids;
+        if($this->playerid != NULL)
+        {
+            $scheduled_matchids = $this->CI->match_model->get_scheduled_matches($this->team, time());
+            return $scheduled_matchids;
+        }
+        elseif ($this->team != null)
+        {
+            $scheduled_matchids = $this->CI->match_model->get_scheduled_matches(array($this->team['teamid']), time());
+            return $scheduled_matchids;
+        }
+        
     }
 
     private function _update_lol($scheduled_matches, $include_invalid_results)
@@ -86,7 +96,7 @@ class Match_updater
         {
             if(!$this->CI->match_cache->has_match($scheduled_match['matchid']))
             {
-                if(isset($this->playerid))
+                if($this->playerid != NULL)
                 {
                     $match_result = $this->_get_match_result($scheduled_match, $this->playerid, $include_invalid_results);
                     

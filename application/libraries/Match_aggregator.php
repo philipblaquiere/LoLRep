@@ -35,7 +35,6 @@ class Match_aggregator
                 $aggregated_matches[$new_match[self::MATCHID]] = $new_match;
             }
         }
-
         $finished_matchids = $this->_get_finished_matches();
         //Get already cached matches associated to finished match.
         $matchids_to_get = array();
@@ -47,7 +46,15 @@ class Match_aggregator
             }
             else
             {
-                array_push($matchids_to_get, $finished_matchid['matchid']);
+                if(isset($this->params[self::PLAYERID]))
+                {
+                    array_push($matchids_to_get, $finished_matchid);
+                }
+                else
+                {
+                    array_push($matchids_to_get, $finished_matchid['matchid']);
+                }
+                
             }
         }
 
@@ -101,7 +108,7 @@ class Match_aggregator
     {   
         if(isset($this->params[self::PLAYERID]))
         {
-            return $this->CI->match_model->get_finished_matchids($$this->params[self::PLAYERID], $this->params[self::SEASONID], $this->params[self::ESPORTID]);
+            return $this->CI->match_model->get_finished_matchids($this->params[self::PLAYERID], $this->params[self::SEASONID], $this->params[self::ESPORTID]);
         }
         elseif(isset($this->params[self::TEAM]))
         {
