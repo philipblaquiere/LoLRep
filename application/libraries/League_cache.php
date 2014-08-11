@@ -99,7 +99,7 @@ class League_cache
         foreach ($leagueids as $leagueid)
         {
         	$false_hits = 0;
-        	if ($params[self::SEARCH_STRING] != "" && strrpos(strtolower($this->CI->redis->hget($leagueid, self::LEAGUE_NAME_KEY)), trim(strtolower($params[self::SEARCH_STRING]))) == FALSE)
+        	if ($params[self::SEARCH_STRING] != "" && $this->_search($leagueid, $params[self::SEARCH_STRING]))
         	{
         		$false_hits+=1;
         	}
@@ -131,6 +131,15 @@ class League_cache
         return $search_results;
     }
 
+    private function _search($leagueid, $search_string)
+    {
+        $league_name = trim(strtolower($this->CI->redis->hget($leagueid, self::LEAGUE_NAME_KEY)));
+        $search_string =  explode(" ",trim(strtolower($search_string)));
+        $exp = '/'
+        . implode('|', array_map('preg_quote', $search_string))
+        . (TRUE ? '/i' : '/');
+        return preg_match($exp, $league_name) ? FALSE : TRUE;
+    }
 
      /*
     |   Called by cron_league as a scheduled task
