@@ -237,7 +237,6 @@ class Ajax extends MY_Controller
 						'league_not_empty' => $_POST['notempty'],
 						'invite' => $_POST['inviteonly'],
 						'search_text' => $_POST['searchtext']);
-		print_r($_POST['searchtext']);
 		$data['leagues'] = $this->league_cache->search($params);
 		$this->load->view('league_list', $data);
 	}

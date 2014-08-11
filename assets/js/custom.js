@@ -266,8 +266,6 @@ $("#league-search-text").keyup(function() {
     var notempty = document.getElementById("league-not-empty-checkbox").checked;
     var inviteonly = document.getElementById("league-invite-only-checkbox").checked;
 
-    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
-
     $.ajax({
         url: '/LoLRep/ajax/search_leagues',
         type: "post",
@@ -286,9 +284,7 @@ $("#league-not-full-checkbox").change(function() {
     var notfull = this.checked;
     var notempty = document.getElementById("league-not-empty-checkbox").checked;
     var inviteonly = document.getElementById("league-invite-only-checkbox").checked;
-
-    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
-
+    
     $.ajax({
         url: '/LoLRep/ajax/search_leagues',
         type: "post",
@@ -307,9 +303,7 @@ $("#league-not-empty-checkbox").change(function() {
     var notfull = document.getElementById("league-not-full-checkbox").checked;
     var notempty = this.checked;
     var inviteonly = document.getElementById("league-invite-only-checkbox").checked;
-
-    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
-
+    
     $.ajax({
         url: '/LoLRep/ajax/search_leagues',
         type: "post",
@@ -328,9 +322,7 @@ $("#league-invite-only-checkbox").change(function() {
     var notfull = document.getElementById("league-not-full-checkbox").checked;
     var notempty = document.getElementById("league-not-empty-checkbox").checked;
     var inviteonly = this.checked;
-
-    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
-
+    
     $.ajax({
         url: '/LoLRep/ajax/search_leagues',
         type: "post",
