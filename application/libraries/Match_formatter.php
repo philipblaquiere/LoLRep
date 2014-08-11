@@ -76,7 +76,7 @@ class Match_formatter
     		$stats = $match[self::VALID_MATCHES_KEY][0][self::MATCH_DETAILS_KEY][self::LOL_STATS];
     		$teama = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_100];
     		$teamb = $match[self::VALID_MATCHES_KEY][0][self::LOL_TEAM_200];
-    		/*if(array_key_exists($playerid, $teama))
+    		if(array_key_exists($playerid, $teama))
     		{
     			$teama[$playerid][self::LOL_CHAMPIONID] = $game[self::LOL_CHAMPIONID];
                 $teama[$playerid][self::LOL_CHAMPION_ICON] = $this->CI->lol_image_formatter->to_image_url($this->lol_champions[$game[self::LOL_CHAMPIONID]],'champion');
@@ -97,7 +97,7 @@ class Match_formatter
                 $teamb[$playerid][self::LOL_SPELL2_ICON] = $this->CI->lol_image_formatter->to_image_url($this->lol_spells[$game[self::LOL_SPELL2]],'spell');
     			$teamb[$playerid][self::LOL_LEVEL] = $game[self::LOL_LEVEL];
     			$teamb[$playerid][self::LOL_STATS] = $this->_add_missing_lol_items($stats);
-  			}*/
+  			}
 
             $player_in_teama = FALSE;
 

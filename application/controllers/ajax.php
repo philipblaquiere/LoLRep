@@ -140,9 +140,10 @@ class Ajax extends MY_Controller
 	{
 		$player = $this->player_model->get_player($playerid, $this->get_esportid());
 		$seasonids = $this->_get_player_seasonid($player);
-		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'seasonids' => $seasonids, 'region' => $player['region']);
+		$params = array('team' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'seasonid' => $seasonids, 'region' => $player['region']);
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_recent_matches());
+		print_r($matches);
 		$data['matches'] = $matches;
 		//print_r($matches);
 		$prefix = $this->get_esport_prefix();
