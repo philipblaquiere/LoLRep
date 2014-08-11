@@ -216,7 +216,7 @@ class MY_Controller extends CI_Controller  {
     $defdate = new DateTime("@$epoch",new DateTimeZone($_SESSION['user']['time_zone']));
     $defdate->setTimezone(new DateTimeZone(self::TIMEZONE_DEFAULT));
     date_default_timezone_set(self::TIMEZONE_DEFAULT);
-    return $defdate->getTimestamp();;
+    return $defdate->getTimestamp();
   }
 
   protected function show_404()
@@ -240,7 +240,7 @@ class MY_Controller extends CI_Controller  {
 
   protected function local_to_gmt($local_time)
   {
-    return unix_to_human(local_to_gmt($local_time));
+    return local_to_gmt($local_time);
   }
 
   protected function gmt_to_local($gmt_time)

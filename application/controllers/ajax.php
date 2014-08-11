@@ -113,7 +113,7 @@ class Ajax extends MY_Controller
 		}
 	}
 
-	private function _get_seasonids($player)
+	private function _get_player_seasonid($player)
 	{
 		$seasonids = array();
 		foreach ($player['teams'] as $teamid)
@@ -126,10 +126,20 @@ class Ajax extends MY_Controller
 		return $seasonids;
 	}
 
+	private function _get_team_seasonid($team)
+	{
+		if(isset($team['leagues']) && isset($team['leagues']['current_season']))
+		{
+			return $team['leagues']['current_season'];
+		}
+		return NULL;
+
+	}
+
 	public function player_recent_matches($playerid)
 	{
 		$player = $this->player_model->get_player($playerid, $this->get_esportid());
-		$seasonids = $this->_get_seasonids($player);
+		$seasonids = $this->_get_player_seasonid($player);
 		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'seasonids' => $seasonids, 'region' => $player['region']);
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_recent_matches());
@@ -140,7 +150,6 @@ class Ajax extends MY_Controller
 		{
 		  return NULL;
 		}
-		print_r('yo');
 		$view = "recent_matches_".$prefix;
 		$this->load->view($view, $data);
 	}
@@ -212,9 +221,27 @@ class Ajax extends MY_Controller
 		$data['schedule'] = $schedule;
 		$this->load->view('view_league', $data);
 	}
-	public function team_recent_matches()
+	public function team_recent_matches($teamid)
 	{
+		$matches = array();
+		$team = $this->team_model->get_team($teamid);
+		$seasonid = $this->_get_team_seasonid($team);
 
+		if($seasonid != NULL)
+		{
+			$params = array('team' => $team, 'esportid' => $this->get_esportid(), 'seasonid' => $seasonid);
+			$this->load->library('match_aggregator', $params);
+			$matches = array_filter($this->match_aggregator->get_recent_matches());
+		}
+		$data['matches'] = $matches;
+		//print_r($matches);
+		$prefix = $this->get_esport_prefix();
+		if($prefix == "")
+		{
+		  return NULL;
+		}
+		$view = "recent_matches_".$prefix;
+		$this->load->view($view, $data);
 	}
 	public function team_schedule()
 	{

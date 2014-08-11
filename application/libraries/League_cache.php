@@ -123,11 +123,7 @@ class League_cache
         	{
         		array_push($search_results, json_decode($this->CI->redis->hget($leagueid, self::LEAGUE_DETAILS), TRUE));
         	}
-           // array_push($search_results, $error);
         }
-       /* array_push($search_results, "no full :". $params[self::LEAGUE_NOT_FULL] );
-        array_push($search_results, "no empty :". $params[self::LEAGUE_NOT_EMPTY] );
-        array_push($search_results, "invite :". $params[self::LEAGUE_IS_INVITE_KEY] );*/
         return $search_results;
     }
 

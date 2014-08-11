@@ -56,7 +56,7 @@ $(document).on('submit','#rune_page_verification',function(event) {
     });
 });
 
-//used in profile page
+//===== in player profile page ======
 $("#view-player-recent-matches").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
@@ -78,13 +78,15 @@ $("#view-player-recent-matches").click(function(event) {
         });
 });
 
-//used in profile page
+
 $("#view-player-upcoming-matches").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
     var playerid = $(event.currentTarget).attr('data-id');
     /* Clear profile content*/
+    
     $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+    
 
     $.ajax({
             url: '/LoLRep/ajax/player_upcoming_matches/' + playerid,
@@ -99,7 +101,7 @@ $("#view-player-upcoming-matches").click(function(event) {
         });
 });
 
-//used in profile page
+
 $("#view-profile-team").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
@@ -120,7 +122,7 @@ $("#view-profile-team").click(function(event) {
         });
 });
 
-//used in player page
+
 $("#view-profile-league").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
@@ -140,8 +142,10 @@ $("#view-profile-league").click(function(event) {
             }
         });
 });
+//===== ------------------------ ======
 
-//used in profile page
+
+// ======= in team profile page ===========
 $("#view-team-roster").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
@@ -162,6 +166,31 @@ $("#view-team-roster").click(function(event) {
             }
         });
 });
+
+$("#view-team-recent-matches").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    var teamid = $(event.currentTarget).attr('data-id');
+    /* Clear profile content*/
+    $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+            url: '/LoLRep/ajax/team_recent_matches/' + teamid,
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#main-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#main-content").html("error while loading team roster " + jqXHR + textStatus + " " + errorThrown );
+            }
+        });
+});
+
+//===== ------------------------ ======
+
+
 
 //used to set value from left text input dropdown
 $(".region-list li a").click(function(event) {
@@ -240,8 +269,8 @@ $("#sundaycheckbox").change(function() {
 });
 
 
-//--------
-//Logic for private/invite only league
+//--------Logic for private/invite only league
+
 $("#inviteonlyleaguecheckbox").change(function() {
     if(!this.checked) {
         document.getElementById("privateleaguecheckbox").checked = false;
@@ -367,8 +396,3 @@ $('textarea.form-control').maxlength({
             threshold: 20,
             placement: 'bottom-right'
         });
-
-$("#search_leagues").hideseek({
-    navigation: true,
-    nodata: 'No Leagues found'
-});

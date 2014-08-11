@@ -31,7 +31,7 @@ class Team_model extends MY_Model {
     return;
   }
 
-  public function get_team_by_teamid($teamid, $esportid)
+  public function get_team($teamid)
   {
     $this->db1->trans_start();
 
