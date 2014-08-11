@@ -10,6 +10,8 @@ class Ajax extends MY_Controller
 	    $this->load->model('banned_model');
 		$this->load->model('player_model');
 		$this->load->library('lol_api');
+		$this->load->model('team_model');
+		$this->load->library('league_cache');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
@@ -111,32 +113,6 @@ class Ajax extends MY_Controller
 		}
 	}
 
-	public function find_team_lol($teamname)
-	{
-		$teamname = trim(urldecode($teamname));
-		$data['team_lol_result'] = $this->team_model->get_team_lol_byname($teamname);
-		if(!$data['team_lol_result'])
-		{
-			//user was registered during verification phase (highly unlikely), display error
-    		$data['errormessage'] = "Team couldn't be found, make sure the spelling is correct (including caps).";
-		$this->load->view('messages/rune_page_verification_fail', $data);
-		}
-		else
-		{
-			$team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'],$esportid);
-			if($team['name'] == $teamname)
-			{
-				//user trying to trade with own team, deny him.
-      		$data['errormessage'] = "You can't trade within your own team.";
-			$this->load->view('messages/rune_page_verification_fail', $data);
-			}
-			else
-			{
-				$this->load->view('ajax/team_lol_search_result',$data);
-			}
-		}
-	}
-
 	private function _get_seasonids($player)
 	{
 		$seasonids = array();
@@ -164,6 +140,7 @@ class Ajax extends MY_Controller
 		{
 		  return NULL;
 		}
+		print_r('yo');
 		$view = "recent_matches_".$prefix;
 		$this->load->view($view, $data);
 	}
@@ -205,34 +182,63 @@ class Ajax extends MY_Controller
 
 	public function profile_view_league()
 	{
-	$this->require_login();
-	$leagueid = $_SESSION['user']['league_info']['leagueid'];
-	$teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
+		$this->require_login();
+		$leagueid = $_SESSION['user']['league_info']['leagueid'];
+		$teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
 
-	if(!$teams)
+		if(!$teams)
+		{
+			$teams['teams'] = array();
+		}
+
+		$league = $this->league_model->get_league_details($leagueid);
+		if($league['start_date'] != NULL)
+		{
+			//get the end date of the season
+			$league['end_date'] = $this->get_local_date($league['end_date']);
+			$league['start_date'] = $this->get_local_date($league['start_date']);
+		}
+
+		$schedule = array();
+		if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+		{
+			$season['start_date'] = strtotime($league['start_date']);
+			$season['end_date'] = strtotime($league['end_date']);
+			$schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+		}
+
+		$data['teams'] = $teams;
+		$data['league'] = $league;
+		$data['schedule'] = $schedule;
+		$this->load->view('view_league', $data);
+	}
+	public function team_recent_matches()
 	{
-		$teams['teams'] = array();
-	}
 
-	$league = $this->league_model->get_league_details($leagueid);
-	if($league['start_date'] != NULL)
+	}
+	public function team_schedule()
 	{
-		//get the end date of the season
-		$league['end_date'] = $this->get_local_date($league['end_date']);
-		$league['start_date'] = $this->get_local_date($league['start_date']);
-	}
 
-	$schedule = array();
-	if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
+	}
+	public function team_roster($teamid)
 	{
-		$season['start_date'] = strtotime($league['start_date']);
-		$season['end_date'] = strtotime($league['end_date']);
-		$schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+		$team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
+		$data['team'] = $team;
+		$this->load->view('team_roster',$data);
+	}
+	public function team_standings()
+	{
+
 	}
 
-	$data['teams'] = $teams;
-	$data['league'] = $league;
-	$data['schedule'] = $schedule;
-	$this->load->view('view_league', $data);
+	public function search_leagues()
+	{
+		$params = array('league_not_full' => $_POST['notfull'],
+						'league_not_empty' => $_POST['notempty'],
+						'invite' => $_POST['inviteonly'],
+						'search_text' => $_POST['searchtext']);
+		$data['leagues'] = $this->league_cache->search($params);
+		$this->load->view('league_list', $data);
 	}
-}
+
+}	

@@ -19,13 +19,13 @@
 	<?php } ?>
 </div>
 <!-- Header -->
-<h2>Teams <?php echo count($teams['teams']) ?>/<?php echo $league['max_teams'] ?></h2>
+<h2>Teams <?php echo count($teams) ?>/<?php echo $league['max_teams'] ?></h2>
 <div class="list-group">
-<?php foreach($teams['teams'] as $team):?>
+<?php foreach($teams as $team):?>
 	<span class="list-group-item">
 		<div class="row">
 			<div class="col-md-7">
-                <a href="<?php echo site_url('teams/view/' . $team['teamid']) ?>"><p class="list-group-item-text"><?php echo $team['team_name']?></p></a>
+                <a href="<?php echo site_url('teams/' . $team['teamid']) ?>"><p class="list-group-item-text"><?php echo $team['team_name']?></p></a>
                 <p class="list-group-item-text">Active Since: <?php echo $team['joined']?> </p>
 	        </div> 
     	</div>  	
@@ -44,9 +44,9 @@
 <?php if(array_key_exists(0, $schedule)) {
 	foreach($schedule as $match):?>
 	<tr>
-		<td><?php echo $teams['teams'][$match['teamaid']]['team_name'] ?></td>
+		<td><?php echo $teams[$match['teamaid']]['team_name'] ?></td>
 		<td>vs.</td>
-		<td><?php echo $teams['teams'][$match['teambid']]['team_name'] ?></td>
+		<td><?php echo $teams[$match['teambid']]['team_name'] ?></td>
 		<td><?php echo $match['match_date'] ?></td>
 		<td><?php echo $match['winnerid'] ?></td>
 		<td><?php echo $match['status'] ?></td>

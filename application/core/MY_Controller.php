@@ -49,10 +49,6 @@ class MY_Controller extends CI_Controller  {
     $this->load->view('include/footer');
   }
 
-  protected function is_player_registered()
-  {
-    return isset($_SESSION['player']) && isset($_SESSION['player']['player_name']);
-  }
   /**
    * Convinience function to determine if the user is logged in.
    * @returns

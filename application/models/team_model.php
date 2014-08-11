@@ -57,7 +57,6 @@ class Team_model extends MY_Model {
     $players = $result->result_array();
     $team['players'] = $players;
 
-
     //Get the League
     $sql = "SELECT  l.league_name as league_name,
                     l.leagueid as leagueid,
@@ -75,6 +74,7 @@ class Team_model extends MY_Model {
               AND lt.status = 'active'";
 
     $result = $this->db1->query($sql);
+    $this->db1->trans_complete();
     $results = $result->result_array();
     $leagues = array();
     if(!empty($results))
@@ -103,8 +103,6 @@ class Team_model extends MY_Model {
       }
       $team['leagues'] = $leagues;
     }
-    
-    
     return $team;
   }
 

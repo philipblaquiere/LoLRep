@@ -127,7 +127,8 @@ class MY_Model extends CI_Model  {
 	protected function gmt_to_local($gmt_time)
 	{
 		$daylight_savings = TRUE;
-		if($_SESSION['user']) {
+		if(isset($_SESSION['user']))
+		{
 		  $time_zone = $_SESSION['user']['time_zone'];
 		}
 		else

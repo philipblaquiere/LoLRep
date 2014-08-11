@@ -18,11 +18,16 @@ class Teams extends MY_Controller{
 
     function _remap($teamid)
     {
-        $this->index($playerid);
+        $this->index($teamid);
     }
     public function index($teamid)
     {
-
+        $team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
+        $data['team'] = $team;
+        $data['banner']['title_big'] = $team['team_name'];
+        //Verify if season started
+        
+        $this->view_wrapper('view_team',$data);
     }
 
     public function create()
@@ -52,25 +57,6 @@ class Teams extends MY_Controller{
     public function join_team()
     {
         $this->require_login();
-    }
-
-    public function view($teamid)
-    {
-        $team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
-        $data['team'] = $team;
-
-        //Verify if season started
-        if(isset($team['leagues']['current_season']))
-        {
-            $data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
-            //get the league;
-            if(!empty($data['schedule']))
-            {
-                $league_details = $this->league_model->get_league_details($team['leagues']['current_league']);
-                $data['teams'] = $this->team_model->get_teams_byleagueid($team['leagues']['current_league'],$this->get_esportid());
-            }
-        }
-        $this->view_wrapper('view_team',$data, false);
     }
 
     public function invite_lol($team)
