@@ -2,23 +2,23 @@
 
 class Match_updater
 {
-    const LOL_PLAYERID = "playerid";
+    const PLAYERID = "playerid";
     const MSG_NO_SCHEDULED_MATCHES = "No scheduled matches found";
     const ERROR_LOL_API = "The League of Legends API isn't responding";
     const ERROR_ESPORTID = "No corresponding eSport has been found";
+    const TEAM = "team";
 
 	private $esportid;
 	private $playerid;
 	private $region;
-    private $teamids;
+    private $team;
     private $CI;
 
 	public function __construct($params)
-    {      
-        
-        $this->teamids = $params['teamids'];
+    {
+        $this->team = $params[self::TEAM];
         $this->esportid = $params['esportid'];
-        $this->playerid = $params['playerid'];
+        $this->playerid = isset($params[self::PLAYERID]) ? $params[self::PLAYERID] : NULL;
         if(array_key_exists('region', $params))
         {
             $this->region = $params['region'];            
@@ -29,9 +29,8 @@ class Match_updater
         $this->CI->load->library('match_formatter');
         $this->CI->match_formatter->set_esportid($this->esportid);
         
-        $params = array(self::LOL_PLAYERID => $this->playerid);
-        $this->CI->load->library('match_cache',$params);
-        $this->CI->load->library('match_validator', $params);
+        $this->CI->load->library('match_cache');
+        $this->CI->load->library('match_validator');
     }
 
     /*
@@ -70,7 +69,7 @@ class Match_updater
     */
     private function _get_scheduled_matches()
     {
-        $scheduled_matchids = $this->CI->match_model->get_scheduled_matches($this->teamids, time());
+        $scheduled_matchids = $this->CI->match_model->get_scheduled_matches(array($this->team['teamid']), time());
         return $scheduled_matchids;
     }
 
@@ -87,56 +86,102 @@ class Match_updater
         {
             if(!$this->CI->match_cache->has_match($scheduled_match['matchid']))
             {
-                $recent_lol_matches = $this->CI->lol_api->get_recent_matches($this->playerid);
-                if(empty($recent_lol_matches))
+                if(isset($this->playerid))
                 {
-                    return "Unable to process request, LoL API is not responding";
-                }
-
-                $match_result = $this->CI->match_validator->validate($scheduled_match, $recent_lol_matches, $include_invalid_results, $this->esportid);
-                
-                if(count($match_result['valid_matches']) >= 1)
-                {
-
-                    $match_results[$scheduled_match['matchid']] = $match_result;
-                    $scheduled_match['gameid'] = $match_result['valid_matches'][0]['match_details']['gameId'];
-                    $match_results[$scheduled_match['matchid']]['match_info'] = $scheduled_match;
-                    $formatted_match = array();
-                    $formatted_match = $this->_format_match($match_results[$scheduled_match['matchid']], null);
+                    $match_result = $this->_get_match_result($scheduled_match, $this->playerid, $include_invalid_results);
                     
-                    //Update Match Cache with a new, data incomplete match
-                    $this->_add_match_to_cache($formatted_match);
-                    $team_players = $this->_get_unified_team_array($formatted_match);
-                    
-                    foreach ($team_players as $team_player)
+                    if(count($match_result['valid_matches']) >= 1)
                     {
-                        $recent_lol_matches = $this->CI->lol_api->get_recent_matches($team_player['summonerId']);
-                        if($recent_lol_matches)
+                        $match_results[$scheduled_match['matchid']] = $match_result;
+                        $scheduled_match['gameid'] = $match_result['valid_matches'][0]['match_details']['gameId'];
+                        $match_results[$scheduled_match['matchid']]['match_info'] = $scheduled_match;
+                        $formatted_match = array();
+                        $formatted_match = $this->_format_match($match_results[$scheduled_match['matchid']], null);
+                        
+                        //Update Match Cache with a new, data incomplete match
+                        $this->_add_match_to_cache($formatted_match);
+                        $team_players = $this->_get_unified_team_array($formatted_match);
+                        
+                        foreach ($team_players as $team_player)
                         {
-                            foreach ($recent_lol_matches['games'] as $game) 
+                            $recent_lol_matches = $this->CI->lol_api->get_recent_matches($team_player['summonerId']);
+                            if($recent_lol_matches)
                             {
-                                $game['summonerId'] = $recent_lol_matches['summonerId'];
-                                if($game['gameId'] == $formatted_match['gameid'])
+                                foreach ($recent_lol_matches['games'] as $game) 
                                 {
-                                    $formatted_match = $this->_format_match($formatted_match, $game);
-                                    continue;
+                                    $game['summonerId'] = $recent_lol_matches['summonerId'];
+                                    if($game['gameId'] == $formatted_match['gameid'])
+                                    {
+                                        $formatted_match = $this->_format_match($formatted_match, $game);
+                                        continue;
+                                    }
                                 }
                             }
+                            else
+                            {
+                                return "Player : Unable to process request, LoL API is not responding";
+                            }
                         }
-                        else
+                        $formatted_match = $this->CI->match_formatter->update_winner($formatted_match);
+                        $formatted_match['complete'] = TRUE;
+                        $this->_add_match_to_cache($formatted_match);
+                        array_push($formatted_matches, $formatted_match);
+                    }
+                    elseif($include_invalid_results)
+                    {
+                        array_push($formatted_matches['invalid'], $match_result);
+                    }
+                }
+                else
+                {
+                    $playerids = $this->_get_team_playerids();
+                    foreach ($playerids as $playerid)
+                    {
+                        $match_result = $this->_get_match_result($scheduled_match, $playerid, $include_invalid_results);
+                        
+                        if(isset($match_result['valid_matches']) && count($match_result['valid_matches']) >= 1)
                         {
-                            return "Unable to process request, LoL API is not responding";
+                            $match_results[$scheduled_match['matchid']] = $match_result;
+                            $scheduled_match['gameid'] = $match_result['valid_matches'][0]['match_details']['gameId'];
+                            $match_results[$scheduled_match['matchid']]['match_info'] = $scheduled_match;
+                            $formatted_match = array();
+                            $formatted_match = $this->_format_match($match_results[$scheduled_match['matchid']], null);
+                            
+                            //Update Match Cache with a new, data incomplete match
+                            $this->_add_match_to_cache($formatted_match);
+                            $team_players = $this->_get_unified_team_array($formatted_match);
+                            
+                            foreach ($team_players as $team_player)
+                            {
+                                $recent_lol_matches = $this->CI->lol_api->get_recent_matches($team_player['summonerId']);
+                                if($recent_lol_matches)
+                                {
+                                    foreach ($recent_lol_matches['games'] as $game) 
+                                    {
+                                        $game['summonerId'] = $recent_lol_matches['summonerId'];
+                                        if($game['gameId'] == $formatted_match['gameid'])
+                                        {
+                                            $formatted_match = $this->_format_match($formatted_match, $game);
+                                            continue;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    return "TEAM : Unable to process request, LoL API is not responding";
+                                }
+                            }
+                            $formatted_match = $this->CI->match_formatter->update_winner($formatted_match);
+                            $formatted_match['complete'] = TRUE;
+                            $this->_add_match_to_cache($formatted_match);
+                            array_push($formatted_matches, $formatted_match);
+                            continue;
+                        }
+                        elseif($include_invalid_results)
+                        {
+                            array_push($formatted_matches['invalid'], $match_result);
                         }
                     }
-                    
-                    $formatted_match = $this->CI->match_formatter->update_winner($formatted_match);
-                    $formatted_match['complete'] = TRUE;
-                    $this->_add_match_to_cache($formatted_match);
-                    array_push($formatted_matches, $formatted_match);
-                }
-                elseif($include_invalid_results)
-                {
-                    array_push($formatted_matches['invalid'], $match_result);
                 }
             }
             else
@@ -146,7 +191,25 @@ class Match_updater
         }
         return $formatted_matches;
     }
+    private function _get_match_result($scheduled_match, $playerid, $include_invalid_results)
+    {
+        $recent_lol_matches = $this->CI->lol_api->get_recent_matches($playerid);
+        if(empty($recent_lol_matches))
+        {
+            return "Unable to process request, LoL API is not responding";
+        }
+        return $this->CI->match_validator->validate($scheduled_match, $recent_lol_matches, $include_invalid_results, $this->esportid);          
+    }
 
+    private function _get_team_playerids()
+    {
+        $playerids = array();
+        foreach ($this->team['players'] as $player)
+        {
+            array_push($playerids, $player['playerid']);
+        }
+        return $playerids;
+    }
     private function _format_match($match, $game)
     {
         return $this->CI->match_formatter->format($match, $game);
@@ -162,7 +225,10 @@ class Match_updater
         $teama_players = $match['teama']['teama_players'];
         $teamb_players = $match['teamb']['teamb_players'];
         $team_players = array_replace($teama_players, $teamb_players);
-        unset($team_players[$this->playerid]);
+        if($this->playerid != NULL)
+        {
+            unset($team_players[$this->playerid]);
+        }
         return $team_players;
     }
 }

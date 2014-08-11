@@ -9,7 +9,6 @@
 	    <script src="<?php echo base_url('assets/js/bootstrap.min.js'); ?>"></script>
 	    <script src="<?php echo base_url('assets/js/bootstrap-datepicker.js'); ?>"></script>
 	    <script src="<?php echo base_url('assets/js/bootstrap-timepicker.min.js'); ?>"></script>
-	    <script src="<?php echo base_url('assets/js/jquery.hideseek.min.js'); ?>"></script>
 	    <script src="<?php echo base_url('assets/js/bootstrap-maxlength.min.js'); ?>"></script>
 	    <script src="<?php echo base_url('assets/js/custom.js'); ?>"></script>
 	</body>

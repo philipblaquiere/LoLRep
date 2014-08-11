@@ -58,7 +58,6 @@ class Match_model extends MY_Model
 
 	public function get_scheduled_matches($teamids, $time_now)
 	{
-
 		$sqla = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
@@ -154,7 +153,7 @@ class Match_model extends MY_Model
 					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
 					AND m.status = 'finished'
 					AND (m.seasonid IN ('" . implode("','", $seasonids) . "'))
-				ORDER BY m.match_date DESC";
+				ORDER BY m.match_date";
 		$result =$this->db1->query($sql);
 		$matchids_array = $result->result_array();
 		$matchids = array();
@@ -163,6 +162,18 @@ class Match_model extends MY_Model
 			array_push($matchids, $matchid['matchid']);
 		}
 		return $matchids;
+	}
+
+	public function get_finished_matchids_byteam($teamid, $seasonid, $esportid)
+	{
+		$sql = "SELECT m.matchid
+				FROM matches m
+				WHERE (m.teamaid = '$teamid' OR m.teambid = '$teamid')
+					AND m.status = 'finished'
+					AND m.seasonid = '$seasonid'
+				ORDER BY m.match_date";
+		$result =$this->db1->query($sql);
+		return $result->result_array();
 	}
 
 	public function get_matches($matchids, $esportid)
@@ -180,7 +191,7 @@ class Match_model extends MY_Model
 						s.season_status,
 						l.leagueid,
 						l.league_name,
-						l.league_type,
+						l.league_typeid,
 						l.invite,
 						l.private,
 						l.imageurl,
@@ -225,7 +236,7 @@ class Match_model extends MY_Model
 				$temp_match['status'] = $match['status'];
 				$temp_match['leagueid'] = $match['leagueid'];
 				$temp_match['league_name'] = $match['league_name'];
-				$temp_match['league_type'] = $match['league_type'];
+				$temp_match['league_typeid'] = $match['league_typeid'];
 				$temp_match['invite'] = $match['invite'];
 				$temp_match['private'] = $match['private'];
 				$temp_match['imageurl'] = $match['imageurl'];

@@ -238,8 +238,8 @@ class Match_validator
                                         if($match_info[self::MATCH_INFO_TEAMA_COMPLETE] && $match_info[self::MATCH_INFO_TEAMB_COMPLETE])
                                         {
                                             $match_info[self::MATCH_DETAILS] = $game;
-                                            $match_info[self::LOL_TEAMA] = $teams[self::LOL_TEAMA];
-                                            $match_info[self::LOL_TEAMB] = $teams[self::LOL_TEAMB];
+                                            $match_info[self::LOL_TEAMA] = $teams[self::LOL_TEAMB];
+                                            $match_info[self::LOL_TEAMB] = $teams[self::LOL_TEAMA];
                                             array_push($match_infos[self::VALID_MATCHES], $match_info);
                                             continue;
                                             //no need to iterate more match is found;

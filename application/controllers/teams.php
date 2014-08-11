@@ -22,7 +22,7 @@ class Teams extends MY_Controller{
     }
     public function index($teamid)
     {
-        $team = $this->team_model->get_team_by_teamid($teamid, $this->get_esportid());
+        $team = $this->team_model->get_team($teamid, $this->get_esportid());
         $data['team'] = $team;
         $data['banner']['title_big'] = $team['team_name'];
         //Verify if season started

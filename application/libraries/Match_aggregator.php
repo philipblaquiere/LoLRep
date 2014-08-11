@@ -9,6 +9,8 @@ class Match_aggregator
 	const PLAYERID = 'playerid';
 	const NON_DIRTY = 'FALSE';
     const ESPORTID = 'esportid';
+    const TEAM = 'team';
+    const SEASONID = 'seasonid';
 
 	public function __construct($params)
     {
@@ -33,34 +35,36 @@ class Match_aggregator
                 $aggregated_matches[$new_match[self::MATCHID]] = $new_match;
             }
         }
-        $finished_matchids = $this->_get_finished_matches($this->params[self::PLAYERID], $this->params[self::ESPORTID]);
 
+        $finished_matchids = $this->_get_finished_matches();
         //Get already cached matches associated to finished match.
-        foreach ($finished_matchids as $finished_matchid )
-        {
-            $aggregated_matches[$finished_matchid] = $this->CI->match_cache->get_match($finished_matchid);
-        }
-
         $matchids_to_get = array();
-        foreach ($aggregated_matches as $aggregated_matchid => $aggregated_match)
+        foreach ($finished_matchids as $finished_matchid)
         {
-            if(empty($aggregated_match))
+            if($this->CI->match_cache->has_match($finished_matchid))
             {
-                array_push($matchids_to_get, $aggregated_matchid);
+                $aggregated_matches[$finished_matchid] = $this->CI->match_cache->get_match($finished_matchid);
+            }
+            else
+            {
+                array_push($matchids_to_get, $finished_matchid['matchid']);
             }
         }
 
-        $matches =  $this->CI->match_model->get_matches($matchids_to_get, $this->params[self::ESPORTID]);
-        
-        foreach ($matches as $match)
+        if(!empty($matchids_to_get))
         {
-            if(!empty($match))
+            $matches =  $this->CI->match_model->get_matches($matchids_to_get, $this->params[self::ESPORTID]);
+            foreach ($matches as $match)
             {
-                $aggregated_matches[$match[self::MATCHID]] = $match;
+                if(!empty($match))
+                {
+                    $aggregated_matches[$match[self::MATCHID]] = $match;
+                }
             }
+            //Add NON_DIRTY matches to match_cache;
+            $this->CI->match_cache->add_matches($matches, self::NON_DIRTY);
         }
-        //Add NON_DIRTY matches to match_cache;
-        $this->CI->match_cache->add_matches($matches, self::NON_DIRTY);
+        
         return $aggregated_matches;
     }
 
@@ -93,8 +97,15 @@ class Match_aggregator
         return $upcoming_matches;
     }
 
-    private function _get_finished_matches($playerid, $esportid)
-    {
-    	return $this->CI->match_model->get_finished_matchids($playerid,$this->params['seasonids'], $esportid);
+    private function _get_finished_matches()
+    {   
+        if(isset($this->params[self::PLAYERID]))
+        {
+            return $this->CI->match_model->get_finished_matchids($$this->params[self::PLAYERID], $this->params[self::SEASONID], $this->params[self::ESPORTID]);
+        }
+        elseif(isset($this->params[self::TEAM]))
+        {
+            return $this->CI->match_model->get_finished_matchids_byteam($this->params[self::TEAM]['teamid'], $this->params[self::SEASONID], $this->params[self::ESPORTID]);
+        }
     }
 }
