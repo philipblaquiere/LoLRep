@@ -7,15 +7,18 @@
 </div>
 <!-- Header -->
 	
-<?php echo form_input(array('name' => 'search_leagues', 'data-toggle' => 'hide-seek', 'id' => 'search_leagues', 'class' => 'form-control', 'data-list' =>'.default_list', 'placeholder' => 'Search', 'autocomplete' => 'off')); ?>
-<br/>
-<div class="list-group">
-	<ul class="list-group default_list">
-		<?php foreach($leagues as $league): ?>
-		<li  class="list-group-item">
-            <a href="<?php echo site_url('leagues/view/' . $league['leagueid']) ?>"><?php echo $league['league_name']?></a>
-	    </li>
-		<?php endforeach; ?>
-	</ul>
+<?php echo form_input(array('name' => 'league-search-text', 'id' => 'league-search-text', 'class' => 'form-control', 'placeholder' => 'Search', 'autocomplete' => 'off')); ?>
+<div class="checkbox">
+  <label><input type="checkbox" id="league-not-full-checkbox" name="league-not-full-checkbox" value="league_not_full">Not Full</label>
 </div>
+<div class="checkbox">
+  <label><input type="checkbox" id="league-not-empty-checkbox" name="league-not-empty-checkbox" value="league_not_empty">Not Empty</label>
+</div>
+<div class="checkbox">
+  <label><input type="checkbox" id="league-invite-only-checkbox" name="league-invite-only-checkbox" value="league_invite_only">Invite Only</label>
+</div>
+<br/>
+<div id="league-search-results">
+	
+<div>
 

@@ -38,7 +38,7 @@ $(document).on('submit','#rune_page_verification',function(event) {
     /* Send the data using post and put the results in a div */
     $.ajax({
         url: '/LoLRep/ajax/rune_page_verification',
-        type: "post",
+        type: "get",
         data: {},
         success: function(data){
             if(data == "success") {
@@ -49,9 +49,9 @@ $(document).on('submit','#rune_page_verification',function(event) {
                 $("#rune_page_verification_result").html(data);
             }
         },
-        error:function(jqXHR, textStatus, errorThrown){
+        error:function(jqXHR, textStatus, errorThrown, responseHeaders){
             alert(errorThrown);
-            $("#rune_page_verification_result").html(textStatus + ": " + errorThrown );
+            $("#rune_page_verification_result").html(textStatus + ": " + errorThrown +responseHeaders+jqXHR);
         }
     });
 });
@@ -60,19 +60,20 @@ $(document).on('submit','#rune_page_verification',function(event) {
 $("#view-player-recent-matches").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
+
     var playerid = $(event.currentTarget).attr('data-id');
     /* Clear profile content*/
     $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
 
     $.ajax({
-            url: '/LoLRep/ajax/player_recent_matches/'+ playerid,
+            url: '/LoLRep/ajax/player_recent_matches/' + playerid,
             type: "post",
             data: {},
             success: function(data){
                 $("#main-content").html(data);
             },
             error:function(jqXHR, textStatus, errorThrown){
-                $("#main-content").html("error while loading matches " + textStatus + " " + errorThrown );
+                $("#main-content").html("error while loading team roster " + jqXHR + textStatus + " " + errorThrown );
             }
         });
 });
@@ -93,7 +94,7 @@ $("#view-player-upcoming-matches").click(function(event) {
                 $("#main-content").html(data);
             },
             error:function(jqXHR, textStatus, errorThrown){
-                $("#main-content").html("error while loading team " + textStatus + " " + errorThrown );
+                $("#main-content").html("Error while loading upcoming matches :" + errorThrown );
             }
         });
 });
@@ -254,6 +255,101 @@ $("#privateleaguecheckbox").change(function() {
 });
 //---------
 
+
+
+//==== LEAGUE SEARCH =======
+
+$("#league-search-text").keyup(function() {
+
+    var searchtext = document.getElementById("league-search-text").value;
+    var notfull = document.getElementById("league-not-full-checkbox").checked;
+    var notempty = document.getElementById("league-not-empty-checkbox").checked;
+    var inviteonly = document.getElementById("league-invite-only-checkbox").checked;
+
+    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+        url: '/LoLRep/ajax/search_leagues',
+        type: "post",
+        data: { 'notfull' : notfull, 'notempty' : notempty, 'inviteonly' : inviteonly, 'searchtext' : searchtext },
+        success: function(data){
+            $("#league-search-results").html(data);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+            $("#league-search-results").html("Error while searching leagues " + jqXHR + textStatus + " " + errorThrown );
+        }
+    });
+});
+
+$("#league-not-full-checkbox").change(function() {
+    var searchtext = document.getElementById("league-search-text").value;
+    var notfull = this.checked;
+    var notempty = document.getElementById("league-not-empty-checkbox").checked;
+    var inviteonly = document.getElementById("league-invite-only-checkbox").checked;
+
+    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+        url: '/LoLRep/ajax/search_leagues',
+        type: "post",
+        data: { 'notfull' : notfull, 'notempty' : notempty, 'inviteonly' : inviteonly, 'searchtext' : searchtext },
+        success: function(data){
+            $("#league-search-results").html(data);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+            $("#league-search-results").html("Error while searching leagues " + jqXHR + textStatus + " " + errorThrown );
+        }
+    });
+});
+
+$("#league-not-empty-checkbox").change(function() {
+    var searchtext = document.getElementById("league-search-text").value;
+    var notfull = document.getElementById("league-not-full-checkbox").checked;
+    var notempty = this.checked;
+    var inviteonly = document.getElementById("league-invite-only-checkbox").checked;
+
+    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+        url: '/LoLRep/ajax/search_leagues',
+        type: "post",
+        data: { 'notfull' : notfull, 'notempty' : notempty, 'inviteonly' : inviteonly, 'searchtext' : searchtext },
+        success: function(data){
+            $("#league-search-results").html(data);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+            $("#league-search-results").html("Error while searching leagues " + jqXHR + textStatus + " " + errorThrown );
+        }
+    });
+});
+
+$("#league-invite-only-checkbox").change(function() {
+    var searchtext = document.getElementById("league-search-text").value;
+    var notfull = document.getElementById("league-not-full-checkbox").checked;
+    var notempty = document.getElementById("league-not-empty-checkbox").checked;
+    var inviteonly = this.checked;
+
+    $("#league-search-results").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+        url: '/LoLRep/ajax/search_leagues',
+        type: "post",
+        data: { 'notfull' : notfull, 'notempty' : notempty, 'inviteonly' : inviteonly, 'searchtext' : searchtext },
+        success: function(data){
+            $("#league-search-results").html(data);
+        },
+        error:function(jqXHR, textStatus, errorThrown){
+            $("#league-search-results").html("Error while searching leagues " + jqXHR + textStatus + " " + errorThrown );
+        }
+    });
+});
+
+//==== END = LEAGUE SEARCH =======
+
+
+
+
+
 function reloadLoLRegister(message) {
     alert("in reload");
     $.ajax({
@@ -275,6 +371,12 @@ function switchButtonToRegister(){
     form.setAttribute('action', 'player/create');
 }
 
+$('textarea.form-control').maxlength({
+            threshold: 20,
+            placement: 'bottom-right'
+        });
+
 $("#search_leagues").hideseek({
-    navigation: true
+    navigation: true,
+    nodata: 'No Leagues found'
 });

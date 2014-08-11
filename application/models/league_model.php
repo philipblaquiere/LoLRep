@@ -106,7 +106,7 @@ class League_model extends MY_Model
       $team_info['teamid'] = $team['teamid'];
       $team_info['team_name'] = $team['team_name'];
       $team_info['joined'] = $team['joined'];
-      $leagues[$result['leagueid']]['seasons'][$team['seasonid']]['teams'][$team['teamid']] = $team_info;
+      $leagues[$team['leagueid']]['seasons'][$team['seasonid']]['teams'][$team['teamid']] = $team_info;
     }
     $this->league_cache->add_leagues($leagues);
     return $cached_leagues + $leagues;
@@ -128,8 +128,8 @@ class League_model extends MY_Model
             VALUES ('" . $season_uniqueid . "', '" . $league_uniqueid . "')";
     $this->db1->query($sql);
 
-    $sql = "INSERT INTO leagues(leagueid, league_name, esportid, league_type, max_teams,invite, private)
-        VALUES ('" . $league_uniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['privateleague'] . "')";
+    $sql = "INSERT INTO leagues(leagueid, league_name, esportid, league_typeid, max_teams,invite, private, description)
+        VALUES ('" . $league_uniqueid . "', '" . $league['name'] . "', '" . $league['esportid'] . "', '" . $league['typeid'] . "', '" . $league['max_teams'] . "', '" . $league['invite'] . "', '" . $league['private'] . "', '" . $league['description'] . "')";
     $this->db1->query($sql);
 
     $sql = "INSERT INTO league_meta(leagueid, first_matches, seasonid)
@@ -228,7 +228,7 @@ class League_model extends MY_Model
       $team_info['teamid'] = $team['teamid'];
       $team_info['team_name'] = $team['team_name'];
       $team_info['joined'] = $team['joined'];
-      $leagues[$result['leagueid']]['seasons'][$team['seasonid']]['teams'][$team['teamid']] = $team_info;
+      $leagues[$team['leagueid']]['seasons'][$team['seasonid']]['teams'][$team['teamid']] = $team_info;
     }
     $this->league_cache->add_leagues($leagues);
     return $leagues;
@@ -256,5 +256,28 @@ class League_model extends MY_Model
             WHERE teamid = '$teamid' AND seasonid = '$seasonid'";
     $this->db1->query($sql);
     return;
+  }
+
+  public function get_league_types()
+  {
+    $sql = "SELECT * FROM league_types";
+    $result = $this->db1->query($sql);
+    return $result->result_array();
+  }
+  public function get_league_owner($uid, $seasonid)
+  {
+    $sql = "SELECT * FROM league_owners
+           WHERE seasonid = '$seasonid' AND UserId = '$uid'";
+    $result = $this->db1->query($sql);
+    return $result->row_array();      
+  }
+  public function get_league_by_name($leaguename)
+  {
+    $leaguename = $this->make_mysql_friendly($leaguename);
+    $sql = "SELECT * FROM leagues
+      WHERE league_name = '$leaguename'
+      LIMIT 1";
+    $result = $this->db1->query($sql);
+    return $result->row_array();
   }
 }
