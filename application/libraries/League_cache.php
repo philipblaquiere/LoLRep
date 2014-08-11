@@ -25,7 +25,7 @@ class League_cache
     const LEAGUE_TEAMS_KEY = "teams";
     const LEAGUE_NOT_FULL = "league_not_full";
     const LEAGUE_NOT_EMPTY = "league_not_empty";
-    const SEARCH_STRING = "search_string";
+    const SEARCH_STRING = "search_text";
 
 	public function __construct()
     {
@@ -93,34 +93,41 @@ class League_cache
     {
     	$leagueids = $this->CI->redis->smembers(self::LEAGUEIDS_KEY);
     	$search_results = array();
+        $league_not_full = $params[self::LEAGUE_NOT_FULL];
+        $league_not_empty = $params[self::LEAGUE_NOT_EMPTY];
+        $invite_only = $params[self::LEAGUE_IS_INVITE_KEY];
         foreach ($leagueids as $leagueid)
         {
         	$false_hits = 0;
-        	if (isset($params[self::SEARCH_STRING]) && strpos($this->CI->redis->hget($leagueid, self::LEAGUE_NAME_KEY), $params[self::SEARCH_STRING]) == FALSE)
+        	if ($params[self::SEARCH_STRING] != "" && strrpos(strtolower($this->CI->redis->hget($leagueid, self::LEAGUE_NAME_KEY)), trim(strtolower($params[self::SEARCH_STRING]))) == FALSE)
         	{
-        		$false_hits.=1;
+        		$false_hits+=1;
         	}
-        	if(isset($params[self::LEAGUE_TYPE_KEY]) && $this->CI->redis->hget($leagueid, self::LEAGUE_TYPE_KEY) != $params[self::LEAGUE_TYPE_KEY])
+        	/*if(isset($params[self::LEAGUE_TYPE_KEY]) && $this->CI->redis->hget($leagueid, self::LEAGUE_TYPE_KEY) != $params[self::LEAGUE_TYPE_KEY])
         	{
-        		$false_hits.=1;
+        		$false_hits += 1;
+        	}*/
+        	if($league_not_full == 'true' && $this->CI->redis->hget($leagueid, self::LEAGUE_NUM_TEAMS_KEY) == $this->CI->redis->hget($leagueid, self::LEAGUE_MAX_TEAMS_KEY))
+        	{
+                $false_hits += 1;
         	}
-        	if(isset($params[self::LEAGUE_NOT_FULL]) && $this->CI->redis->hget($leagueid, self::LEAGUE_NUM_TEAMS_KEY) == $this->CI->redis->hget($leagueid, self::LEAGUE_MAX_TEAMS_KEY) )
-        	{
-        		$false_hits.=1;
+        	if($league_not_empty == 'true' && $this->CI->redis->hget($leagueid, self::LEAGUE_NUM_TEAMS_KEY) == 0)
+            {
+                $false_hits += 1;
         	}
-        	if(isset($params[self::LEAGUE_NOT_EMPTY]) && $this->CI->redis->hget($leagueid, self::LEAGUE_NUM_TEAMS_KEY) == 0)
+        	if($invite_only == 'true'&& $this->CI->redis->hget($leagueid, self::LEAGUE_IS_INVITE_KEY) == 0)
         	{
-        		$false_hits.=1;
-        	}
-        	if(isset($params[self::LEAGUE_IS_INVITE_KEY]) && $this->CI->redis->hget($leagueid, self::LEAGUE_IS_INVITE_KEY) == 0)
-        	{
-        		$false_hits.=1;
+                $false_hits += 1;
         	}
         	if($false_hits == 0)
         	{
-        		 array_push($search_results, json_decode($this->CI->redis->hget($leagueid, self::LEAGUE_DETAILS), TRUE));
+        		array_push($search_results, json_decode($this->CI->redis->hget($leagueid, self::LEAGUE_DETAILS), TRUE));
         	}
+           // array_push($search_results, $error);
         }
+       /* array_push($search_results, "no full :". $params[self::LEAGUE_NOT_FULL] );
+        array_push($search_results, "no empty :". $params[self::LEAGUE_NOT_EMPTY] );
+        array_push($search_results, "invite :". $params[self::LEAGUE_IS_INVITE_KEY] );*/
         return $search_results;
     }
 

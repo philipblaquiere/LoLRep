@@ -28,8 +28,15 @@
   <div class="form-group">
     <?php echo form_label('League Name', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_input(array('name' => 'name', 'class' => 'form-control', 'placeholder' => 'League Name', 'value' => set_value('leaguename'))); ?>
+      <?php echo form_input(array('name' => 'league_name', 'class' => 'form-control', 'placeholder' => 'League Name', 'value' => set_value('leaguename'))); ?>
       <span class="help-block">Attract teams to your league by coming up with a descriptive name.</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <?php echo form_label('Description', 'name', array('class' => 'col-sm-2 control-label')); ?>
+    <div class="col-sm-10">
+      <?php echo form_textarea(array('name' => 'league_description', 'class' => 'form-control league_description','maxlength'=>'500', 'placeholder' => 'League Name', 'value' => set_value('leaguename'))); ?>
+      <span class="help-block">Attract teams by providing them with a short text on why your League is right for them</span>
     </div>
   </div>
   <div class="form-group">
@@ -49,7 +56,7 @@
     <div class="col-sm-10"> 
       <select name="typeid" class="form-control">
         <?php foreach ($league_types as $key => $league_type): ?>
-          <option value="<?php echo $league_type['league_type_id']?>"><?php echo $league_type['league_type']?></option>
+          <option value="<?php echo $league_type['league_typeid']?>"><?php echo $league_type['league_type']?></option>
         <?php endforeach; ?>
       </select>
     </div>
@@ -58,7 +65,7 @@
     <?php echo form_label('Invite-Only', 'label', array('class' => 'col-sm-2 control-label')); ?>
       <div class="col-sm-10">
         <label class="checkbox-inline">
-          <input type="checkbox" name="inviteonlyleaguecheckbox" id="inviteonlyleaguecheckbox" value="inviteonly">
+          <input type="checkbox" name="inviteonlyleaguecheckbox" id="inviteonlyleaguecheckbox" value="invite">
           <div id="inviteonlycheckboxhelper"><small>Only teams that have been invited by the League owner can join.</small></div>
         </label>
       </div>

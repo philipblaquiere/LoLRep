@@ -5,6 +5,7 @@ class Leagues extends MY_Controller{
 	 * Constructor: initialize required libraries.
 	 */
     private $MAX_LEAGUE_COUNT = 20;
+    const DESCRIPTION_MAX_CHARACTERS = 500;
 
 	public function __construct()
     {
@@ -25,23 +26,14 @@ class Leagues extends MY_Controller{
     {
         $leagues = $this->league_model->get_all_leagues($this->get_esportid());
         $league = $this->league_model->get_leagues(array('784d79ec-8461-57dc-b8ee-cb30c062bbb8'));
-
         $player_teams = array();
         $captain_team = array();
         $player = array();
         if($this->player_exists())
         {
             $player = $this->get_player();
-            print_r($player);
             $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
             $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
-        }
-       
-        
-        if(empty($player_teams))
-        {
-           //user isn't part of a team, let the user know that he can't join a league
-            $this->system_message_model->set_message("You must be part and captain of a team to join a league", MESSAGE_WARNING);
         }
         
         foreach ($leagues as $league)
@@ -81,7 +73,7 @@ class Leagues extends MY_Controller{
                 $leagues[$league['leagueid']]['join_status'] = "Invite Only";
                 $leagues[$league['leagueid']]['join_status_tooltip'] = "This league is invite only";
             }
-            else if(count($league['seasons'][$league['current_season']]['teams']) == $league['max_teams'])
+            else if(isset($league['seasons'][$league['current_season']]['teams']) && count($league['seasons'][$league['current_season']]['teams']) == $league['max_teams'])
             {
                 $leagues[$league['leagueid']]['can_join'] = FALSE;
                 $leagues[$league['leagueid']]['join_status'] = "Full";
@@ -118,8 +110,9 @@ class Leagues extends MY_Controller{
         //Validation on input (requires that all fields exist)
         $this->load->library('form_validation');
         $this->form_validation->set_rules('typeid', 'Type', 'required');
-        $this->form_validation->set_rules('name', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename|callback_day_selected');
-        $this->form_validation->set_rules('max_teams', 'Maximum # of Teams', 'trim|required|callback_valid_teamcount');
+        $this->form_validation->set_rules('league_name', 'League Name', 'trim|required|xss_clean|callback_unique_leaguename|callback_day_selected');
+        $this->form_validation->set_rules('max_teams', 'Maximum # of Teams', 'callback_valid_teamcount');
+        $this->form_validation->set_rules('league_description', 'League Description', 'trim|xss_clean|callback_character_count');
 
         if($this->form_validation->run() == FALSE)
         {
@@ -134,43 +127,44 @@ class Leagues extends MY_Controller{
 
             //get times of day of week if corresponding checkbox is checked
             if(in_array("mondaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('monday',$input['mondaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('monday',$input['mondaytimepicker'], $time));
             }
             if(in_array("tuesdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('tuesday',$input['tuesdaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('tuesday',$input['tuesdaytimepicker'], $time));
             }
             if(in_array("wednesdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('wednesday',$input['wednesdaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('wednesday',$input['wednesdaytimepicker'], $time));
             }
             if(in_array("thursdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('thursday',$input['thursdaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('thursday',$input['thursdaytimepicker'], $time));
             }
             if(in_array("fridaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('friday',$input['fridaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('friday',$input['fridaytimepicker'], $time));
             }
             if(in_array("saturdaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('saturday',$input['saturdaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('saturday',$input['saturdaytimepicker'], $time));
             }
             if(in_array("sundaytimepicker", $input)) {
-                array_push($leagues_meta, $this->_get_first_match_datetime('sunday',$input['sundaytimepicker'],$time));
+                array_push($leagues_meta, $this->_get_first_match_datetime('sunday',$input['sundaytimepicker'], $time));
             }
             $season['userid'] = $this->get_userid();
             $season['season_duration'] = $input['duration'];
             $season['season_esportid'] = $this->get_esportid();
 
-            $league['name'] = $input['name'];
+            $league['name'] = $input['league_name'];
             $league['esportid'] = $this->get_esportid();
             $league['max_teams'] = $input['max_teams'];
             $league['typeid'] = $input['typeid'];
-            $league['invite'] = in_array("inviteonly", $input) ? 1 : 0;
-            $league['privateleague'] = in_array("private", $input) ? 1 : 0;
+            $league['invite'] = in_array("invite", $input) ? 1 : 0;
+            $league['private'] = in_array("private", $input) ? 1 : 0;
             $league['league_meta'] = $leagues_meta;
+            $league['description'] = $input['league_description'];
             $this->view_wrapper('create_league', $data, false);
             if($this->league_model->create_league($league,$season))
             {
                 $this->system_message_model->set_message('The League has been created.', MESSAGE_INFO);
             }
-            redirect('home', 'refresh');
+            redirect('leagues', 'refresh');
         }
     }
 
@@ -302,11 +296,11 @@ class Leagues extends MY_Controller{
         }
     }
 
-    private function _get_first_match_datetime($dayofweek,$timeofday,$seasonstartdate)
+    private function _get_first_match_datetime($dayofweek, $timeofday, $seasonstartdate)
     {
         $firstmidnight = $this->_get_next_dayofweek($dayofweek, $seasonstartdate);
         $dt = new DateTime("@$firstmidnight");  // convert UNIX timestamp to PHP DateTime
-        return $this->get_default_epoch(($dt->format('Y-m-d') . " " .$timeofday));
+        return $this->local_to_gmt(human_to_unix(($dt->format('Y-m-d') . " " .$timeofday)));
     }
 
     private function _get_next_dayofweek($day,$startdate)
@@ -342,6 +336,19 @@ class Leagues extends MY_Controller{
             array_push($result, $array_item[$value]);
         }
         return $result;
+    }
+
+    public function character_count($description)
+    {
+        if(strlen($description) > self::DESCRIPTION_MAX_CHARACTERS)
+        {
+            $this->form_validation->set_message('character_count','League description must have 500 or less characters');
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
     }
 
     public function unique_leaguename($new_league_name)

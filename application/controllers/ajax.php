@@ -11,6 +11,7 @@ class Ajax extends MY_Controller
 		$this->load->model('player_model');
 		$this->load->library('lol_api');
 		$this->load->model('team_model');
+		$this->load->library('league_cache');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
@@ -112,32 +113,6 @@ class Ajax extends MY_Controller
 		}
 	}
 
-	public function find_team_lol($teamname)
-	{
-		$teamname = trim(urldecode($teamname));
-		$data['team_lol_result'] = $this->team_model->get_team_lol_byname($teamname);
-		if(!$data['team_lol_result'])
-		{
-			//user was registered during verification phase (highly unlikely), display error
-    		$data['errormessage'] = "Team couldn't be found, make sure the spelling is correct (including caps).";
-		$this->load->view('messages/rune_page_verification_fail', $data);
-		}
-		else
-		{
-			$team = $this->team_model->get_team_by_captainid($_SESSION['user']['UserId'],$esportid);
-			if($team['name'] == $teamname)
-			{
-				//user trying to trade with own team, deny him.
-      		$data['errormessage'] = "You can't trade within your own team.";
-			$this->load->view('messages/rune_page_verification_fail', $data);
-			}
-			else
-			{
-				$this->load->view('ajax/team_lol_search_result',$data);
-			}
-		}
-	}
-
 	private function _get_seasonids($player)
 	{
 		$seasonids = array();
@@ -165,6 +140,7 @@ class Ajax extends MY_Controller
 		{
 		  return NULL;
 		}
+		print_r('yo');
 		$view = "recent_matches_".$prefix;
 		$this->load->view($view, $data);
 	}
@@ -236,8 +212,6 @@ class Ajax extends MY_Controller
 		$data['schedule'] = $schedule;
 		$this->load->view('view_league', $data);
 	}
-
-
 	public function team_recent_matches()
 	{
 
@@ -255,6 +229,17 @@ class Ajax extends MY_Controller
 	public function team_standings()
 	{
 
+	}
+
+	public function search_leagues()
+	{
+		$params = array('league_not_full' => $_POST['notfull'],
+						'league_not_empty' => $_POST['notempty'],
+						'invite' => $_POST['inviteonly'],
+						'search_text' => $_POST['searchtext']);
+		print_r($_POST['searchtext']);
+		$data['leagues'] = $this->league_cache->search($params);
+		$this->load->view('league_list', $data);
 	}
 
 }	
