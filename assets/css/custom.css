@@ -145,9 +145,43 @@
   max-height:100px;
 }
 
-.player-stats{
+
+
+.season-stats{
+  position: relative;
+  min-height: 150px;
+  overflow: hidden;
+  width: 100%;
+  padding: 10px 0 0 0;
+}
+.season-stats .stat-list{
+  float: left;
+  width: 100%;
+}
+.season-stats .stat-list li{
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  padding: 20px 5px 15px 5px;
+}
+
+.season-stats .stat-list .stat-label{
   font-family: 'Open Sans', sans-serif;
-  font-size: 3em;
+  font-size: 0.95em;
+  position: absolute;
+  bottom: 10px;
+  text-transform: uppercase;
+  width: 120px;
+  margin-bottom: -5px;
+}
+
+.season-stats .stat-list .stat-value{
+  font-family: 'Open Sans', sans-serif;
+  font-size: 50px;
+  width: 120px;
+  margin-top: -5px;
+  padding-bottom: 5px;
+
 }
 
 .player-teams{

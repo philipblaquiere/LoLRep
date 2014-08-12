@@ -14,6 +14,13 @@ class Stats_formatter
 	const AVERAGE_CS_LOL = "cs_average";
 	const AVERAGE_CS_PM_LOL = "cspm_average";
 
+	const AVERAGE_KDA_LOL_LABEL = "avg. kda ratio";
+	const AVERAGE_GPM_LOL_LABEL = "avg. gold/min";
+	const AVERAGE_GPG_LOL_LABEL = "avg. gold/game";
+	const AVERAGE_CS_LOL_LABEL = "avg. cs/game";
+	const AVERAGE_CS_PM_LOL_LABEL = "avg. cs/min";
+
+
 	public function __construct()
 	{
     }
@@ -56,12 +63,23 @@ class Stats_formatter
     			}
     		}
     	}
-    	$stat_averages[self::AVERAGE_KDA_LOL] = round($this->_calculate_average($stat_averages[self::AVERAGE_KDA_LOL]), 1);
-    	$stat_averages[self::AVERAGE_GPM_LOL] = round($this->_calculate_average($stat_averages[self::AVERAGE_GPM_LOL])/1000, 1);
-    	$stat_averages[self::AVERAGE_GPG_LOL] = round($this->_calculate_average($stat_averages[self::AVERAGE_GPG_LOL])/1000, 1);
-    	$stat_averages[self::AVERAGE_CS_LOL] = intval($this->_calculate_average($stat_averages[self::AVERAGE_CS_LOL]));
-    	$stat_averages[self::AVERAGE_CS_PM_LOL] = intval($this->_calculate_average($stat_averages[self::AVERAGE_CS_PM_LOL]));
-    	return $stat_averages;
+   		$return_stats = array();
+    	$stat['value'] = round($this->_calculate_average($stat_averages[self::AVERAGE_KDA_LOL]), 1);
+    	$stat['label'] = self::AVERAGE_KDA_LOL_LABEL;
+    	array_push($return_stats, $stat);
+    	$stat['value'] = round($this->_calculate_average($stat_averages[self::AVERAGE_GPM_LOL])/1000, 1)."k";
+    	$stat['label'] = self::AVERAGE_GPM_LOL_LABEL;
+    	array_push($return_stats, $stat);
+    	$stat['value'] = round($this->_calculate_average($stat_averages[self::AVERAGE_GPG_LOL])/1000, 1)."k";
+    	$stat['label'] = self::AVERAGE_GPG_LOL_LABEL;
+    	array_push($return_stats, $stat);
+    	$stat['value'] = intval($this->_calculate_average($stat_averages[self::AVERAGE_CS_LOL]));
+    	$stat['label'] = self::AVERAGE_CS_LOL_LABEL;
+    	array_push($return_stats, $stat);
+    	$stat['value'] = intval($this->_calculate_average($stat_averages[self::AVERAGE_CS_PM_LOL]));
+    	$stat['label'] = self::AVERAGE_CS_PM_LOL_LABEL;
+    	array_push($return_stats, $stat);
+    	return $return_stats;
     }
 
     private function _calculate_average($stats)
