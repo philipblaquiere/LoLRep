@@ -9,6 +9,7 @@ class Players extends MY_Controller{
     parent::__construct();
     $this->load->model('system_message_model');
     $this->load->model('player_model');
+    $this->load->model('statistics_model');
   }
 
   function _remap($playerid)
@@ -20,19 +21,10 @@ class Players extends MY_Controller{
   {
     $player = $this->player_model->get_player($playerid,$this->get_esportid());
     $data['player'] = $player;
-    //$team_stats = $this->statistics_model->lol_team_stats($teamid, $leagueid, $seasonid)
     $data['banner']['title_big'] = $player['player_name'];
     $data['is_logged_in'] = $this->is_logged_in();
-
-    /*$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
-    $this->load->library('match_aggregator', $params);
-    $matches = $this->match_aggregator->get_recent_matches();
-    print_r($matches);*/
     $this->view_wrapper('profile',$data);
   }
-
-
-
 
   public function create()
   {
@@ -47,7 +39,6 @@ class Players extends MY_Controller{
         # code...
         break;
     }
-
   }
 
   private function _create_lol()
@@ -65,6 +56,5 @@ class Players extends MY_Controller{
     $this->player_model->create($this->get_userid(), $player, $this->get_esportid());
     $this->system_message_model->set_message($player['player_name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
     redirect('home','refresh');
-    
   }
 }

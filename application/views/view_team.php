@@ -5,9 +5,10 @@
 		<div class="player-links">
 				<ul class="nav nav-pills">
 					<li><a href="/Team_recent_matches" id="view-team-recent-matches" data-id="<?php echo $team['teamid'] ?>">Recent Matches</a></li>
-					<li><a href="/Team_schedule" id="view-team-upcoming-matches" data-id="<?php echo $team['teamid'] ?>">Upcoming Matches</a></li>
+					<li><a href="/Team_upcoming_matches" id="view-team-upcoming-matches" data-id="<?php echo $team['teamid'] ?>">Upcoming Matches</a></li>
 					<li><a href="/Team_roster" id="view-team-roster" data-id="<?php echo $team['teamid'] ?>">Roster</a></li>
-					<li><a href="/Team_standings" id="view-team_standings" data-id="<?php echo $team['teamid'] ?>">Standings</a></li>
+					<li><a href="/Team_stats" id="view-team-stats" data-id="<?php echo $team['teamid'] ?>">Stats</a></li>
+					<li><a href="/Team_standings" id="view-team-standings" data-id="<?php echo $team['teamid'] ?>">Standings</a></li>
 				</ul>
 			</div>
 			<div id="main-content">

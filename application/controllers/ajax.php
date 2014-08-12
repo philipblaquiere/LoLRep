@@ -12,6 +12,8 @@ class Ajax extends MY_Controller
 		$this->load->library('lol_api');
 		$this->load->model('team_model');
 		$this->load->library('league_cache');
+		$this->load->model('statistics_model');
+		$this->load->library('stats_formatter');
 	}
 
 	public function authenticate_summoner($region, $summonerinput)
@@ -143,7 +145,6 @@ class Ajax extends MY_Controller
 		$params = array('team' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'seasonid' => $seasonids, 'region' => $player['region']);
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_recent_matches());
-		print_r($matches);
 		$data['matches'] = $matches;
 		//print_r($matches);
 		$prefix = $this->get_esport_prefix();
@@ -158,7 +159,7 @@ class Ajax extends MY_Controller
 	public function player_upcoming_matches($playerid)
 	{
 		$player = $this->player_model->get_player($playerid, $this->get_esportid());
-		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'region' => $player['region']);
+		$params = array('teamids' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid']);
 		$this->load->library('match_aggregator', $params);
 		$matches = array_filter($this->match_aggregator->get_upcoming_matches());
 		$data['matches'] = $matches;
@@ -171,57 +172,34 @@ class Ajax extends MY_Controller
 		$this->load->view($view, $data);
 	}
 
-	public function profile_view_team()
+	public function player_stats($playerid)
 	{
-		$teamid = $_SESSION['user']['league_info']['teamid'];
-		$data['team'] = $this->team_model->get_team_by_teamid($teamid, $_SESSION['esportid']);
-		$data['roster'] = $this->team_model->get_team_roster($teamid, $_SESSION['esportid']);
-		$data['calendar'] = $this->calendar;
-
-		$data['schedule'] = array();
-		$data['schedule'] = $this->match_model->get_matches_by_team($data['team']);
-		//get the league;
-		if($data['schedule'])
+		$player = $this->player_model->get_player($playerid, $this->get_esportid());
+		$data['player'] = $player;
+		$data['stats'] = NULL;
+		if(isset($player['teams']) && isset($player['teams_meta']) && isset($player['teams_meta'][$player['teams'][0]]['current_season']))
 		{
-			$league_details = $this->league_model->get_league_details($data['team']['leagueid']);
-			$data['teams'] = $this->team_model->get_teams_byleagueid($data['team']['leagueid'],$_SESSION['esportid']);
+			$data['current_team'] = $player['teams'][0];
+			$data['current_season'] = $player['teams_meta'][$player['teams'][0]]['current_season'];
+			$data['current_league'] = $player['teams_meta'][$player['teams'][0]]['current_league'];
+			$team_stats = $this->statistics_model->get_team_stats($data['current_team'], $data['current_league'],$data['current_season'], $this->get_esportid());
+			$player_stats = isset($team_stats['player_stats'][$playerid]) ? $team_stats['player_stats'][$playerid] : NULL;
+			if($player_stats != NULL)
+			{
+				$player_stats = $this->stats_formatter->calculate_averages($player_stats, $this->get_esportid());
+			}
+			$data['stats'] = $player_stats;
 		}
-		$this->load->view('view_team', $data);
+		$prefix = $this->get_esport_prefix();
+		if($prefix == "")
+		{
+		  return NULL;
+		}
+		$view = "stats_".$prefix;
+		$this->load->view($view, $data);
 
 	}
 
-	public function profile_view_league()
-	{
-		$this->require_login();
-		$leagueid = $_SESSION['user']['league_info']['leagueid'];
-		$teams = $this->team_model->get_teams_byleagueid($leagueid, $_SESSION['esportid']);
-
-		if(!$teams)
-		{
-			$teams['teams'] = array();
-		}
-
-		$league = $this->league_model->get_league_details($leagueid);
-		if($league['start_date'] != NULL)
-		{
-			//get the end date of the season
-			$league['end_date'] = $this->get_local_date($league['end_date']);
-			$league['start_date'] = $this->get_local_date($league['start_date']);
-		}
-
-		$schedule = array();
-		if($league['season_status'] != 'new' && $league['start_date'] != NULL) 
-		{
-			$season['start_date'] = strtotime($league['start_date']);
-			$season['end_date'] = strtotime($league['end_date']);
-			$schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
-		}
-
-		$data['teams'] = $teams;
-		$data['league'] = $league;
-		$data['schedule'] = $schedule;
-		$this->load->view('view_league', $data);
-	}
 	public function team_recent_matches($teamid)
 	{
 		$matches = array();
@@ -244,9 +222,27 @@ class Ajax extends MY_Controller
 		$view = "recent_matches_".$prefix;
 		$this->load->view($view, $data);
 	}
-	public function team_schedule()
+	public function team_upcoming_matches($teamid)
 	{
+		$matches = array();
+		$team = $this->team_model->get_team($teamid);
+		$seasonid = $this->_get_team_seasonid($team);
 
+		if($seasonid != NULL)
+		{
+			$params = array('team' => $team, 'esportid' => $this->get_esportid(), 'seasonid' => $seasonid);
+			$this->load->library('match_aggregator', $params);
+			$matches = array_filter($this->match_aggregator->get_upcoming_matches());
+		}
+		$data['matches'] = $matches;
+		//print_r($matches);
+		$prefix = $this->get_esport_prefix();
+		if($prefix == "")
+		{
+		  return NULL;
+		}
+		$view = "upcoming_matches_".$prefix;
+		$this->load->view($view, $data);
 	}
 	public function team_roster($teamid)
 	{
@@ -254,9 +250,30 @@ class Ajax extends MY_Controller
 		$data['team'] = $team;
 		$this->load->view('team_roster',$data);
 	}
-	public function team_standings()
+	public function team_stats($teamid)
 	{
-
+		$data['stats'] = NULL;
+		$team = $this->team_model->get_team($teamid, $this->get_esportid());
+		if(isset($team['leagues']) && isset($team['leagues']['current_season']))
+		{
+			$data['current_team'] = $team['teamid'];
+			$data['current_season'] = $team['leagues']['current_season'];
+			$data['current_league'] = $team['leagues']['current_league'];
+			$team_stats = $this->statistics_model->get_team_stats($data['current_team'], $data['current_league'],$data['current_season'], $this->get_esportid());
+			$team_stats = isset($team_stats['player_stats']) ? $team_stats['player_stats'] : NULL;
+			if($team_stats != NULL)
+			{
+				$team_stats = $this->stats_formatter->calculate_averages($team_stats, $this->get_esportid());
+			}
+			$data['stats'] = $team_stats;
+		}
+		$prefix = $this->get_esport_prefix();
+		if($prefix == "")
+		{
+		  return NULL;
+		}
+		$view = "stats_".$prefix;
+		$this->load->view($view, $data);
 	}
 
 	public function search_leagues()

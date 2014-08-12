@@ -10,14 +10,28 @@ class Statistics_model extends MY_Model
 		$this->db1 = $this->load->database('default', TRUE);
 	}
 
-	public function lol_team_stats($teamid, $leagueid, $seasonid)
+	public function get_team_stats($teamid, $leagueid, $seasonid, $esportid)
+	{
+		switch ($esportid) {
+			case '1':
+				return $this->_get_lol_team_stats($teamid, $leagueid, $seasonid);
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+	}
+	private function _get_lol_team_stats($teamid, $leagueid, $seasonid)
 	{
 		$sql = "SELECT 	ls.goldEarned, 
 						ls.numDeaths, 
 						ls.assists, 
 						ls.championsKilled,
 						ls.timePlayed,
-						pt.playerid
+						ls.minionsKilled,
+						pt.playerid,
+						m.matchid
 				FROM lol_statistics ls, matches m, player_teams pt
 				WHERE (m.teamaid = '$teamid' OR m.teambid = '$teamid')
 					AND pt.teamid = '$teamid'
@@ -31,6 +45,7 @@ class Statistics_model extends MY_Model
 		$result = $result->result_array();
 
 		$team_stats = array();
+		$player_stats = array();
 		$team_stats['teamid'] = $teamid;
 		$team_stats['leagueid'] = $leagueid;
 		$team_stats['seasonid'] = $seasonid;
@@ -43,12 +58,16 @@ class Statistics_model extends MY_Model
 			$game['championsKilled'] = $stats['championsKilled'];
 			$game['timePlayed'] = $stats['timePlayed'];
 			$game['goldEarned'] = $stats['goldEarned'];
-			if(!array_key_exists($stats['playerid'], $team_stats))
+			$game['minionsKilled'] = $stats['minionsKilled'];
+			if(!array_key_exists($stats['playerid'], $player_stats))
 			{
-				$team_stats[$stats['playerid']] = array();
+				$player_stats[$stats['playerid']] = array();
 			}
-			array_push($team_stats[$stats['playerid']]['games'], $game);
+			$player_stats[$stats['playerid']][$stats['matchid']] = $game;
 		}
+
+		$team_stats['player_stats'] = $player_stats;
+
 		return $team_stats;
 	}
 

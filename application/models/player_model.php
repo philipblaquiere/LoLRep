@@ -22,7 +22,7 @@ class Player_model extends MY_Model {
 
 	public function get_player($playerid, $esportid)
 	{
-		$sql = "SELECT p.*, lt.teamid, t.team_name, l.leagueid, l.league_name, s.seasonid, s.season_status, s.start_date,s.end_date
+		$sql = "SELECT p.*, lt.teamid, t.team_name, l.leagueid, l.league_name, s.seasonid, s.season_status, s.start_date, s.end_date
 				FROM players p,  player_teams pt, teams t, leagues l, league_teams lt, seasons s, season_teams st, season_leagues sl
 				WHERE p.playerid = '$playerid'
 					AND p.esportid = '$esportid'
