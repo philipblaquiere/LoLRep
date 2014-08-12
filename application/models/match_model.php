@@ -6,6 +6,8 @@ class Match_model extends MY_Model
 	const LOL_MAX_MATCH_DURATION = 8800; // 2:30hrs
 	const LOL_MIN_MATCH_DURATION = 1200; // 20 minutes
 	const DATE_FORMAT = "DATE_RSS";
+	const MATCH_FINISHED = 'finished';
+	const MATCH_SCHEDULED = 'scheduled';
 
 	public function __construct()
 	{
@@ -127,6 +129,25 @@ class Match_model extends MY_Model
 					AND l.esportid = '$esportid'
 					AND lt.leagueid = m.leagueid
 					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
+					AND m.status = 'scheduled'
+					AND m.match_date > '$time_now'
+				ORDER BY m.match_date";
+		$result =$this->db1->query($sql);
+		$matchids_array = $result->result_array();
+		$matchids = array();
+		foreach ($matchids_array as $matchid)
+		{
+			array_push($matchids, $matchid['matchid']);
+		}
+		return $matchids;
+	}
+
+	public function get_upcoming_matchids_byteam($teamid, $esportid)
+	{
+		$time_now = time();
+		$sql = "SELECT m.matchid
+				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
+				WHERE (m.teamaid = '$teamid' OR m.teambid = '$teamid')
 					AND m.status = 'scheduled'
 					AND m.match_date > '$time_now'
 				ORDER BY m.match_date";
@@ -344,7 +365,7 @@ class Match_model extends MY_Model
 				FROM 	lol_statistics ls, 
 						lol_champions lc, 
 						lol_spells lsp
-					WHERE 	ls.matchid = '$matchid'
+					WHERE ls.matchid = '$matchid'
 						AND	ls.championId = lc.championid
 						AND	(ls.spell1 = lsp.spellid OR ls.spell2 = lsp.spellid) ";
 		$results = $this->db1->query($sql);
@@ -420,14 +441,16 @@ class Match_model extends MY_Model
 		return $players;
 	}
 
-	public function get_matches_by_team($team)
+	public function get_matches_by_team($team, $finished = TRUE)
 	{
+		$match_status = $finished ? self::MATCH_FINISHED : self::MATCH_SCHEDULED;
 		$seasonid = $team['leagues']['current_season'];
 		$teamid = $team['teamid'];
 
 		$sql = "SELECT m.* FROM matches m
 				WHERE (teamaid = '$teamid' OR teambid = '$teamid')
-				AND m.seasonid = '$seasonid'";
+				AND m.seasonid = '$seasonid'
+				AND m.status = '$match_status'";
 		$results = $this->db1->query($sql);
 		$results = $results->result_array();
 		return $results;

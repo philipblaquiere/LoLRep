@@ -102,46 +102,27 @@ $("#view-player-upcoming-matches").click(function(event) {
 });
 
 
-$("#view-profile-team").click(function(event) {
+$("#view-player-stats").click(function(event) {
     /* Stop form from submitting normally */
     event.preventDefault();
-
+    var playerid = $(event.currentTarget).attr('data-id');
+    
     /* Clear profile content*/
-    $("#profile-content").html('');
+    $("#main-content").html('');
 
     $.ajax({
-            url: '/LoLRep/ajax/profile_view_team/',
+            url: '/LoLRep/ajax/player_stats/' + playerid,
             type: "post",
             data: {},
             success: function(data){
-                $("#profile-content").html(data);
+                $("#main-content").html(data);
             },
             error:function(jqXHR, textStatus, errorThrown){
-                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
+                $("#main-content").html("error while loading team " + textStatus + " " + errorThrown );
             }
         });
 });
 
-
-$("#view-profile-league").click(function(event) {
-    /* Stop form from submitting normally */
-    event.preventDefault();
-
-    /* Clear profile content*/
-    $("#profile-content").html('');
-
-    $.ajax({
-            url: '/LoLRep/ajax/profile_view_league/',
-            type: "post",
-            data: {},
-            success: function(data){
-                $("#profile-content").html(data);
-            },
-            error:function(jqXHR, textStatus, errorThrown){
-                $("#profile-content").html("error while loading team " + textStatus + " " + errorThrown );
-            }
-        });
-});
 //===== ------------------------ ======
 
 
@@ -184,6 +165,48 @@ $("#view-team-recent-matches").click(function(event) {
             },
             error:function(jqXHR, textStatus, errorThrown){
                 $("#main-content").html("error while loading team roster " + jqXHR + textStatus + " " + errorThrown );
+            }
+        });
+});
+
+$("#view-team-upcoming-matches").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    var teamid = $(event.currentTarget).attr('data-id');
+    /* Clear profile content*/
+    $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+            url: '/LoLRep/ajax/team_upcoming_matches/' + teamid,
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#main-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#main-content").html("error while loading team roster " + jqXHR + textStatus + " " + errorThrown );
+            }
+        });
+});
+
+$("#view-team-stats").click(function(event) {
+    /* Stop form from submitting normally */
+    event.preventDefault();
+
+    var teamid = $(event.currentTarget).attr('data-id');
+    /* Clear profile content*/
+    $("#main-content").html('<div class="row"><div class="col-md-1 col-md-offset-5"><div class="spinner"><i class="fa-li fa fa-spinner fa-spin fa-2x"></i></div></div></div>');
+
+    $.ajax({
+            url: '/LoLRep/ajax/team_stats/' + teamid,
+            type: "post",
+            data: {},
+            success: function(data){
+                $("#main-content").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#main-content").html("error while loading team stats " + jqXHR + textStatus + " " + errorThrown );
             }
         });
 });

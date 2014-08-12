@@ -144,6 +144,16 @@
 .league_description {
   max-height:100px;
 }
+
+.player-stats{
+  font-family: 'Open Sans', sans-serif;
+  font-size: 3em;
+}
+
+.player-teams{
+
+}
+
 .color-pallette{
   #0ba89c teal
   #7c1c22 red

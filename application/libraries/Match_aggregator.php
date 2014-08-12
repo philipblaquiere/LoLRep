@@ -77,7 +77,8 @@ class Match_aggregator
 
     public function get_upcoming_matches()
     {
-        $upcoming_matchids = $this->CI->match_model->get_upcoming_matchids($this->params[self::PLAYERID], $this->params[self::ESPORTID]);
+        $upcoming_matchids = isset($this->params[self::PLAYERID]) ? $this->CI->match_model->get_upcoming_matchids($this->params[self::PLAYERID], $this->params[self::ESPORTID]) : $this->CI->match_model->get_upcoming_matchids_byteam($this->params['team']['teamid'], $this->params[self::ESPORTID]);
+
         $upcoming_matches = array();
         foreach ($upcoming_matchids as $matchid)
         {
