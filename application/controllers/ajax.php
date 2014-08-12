@@ -190,12 +190,7 @@ class Ajax extends MY_Controller
 			}
 			$data['stats'] = $player_stats;
 		}
-		$prefix = $this->get_esport_prefix();
-		if($prefix == "")
-		{
-		  return NULL;
-		}
-		$view = "stats_".$prefix;
+		$view = "stats";
 		$this->load->view($view, $data);
 
 	}
@@ -272,7 +267,7 @@ class Ajax extends MY_Controller
 		{
 		  return NULL;
 		}
-		$view = "stats_".$prefix;
+		$view = "stats";
 		$this->load->view($view, $data);
 	}
 
