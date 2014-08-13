@@ -1,5 +1,5 @@
 <div class="season-stats">
-	<?php if(isset($stats)){ ?>
+	<?php if(count($stats) > 0){ ?>
 		<ul class="stat-list">
 			<?php foreach ($stats as $stat) { ?>
 			<li>

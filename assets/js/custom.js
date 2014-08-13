@@ -387,10 +387,28 @@ $("#league-invite-only-checkbox").change(function() {
         }
     });
 });
+$("#league-search-result").ready(function(){ 
+    
+    $.ajax({
+            url: '/LoLRep/ajax/search_leagues',
+            type: "post",
+            data: { 'notfull' : false, 'notempty' : false, 'inviteonly' : false, 'searchtext' : "" },
+            success: function(data){
+                $("#league-search-results").html(data);
+            },
+            error:function(jqXHR, textStatus, errorThrown){
+                $("#league-search-results").html("Error while searching leagues " + jqXHR + textStatus + " " + errorThrown );
+            }
+    });
+ });
+
 
 //==== END = LEAGUE SEARCH =======
 
-
+function loadleagues()
+{
+    
+}
 
 
 

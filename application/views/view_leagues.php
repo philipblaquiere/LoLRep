@@ -19,6 +19,5 @@
 </div>
 <br/>
 <div id="league-search-results">
-	
 <div>
 
