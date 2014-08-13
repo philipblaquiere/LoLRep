@@ -20,41 +20,9 @@ class Players extends MY_Controller{
   public function index($playerid)
   {
     $player = $this->player_model->get_player($playerid,$this->get_esportid());
+    print_r($_SESSION['player']);
     $data['player'] = $player;
     $data['banner']['title_big'] = $player['player_name'];
     $data['is_logged_in'] = $this->is_logged_in();
     $this->view_wrapper('profile',$data);
   }
-
-  public function create()
-  {
-    $this->require_login();
-    switch ($this->get_esportid())
-    {
-      case '1':
-        $this->_create_lol();
-        break;
-      
-      default:
-        # code...
-        break;
-    }
-  }
-
-  private function _create_lol()
-  {
-    $player = $this->get_player();
-    
-    //check for registered in case a currently registered player somehow accesses the create controller.
-    if(empty($player) || array_key_exists('registered', $_SESSION['player']))
-    {
-      //global object not present, an error has occured while checking pages or while redirecting herrune e from JQuery
-      $this->system_message_model->set_message('Error: No Summoner has been found. Cannot complete registration', MESSAGE_INFO);
-      redirect('add_esport', 'location');
-    }
-    //valid summoner, create summoner and redirect to home page.
-    $this->player_model->create($this->get_userid(), $player, $this->get_esportid());
-    $this->system_message_model->set_message($player['player_name'] . ', you have successfully linked your League of Legends account!', MESSAGE_INFO);
-    redirect('home','refresh');
-  }
-}

@@ -388,7 +388,7 @@ $("#league-invite-only-checkbox").change(function() {
     });
 });
 $("#league-search-result").ready(function(){ 
-    
+
     $.ajax({
             url: '/LoLRep/ajax/search_leagues',
             type: "post",
@@ -430,7 +430,7 @@ function switchButtonToRegister(){
     button.setAttribute('value','Register');
     form = document.getElementById('rune_page_verification');
     form.setAttribute('id','create');
-    form.setAttribute('action', 'player/create');
+    form.setAttribute('action', 'add_esport/create');
 }
 
 $('textarea.form-control').maxlength({
