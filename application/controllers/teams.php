@@ -16,11 +16,8 @@ class Teams extends MY_Controller{
         $this->load->model('league_model');
     }
 
-    function _remap($teamid)
-    {
-        $this->index($teamid);
-    }
-    public function index($teamid)
+ 
+    public function view($teamid)
     {
         $team = $this->team_model->get_team($teamid, $this->get_esportid());
         $data['team'] = $team;

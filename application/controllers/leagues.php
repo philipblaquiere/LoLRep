@@ -20,6 +20,7 @@ class Leagues extends MY_Controller
         $this->load->model('match_model');
         $this->load->model('player_model');
         $this->load->model('team_model');
+        $this->load->library('league_standings');
     }
 
     public function index()
@@ -143,7 +144,6 @@ class Leagues extends MY_Controller
     {
         $league = $this->league_model->get_leagues(array($leagueid));
         $league = $league[$leagueid];
-        print_r($league);
         $league_teams = isset($league['seasons'][$league['current_season']]['teams']) ? $league['seasons'][$league['current_season']]['teams'] : array();
         $player = $this->get_player();
         if(!$this->_can_player_view_league($player, $league))
@@ -176,6 +176,12 @@ class Leagues extends MY_Controller
             {
                     $match['match_date'] = $this->gmt_to_local($match['match_date']);
             }
+        }
+
+        if(!empty($schedule))
+        {
+            $standings = $this->league_standings->get_standings($league, $schedule);
+            $data['standings'] = $standings;
         }
         $data['player'] = $player;
         $data['join_button'] = $join_button;

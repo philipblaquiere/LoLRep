@@ -34,14 +34,43 @@
 	<span class="list-group-item">
 		<div class="row">
 			<div class="col-md-7">
-                <a href="<?php echo site_url('teams/' . $team['teamid']) ?>"><p class="list-group-item-text"><?php echo $team['team_name']?></p></a>
+                <a href="<?php echo site_url('teams/view/' . $team['teamid']) ?>"><p class="list-group-item-text"><?php echo $team['team_name']?></p></a>
                 <p class="list-group-item-text">Active Since: <?php echo $team['joined']?> </p>
 	        </div> 
     	</div>  	
     </span> 
 <?php endforeach; ?>
 </div>
+
+<!-- STANDINGS -->
+<?php if(!empty($standings)) { ?>
+<hr/>
 <h2>Standings</h2>
+
+<table class="table table-striped table-condensed ">
+	<th>Rank</th>
+	<th></th>
+	<th>Team</th>
+	<th>Wins</th>
+	<th>Losses</th>
+
+	<?php foreach($standings as $standing):?>
+	<tr>
+		<td><?php echo $standing['rank'] ?></td>
+		<td></td>
+		<td><?php echo $standing['team_name']  ?></td>
+		<td><?php echo $standing['wins'] ?></td>
+		<td><?php echo $standing['loss']  ?></td>
+	</tr>
+<?php  endforeach;  ?>
+</table>
+<?php } ?>
+
+<!-- STANDINGS -->
+
+
+<!-- SCHEDULE -->
+<hr/>
 <h2>Schedule</h2>
 <table class="table table-striped table-condensed table-hover">
 	<th>Team A</th>
@@ -60,7 +89,7 @@
 	</tr>
 <?php  endforeach; } ?>
 </table>
-
+<!-- SCHEDULE -->
 
 <!-- Set Start Date Modal -->
 <div class="modal fade" id="season_startdate_modal" tabindex="-1" role="dialog" aria-labelledby="season_startdate_modallabel" aria-hidden="true">

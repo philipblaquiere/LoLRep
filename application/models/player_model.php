@@ -185,7 +185,8 @@ class Player_model extends MY_Model {
 	    if(!empty($player))
 	    {
 	    	$playerid = $player['playerid'];
-			$sql = "SELECT 	pt.teamid AS teamid
+			$sql = "SELECT 	pt.teamid AS teamid,
+							t.team_name
 							FROM player_teams AS pt, teams AS t, league_teams as lt
 							WHERE pt.playerid = '$playerid'
 								AND t.teamid = pt.teamid
@@ -196,7 +197,11 @@ class Player_model extends MY_Model {
 			$player['teams'] = array();
 			if($result)
 			{
-				$player['teams'] = $result[0];
+				foreach ($result as $team) {
+					$player['teams'][$team['teamid']]['teamid'] = $team['teamid'];
+					$player['teams'][$team['teamid']]['team_name'] = $team['team_name'];
+				}
+				
 			}
 	    }
 	    $this->db1->trans_complete();
