@@ -25,7 +25,6 @@ class Leagues extends MY_Controller{
     public function index()
     {
         $leagues = $this->league_model->get_all_leagues($this->get_esportid());
-        $league = $this->league_model->get_leagues(array('784d79ec-8461-57dc-b8ee-cb30c062bbb8'));
         $player_teams = array();
         $captain_team = array();
         $player = array();
