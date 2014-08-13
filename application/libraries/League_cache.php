@@ -85,6 +85,7 @@ class League_cache
 	    	$this->CI->redis->hset($league[self::LEAGUEID], array(self::LEAGUE_NAME_KEY => $league[self::LEAGUE_NAME_KEY]));
 	    	$this->CI->redis->hset($league[self::LEAGUEID], array(self::LEAGUE_TYPE_KEY => $league[self::LEAGUE_TYPE_KEY]));
 	    	$this->CI->redis->hset($league[self::LEAGUEID], array(self::LEAGUE_IS_INVITE_KEY => $league[self::LEAGUE_IS_INVITE_KEY]));
+            $this->CI->redis->hset($league[self::LEAGUEID], array(self::LEAGUE_IS_PRIVATE_KEY => $league[self::LEAGUE_IS_PRIVATE_KEY]));
 	    	$this->CI->redis->hset($league[self::LEAGUEID], array(self::LEAGUE_DETAILS => json_encode($league)));
         }
     }
@@ -101,8 +102,12 @@ class League_cache
         	$false_hits = 0;
         	if ($params[self::SEARCH_STRING] != "" && $this->_search($leagueid, $params[self::SEARCH_STRING]))
         	{
-        		$false_hits+=1;
+        		$false_hits += 1;
         	}
+            if($this->CI->redis->hget($leagueid, self::LEAGUE_IS_PRIVATE_KEY) == 1)
+            {
+                $false_hits += 1;
+            }
         	/*if(isset($params[self::LEAGUE_TYPE_KEY]) && $this->CI->redis->hget($leagueid, self::LEAGUE_TYPE_KEY) != $params[self::LEAGUE_TYPE_KEY])
         	{
         		$false_hits += 1;
@@ -115,7 +120,7 @@ class League_cache
             {
                 $false_hits += 1;
         	}
-        	if($invite_only == 'true'&& $this->CI->redis->hget($leagueid, self::LEAGUE_IS_INVITE_KEY) == 0)
+        	if($invite_only == 'true' && $this->CI->redis->hget($leagueid, self::LEAGUE_IS_INVITE_KEY) == 0)
         	{
                 $false_hits += 1;
         	}

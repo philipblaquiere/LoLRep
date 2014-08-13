@@ -19,6 +19,15 @@
 	<?php } ?>
 </div>
 <!-- Header -->
+
+<!-- Join League Button -->
+<?php if($join_button['display_button']) { ?>
+	<a href="<?php echo site_url($join_button['url']) ?>" class="btn btn-default btn-lg btn-block" role="button"><?php echo $join_button['label'] ?></a>
+	<hr/>
+<?php } ?>
+
+<!-- Join League Button -->
+
 <h2>Teams <?php echo count($teams) ?>/<?php echo $league['max_teams'] ?></h2>
 <div class="list-group">
 <?php foreach($teams as $team):?>
@@ -40,7 +49,6 @@
 	<th>Team B</th>
 	<th>Date</th>
 	<th>Winner</th>
-	<th>Status</th>
 <?php if(array_key_exists(0, $schedule)) {
 	foreach($schedule as $match):?>
 	<tr>
@@ -48,8 +56,7 @@
 		<td>vs.</td>
 		<td><?php echo $teams[$match['teambid']]['team_name'] ?></td>
 		<td><?php echo $match['match_date'] ?></td>
-		<td><?php echo $match['winnerid'] ?></td>
-		<td><?php echo $match['status'] ?></td>
+		<td><?php if(isset($match['winnerid'])) { echo $teams[$match['winnerid']]['team_name']; } ?></td>
 	</tr>
 <?php  endforeach; } ?>
 </table>

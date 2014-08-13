@@ -8,6 +8,8 @@
 class MY_Controller extends CI_Controller  {
 
   const TIMEZONE_DEFAULT = "UM5";
+  const LOL_MIN_TEAM_PLAYERS = 1;
+  const LOL_MAX_TEAM_PLAYERS =10;
 
   public function __construct()
   {
@@ -219,8 +221,30 @@ class MY_Controller extends CI_Controller  {
     return $defdate->getTimestamp();
   }
 
-  protected function show_404()
+  protected function get_min_players($esportid)
   {
+    switch ($esportid) {
+      case '1':
+        return self::LOL_MIN_TEAM_PLAYERS;
+        break;
+      
+      default:
+        # code...
+        break;
+    }
+    return;
+  }
+  protected function get_max_players($esportid)
+  {
+    switch ($esportid) {
+      case '1':
+        return self::LOL_MAX_TEAM_PLAYERS;
+        break;
+      
+      default:
+        # code...
+        break;
+    }
     return;
   }
 
@@ -238,21 +262,20 @@ class MY_Controller extends CI_Controller  {
     return "LF98af2kF4K2kjL!dB";
   }
 
-  protected function local_to_gmt($local_time)
+  /*
+  *Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
+  */
+  protected function local_to_gmt($local_time, $to_human = TRUE)
   {
-    return local_to_gmt($local_time);
+    $time = local_to_gmt($local_time);
+    return unix_to_human();
   }
 
-  protected function gmt_to_local($gmt_time)
+  protected function gmt_to_local($gmt_time, $to_human = TRUE)
   {
-    if(isset($_SESSION['user'])) {
-      $time_zone = $_SESSION['user']['time_zone'];
-    }
-    else
-    {
-      $time_zone = self::TIMEZONE_DEFAULT;
-    }
-    return unix_to_human(gmt_to_local($gmt_time, $time_zone, date("I",$gmt_time)));
+    $time_zone = isset($_SESSION['user']) ? $_SESSION['user']['time_zone'] : self::TIMEZONE_DEFAULT;
+    $time = gmt_to_local($gmt_time, $time_zone, date("I",$gmt_time));
+    return $to_human ? unix_to_human($time) : $time;
   }
 
 }
