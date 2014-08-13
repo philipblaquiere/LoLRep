@@ -78,6 +78,7 @@ class League_model extends MY_Model
         $leagues[$result['leagueid']]['league_typeid'] = $result['league_typeid'];
         $leagues[$result['leagueid']]['league_type'] = $result['league_type'];
         $leagues[$result['leagueid']]['max_teams'] = $result['max_teams'];
+        $leagues[$result['leagueid']]['private'] = $result['private'];
         $leagues[$result['leagueid']]['invite'] = $result['invite'];
         $leagues[$result['leagueid']]['ownerid'] = $result['userid'];
         $leagues[$result['leagueid']]['imageurl'] = $result['imageurl'];
@@ -201,6 +202,7 @@ class League_model extends MY_Model
         $leagues[$result['leagueid']]['league_type'] = $result['league_type'];
         $leagues[$result['leagueid']]['max_teams'] = $result['max_teams'];
         $leagues[$result['leagueid']]['invite'] = $result['invite'];
+        $leagues[$result['leagueid']]['private'] = $result['private'];
         $leagues[$result['leagueid']]['ownerid'] = $result['userid'];
         $leagues[$result['leagueid']]['imageurl'] = $result['imageurl'];
         if($result['season_status'] == self::ACTIVE_STATUS)

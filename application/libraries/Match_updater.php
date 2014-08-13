@@ -43,7 +43,7 @@ class Match_updater
     public function update($include_invalid_results = FALSE)
     {
         $scheduled_matchids = $this->_get_scheduled_matches();
-        if($scheduled_matchids)
+        if(!empty($scheduled_matchids))
         {
             $scheduled_matches = $this->CI->match_model->get_matches($scheduled_matchids, $this->esportid);
             switch ($this->esportid)
@@ -207,6 +207,10 @@ class Match_updater
         if(empty($recent_lol_matches))
         {
             return "Unable to process request, LoL API is not responding";
+        }
+        elseif (!isset($recent_lol_matches['summonerId']))
+        {
+            return "Too many requests, chill out man.";
         }
         return $this->CI->match_validator->validate($scheduled_match, $recent_lol_matches, $include_invalid_results, $this->esportid);          
     }

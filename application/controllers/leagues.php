@@ -1,10 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Leagues extends MY_Controller{
-	/**
-	 * Constructor: initialize required libraries.
-	 */
-    private $MAX_LEAGUE_COUNT = 20;
+class Leagues extends MY_Controller
+{
     const DESCRIPTION_MAX_CHARACTERS = 500;
 
 	public function __construct()
@@ -21,7 +18,10 @@ class Leagues extends MY_Controller{
         $this->load->model('league_model');
         $this->load->model('season_model');
         $this->load->model('match_model');
+        $this->load->model('player_model');
+        $this->load->model('team_model');
     }
+
     public function index()
     {
         $leagues = $this->league_model->get_all_leagues($this->get_esportid());
@@ -34,62 +34,10 @@ class Leagues extends MY_Controller{
             $captain_team = $this->team_model->get_team_by_captainid($player['playerid'], $this->get_esportid());
             $player_teams = $this->team_model->get_teams_by_playerid($player['playerid'], $this->get_esportid());
         }
-        
-        foreach ($leagues as $league)
-        {
-            //Check if user can join league, can join if 
-            /*  season is new
-            *   isn't already part of the league
-            *   league aint full   
-            *   league aint invite only
-            *   user is captain
-            *   hasn't already changed league today
-            */
 
-            if(empty($player))
-            {
-                //User not signed in
-                $leagues[$league['leagueid']]['can_join'] = FALSE;
-                $leagues[$league['leagueid']]['join_status'] = "Join";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "Register your game account before joining leagues.";
-            }
-            else if(!empty($current_league) && $current_league['leagueid'] == $leagues[$league['leagueid']]['leagueid'])
-            {
-                $leagues[$league['leagueid']]['can_join'] = FALSE;
-                $leagues[$league['leagueid']]['join_status'] = "Current";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "You are currently part of this league";
-            }
-            else if(!$captain_team)
-            {
-                //User is not a captain of any team
-                $leagues[$league['leagueid']]['can_join'] = FALSE;
-                $leagues[$league['leagueid']]['join_status'] = "Join";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "You must be captain of your team to join this league";
-            }
-            else if($league['invite'] == 1)
-            {
-                $leagues[$league['leagueid']]['can_join'] = FALSE;
-                $leagues[$league['leagueid']]['join_status'] = "Invite Only";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "This league is invite only";
-            }
-            else if(isset($league['seasons'][$league['current_season']]['teams']) && count($league['seasons'][$league['current_season']]['teams']) == $league['max_teams'])
-            {
-                $leagues[$league['leagueid']]['can_join'] = FALSE;
-                $leagues[$league['leagueid']]['join_status'] = "Full";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "This league is full";
-            }
-            
-            else
-            {
-                $leagues[$league['leagueid']]['can_join'] = TRUE;
-                $leagues[$league['leagueid']]['join_status'] = "Join";
-                $leagues[$league['leagueid']]['join_status_tooltip'] = "Join this league";
-            }
-        }
         $data['captain_team'] = $captain_team;
         $data['leagues'] = $leagues;
         $data['current_league'] = empty($current_league) ? array() : $current_league;
-        $data['max_league_count'] = $this->MAX_LEAGUE_COUNT;
         
         $this->view_wrapper('view_leagues', $data, false);
     }
@@ -176,25 +124,11 @@ class Leagues extends MY_Controller{
 
         if($team['league'])
         {
-            //Team is already part of league, check if team joined the league sometime today.
-            $today_midnight = $this->get_default_epoch($this->get_local_datetime(strtotime('today midnight')));
-            $time_now = strtotime($this->get_local_datetime(time()));
-            $joined_date = strtotime($this->get_local_datetime(strtotime($current_league['joined'])));
-            if($time_now - $joined_date < $this->UNIX_DAY)
-            {
-                $time_remaining = $this->UNIX_DAY - ($time_now - $joined_date);
-                //joined today, ask to wait.
-                $this->system_message_model->set_message("You recently joined another league, you must wait 24h to switch league. You have until the registration period ends.", MESSAGE_INFO);
-                redirect('leagues', 'refresh');
-            }
-            else
-            {
-                //Remove from current league and join the other league
-                $this->league_model->leave_league($captain_team['teamid'], $team['league']['leagueid'], $league['current_season']);
-                $joined_league = $this->league_model->join_league($leagueid, $captain_team['teamid']);
-                $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
-                redirect('leagues', 'refresh');
-            }
+            //Remove from current league and join the other league
+            $this->league_model->leave_league($captain_team['teamid'], $team['league']['leagueid'], $league['current_season']);
+            $joined_league = $this->league_model->join_league($leagueid, $captain_team['teamid']);
+            $this->system_message_model->set_message("You have successfully joined the league" , MESSAGE_INFO);
+            redirect('leagues', 'refresh');
         }
         else
         {
@@ -209,9 +143,14 @@ class Leagues extends MY_Controller{
     {
         $league = $this->league_model->get_leagues(array($leagueid));
         $league = $league[$leagueid];
+        print_r($league);
         $league_teams = isset($league['seasons'][$league['current_season']]['teams']) ? $league['seasons'][$league['current_season']]['teams'] : array();
         $player = $this->get_player();
-
+        if(!$this->_can_player_view_league($player, $league))
+        {
+            redirect('leagues', 'refresh');
+        }
+        $join_button = $this->_can_player_join_league($player, $league);
         $season = array();
 
         foreach ($league['seasons'] as $league_season)
@@ -232,23 +171,31 @@ class Leagues extends MY_Controller{
         $schedule = array();
         if($season['season_status'] != 'new' && $season['start_date'] != NULL) 
         {
-            $season['start_date'] = strtotime($season['start_date']);
-            $season['end_date'] = strtotime($season['end_date']);
             $schedule = $this->match_model->get_matches_by_leagueid($leagueid, $season);
+            foreach ($schedule as &$match)
+            {
+                    $match['match_date'] = $this->gmt_to_local($match['match_date']);
+            }
         }
         $data['player'] = $player;
+        $data['join_button'] = $join_button;
         $data['season'] = $season;
         $data['teams'] = $league_teams;
         $data['league'] = $league;
         $data['schedule'] = $schedule;
         $this->view_wrapper('view_league', $data, false);
-
     }
 
     public function start_season($seasonid)
     {
         $this->require_login();
         $this->load->library('form_validation');
+        $userid = $this->get_userid();
+
+        if(empty($userid))
+        {
+            redirect('home', 'refresh');
+        }
 
         $this->form_validation->set_rules('season_start_date', 'Season Start', 'required|callback_date_infuture');
 
@@ -263,6 +210,11 @@ class Leagues extends MY_Controller{
         {
             $league = $this->league_model->get_league($leagueid);
             $league = $league[$leagueid];
+            //User cant start the season if not league owner and if current season is active.
+            if($userid != $league['ownerid'] || $league['seasons'][$league['current_season']]['status'] == 'active')
+            {
+                redirect('home', 'refresh');
+            }
             $league_teams = $this->league_model->get_league_teams($this->get_esportid(),array($leagueid));
             $league_teams = $league_teams[$leagueid];
             $start_date = $this->input->post('season_start_date');
@@ -288,38 +240,136 @@ class Leagues extends MY_Controller{
                 $schedule[$match_num]['teambid'] = $teams[$match['teambid']];
                 $match_num++;
             }
-            
-            $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())), $teams);
+
+             $this->season_model->start_season($seasonid, $this->get_default_epoch($start_date), $this->get_default_epoch(date('Y-m-d',$this->schedule_maker->get_end_date())), $teams);
             $this->match_model->create_matches($leagueid, $seasonid, $schedule);
             redirect('leagues/view/'.$leagueid,'refresh');
         }
+    }
+
+    private function _can_player_view_league($player, $league)
+    {
+        if($league['private'] == 1)
+        {
+            //Check to see if players team is part of League.
+            if(!empty($player) && count($player['teams'] > 0))
+            {
+                //Player is in a team, check if teamid is in league teams
+                $player_teamid = $player['teams']['teamid'];
+                if(isset($league['seasons']) && isset($league['seasons'][$league['current_season']]['teams']) && array_key_exists($player_teamid, $league['seasons'][$league['current_season']]['teams']))
+                {
+                    //Team is in private league
+                    return TRUE;
+                }
+            }
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    private function _can_player_join_league($player, $league)
+    {
+        $response = array();
+        if($league['invite'] == 1)
+        {
+            //League is invite only
+            $response['display_button'] = FALSE;
+            $response['label'] = "THIS LEAGUE IS INVITE ONLY";
+            return $response;
+        }
+        elseif(empty($player))
+        {
+            $response['url'] = "add_esport";
+            $response['display_button'] = TRUE;
+            $response['label'] = "REGISTER TO JOIN THIS LEAGUE";
+            return $response;
+        }
+        elseif(count($player['teams']) == 0)
+        {
+            $response['url'] = "teams/create";
+            $response['display_button'] = TRUE;
+            $response['label'] = "CREATE/JOIN A TEAM TO JOIN THIS LEAGUE";
+            return $response;
+        }
+        
+        else
+        {
+            $team_details = $this->team_model->get_team($player['teams']['teamid']);
+            if($team_details['captainid'] != $player['playerid'])
+            {
+                //Player isn't team's captain
+                foreach ($team_details['players'] as $player)
+                {
+                    if($team_details['captainid'] == $player['playerid'])
+                    {
+                        $team_captain_name = $player['player_name'];
+                        continue;
+                    }
+                }
+                $response['url'] = "#";
+                $response['display_button'] = TRUE;
+                $response['label'] = "ASK " . $team_captain_nam . " TO JOIN THIS LEAGUE";
+                return $response;
+            }
+            elseif (count($team_details['players']) < $this->get_min_players($this->get_esportid()))
+            {
+                //Team isn't complete, redirect to market.
+                $response['url'] = "market";
+                $response['display_button'] = TRUE;
+                $response['label'] = "ADD PLAYERS TO YOUR TEAM";
+                return $response;
+            }
+            elseif (isset($team_details['leagues']['current_league']))
+            {
+                $current_season = $team_details['leagues']['current_season'];
+                $current_league = $team_details['leagues']['current_league'];
+                if($current_league == $league['leagueid'])
+                {
+                    //Player is already part of this league
+                    $response['display_button'] = FALSE;
+                    return $response;
+                }
+                elseif($team_details['leagues'][$current_league]['seasons'][$current_season]['start_date'] == "")
+                {
+                    $response['url'] = "leagues/join/".$league['leagueid'];
+                    $response['display_button'] = TRUE;
+                    $response['label'] = "LEAVE ". $team_details['leagues'][$current_league]['league_name'] ." AND JOIN THIS LEAGUE";
+                    return $response;
+                }
+                //LOGIC FOR MULTIPLE LEAGUES START HERE, SINGLE LEAGUE FOR NOW
+                else
+                {
+                    //Player can leave their league, since it already started
+                    $response['url'] = "#";
+                    $response['display_button'] = FALSE;
+                    $response['label'] = "ALREADY PART OF AN ACTIVE LEAGUE";
+                    return $response;
+                }
+            }
+            else
+            {
+                 
+                //Player is captain, has a complete team, and isn't part of a league
+                $response['url'] = "leagues/join/".$league['leagueid'];
+                $response['display_button'] = TRUE;
+                $response['label'] = "JOIN THIS LEAGUE";
+                return $response;
+            }
+        }
+        return $response;
     }
 
     private function _get_first_match_datetime($dayofweek, $timeofday, $seasonstartdate)
     {
         $firstmidnight = $this->_get_next_dayofweek($dayofweek, $seasonstartdate);
         $dt = new DateTime("@$firstmidnight");  // convert UNIX timestamp to PHP DateTime
-        return $this->local_to_gmt(human_to_unix(($dt->format('Y-m-d') . " " .$timeofday)));
+        return $this->local_to_gmt(human_to_unix(($dt->format('Y-m-d') . " " .$timeofday)), FALSE);
     }
 
     private function _get_next_dayofweek($day,$startdate)
     {
         return strtotime( "Next ". $day, $startdate);
     }
-
-    public function day_selected()
-    {
-        $days = $this->input->post();
-        if(in_array("mondaytimepicker", $days) || in_array("tuesdaytimepicker", $days) || in_array("wednesdaytimepicker", $days) || in_array("thursdaytimepicker", $days) || in_array("fridaytimepicker", $days) || in_array("saturdaytimepicker", $days) || in_array("sundaytimepicker", $days))
-        {
-            return TRUE;
-        }
-        else
-        {
-            $this->form_validation->set_message('day_selected','You must select as least one day and time to play!');
-            return FALSE;
-        }
-    }    
 
     private function _owns_season($userid)
     {
@@ -336,6 +386,24 @@ class Leagues extends MY_Controller{
         }
         return $result;
     }
+
+    //=================
+    //  CALLBACKS
+    // ================   
+
+    public function day_selected()
+    {
+        $days = $this->input->post();
+        if(in_array("mondaytimepicker", $days) || in_array("tuesdaytimepicker", $days) || in_array("wednesdaytimepicker", $days) || in_array("thursdaytimepicker", $days) || in_array("fridaytimepicker", $days) || in_array("saturdaytimepicker", $days) || in_array("sundaytimepicker", $days))
+        {
+            return TRUE;
+        }
+        else
+        {
+            $this->form_validation->set_message('day_selected','You must select as least one day and time to play!');
+            return FALSE;
+        }
+    }    
 
     public function character_count($description)
     {
@@ -377,4 +445,8 @@ class Leagues extends MY_Controller{
             return TRUE;
         }
     }
+    //=================
+    //  END CALLBACKS
+    // ================   
+
 }

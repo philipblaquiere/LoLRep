@@ -6,10 +6,11 @@
  */
 class MY_Model extends CI_Model  {
 
-	private $TIMEZONE_DEFAULT = "UTC";
+	const TIMEZONE_DEFAULT = "UM5";
 
   	public function __construct() {
     	parent::__construct();
+    	date_default_timezone_set('Africa/Lagos');
 	}
 
 	/*
@@ -104,10 +105,23 @@ class MY_Model extends CI_Model  {
 		return str_replace("'", "\'", $string);
 	}
 
-
-	 /*
-	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date. 
+	/*
+	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
 	*/
+	protected function local_to_gmt($local_time, $to_human = TRUE)
+	{
+		$time = local_to_gmt($local_time);
+		return unix_to_human();
+	}
+
+	protected function gmt_to_local($gmt_time, $to_human = TRUE)
+	{
+		$time_zone = isset($_SESSION['user']) ? $_SESSION['user']['time_zone'] : self::TIMEZONE_DEFAULT;
+		$time = gmt_to_local($gmt_time, $time_zone, date("I",$gmt_time));
+		return $to_human ? unix_to_human($time) : $time;
+	}
+
+	/*
 	protected function get_local_date($epoch, $format = 'F j, Y') {
 		$date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
 		if($_SESSION['user']) {
@@ -115,30 +129,6 @@ class MY_Model extends CI_Model  {
 		}
 		return $date->format($format);
 	}
-
-	/*
-	*Converts the UTC/GMT UNIX standard epoch time to the user specific time zone formatted date and time.
-	*/
-	protected function local_to_gmt($local_time)
-	{
-		return unix_to_human(local_to_gmt($local_time));
-	}
-
-	protected function gmt_to_local($gmt_time)
-	{
-		$daylight_savings = TRUE;
-		if(isset($_SESSION['user']))
-		{
-		  $time_zone = $_SESSION['user']['time_zone'];
-		}
-		else
-		{
-			$time_zone = "UM5";
-		}
-		return unix_to_human(gmt_to_local($gmt_time, $time_zone, date("I",$gmt_time)));
-	}
-
-
 	protected function get_local_datetime($epoch, $format='F j, Y H:i:s') {
 		$date = new DateTime("@$epoch", new DateTimeZone($this->TIMEZONE_DEFAULT));
 		if(array_key_exists('user', $_SESSION)) {
@@ -154,5 +144,5 @@ class MY_Model extends CI_Model  {
 		$defdate->setTimezone(new DateTimeZone($this->TIMEZONE_DEFAULT));
 		date_default_timezone_set($this->TIMEZONE_DEFAULT);
 		return $defdate->getTimestamp();;
-	}
+	}*/
   }

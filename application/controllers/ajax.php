@@ -192,7 +192,6 @@ class Ajax extends MY_Controller
 		}
 		$view = "stats";
 		$this->load->view($view, $data);
-
 	}
 
 	public function team_recent_matches($teamid)
@@ -217,6 +216,7 @@ class Ajax extends MY_Controller
 		$view = "recent_matches_".$prefix;
 		$this->load->view($view, $data);
 	}
+
 	public function team_upcoming_matches($teamid)
 	{
 		$matches = array();
@@ -239,12 +239,14 @@ class Ajax extends MY_Controller
 		$view = "upcoming_matches_".$prefix;
 		$this->load->view($view, $data);
 	}
+
 	public function team_roster($teamid)
 	{
 		$team = $this->team_model->get_team($teamid, $this->get_esportid());
 		$data['team'] = $team;
 		$this->load->view('team_roster',$data);
 	}
+
 	public function team_stats($teamid)
 	{
 		$data['stats'] = NULL;
