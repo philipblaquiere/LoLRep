@@ -27,6 +27,35 @@
 <?php } ?>
 
 <!-- Join League Button -->
+
+<!-- STANDINGS -->
+<?php if(!empty($standings)) { ?>
+<hr/>
+<h2>Standings</h2>
+
+<table class="table table-condensed ">
+	<th>Rank</th>
+	<th></th>
+	<th>Team</th>
+	<th>Wins</th>
+	<th>Losses</th>
+
+	<?php foreach($standings as $standing):?>
+	<tr>
+		<td><?php echo $standing['rank'] ?></td>
+		<td></td>
+		<td><?php echo $standing['team_name']  ?></td>
+		<td><?php echo $standing['wins'] ?></td>
+		<td><?php echo $standing['loss']  ?></td>
+	</tr>
+<?php  endforeach;  ?>
+</table>
+<?php } ?>
+
+<!-- STANDINGS -->
+
+<!-- STATS BAR -->
+<hr/>
 <div class="row">
   <div class="col-md-4">
   	<div class="league-performers">
@@ -153,33 +182,7 @@
   	<h2>Latest Results</h2>
   </div>
 </div>
-
-
-<!-- STANDINGS -->
-<?php if(!empty($standings)) { ?>
-<hr/>
-<h2>Standings</h2>
-
-<table class="table table-striped table-condensed ">
-	<th>Rank</th>
-	<th></th>
-	<th>Team</th>
-	<th>Wins</th>
-	<th>Losses</th>
-
-	<?php foreach($standings as $standing):?>
-	<tr>
-		<td><?php echo $standing['rank'] ?></td>
-		<td></td>
-		<td><?php echo $standing['team_name']  ?></td>
-		<td><?php echo $standing['wins'] ?></td>
-		<td><?php echo $standing['loss']  ?></td>
-	</tr>
-<?php  endforeach;  ?>
-</table>
-<?php } ?>
-
-<!-- STANDINGS -->
+<!-- STATS BAR -->
 
 
 <!-- SCHEDULE -->

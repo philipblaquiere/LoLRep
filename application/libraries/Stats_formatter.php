@@ -35,7 +35,7 @@ class Stats_formatter
             case '1':
                 foreach ($player_stats as $playerid => $player_stats)
                 {
-                    $player_averages[$playerid]= $this->_calculate_averages_lol($player_stats, $esportid);
+                    $player_averages[$playerid] = $this->_calculate_averages_lol($player_stats, $esportid);
                 }
                 return $player_averages;
                 break;
