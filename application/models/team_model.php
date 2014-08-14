@@ -31,79 +31,88 @@ class Team_model extends MY_Model {
     return;
   }
 
-  public function get_team($teamid)
+  public function get_teams($teamids)
   {
     $this->db1->trans_start();
 
-    //Get Team information
-    $sql = "SELECT  t.team_name as team_name,
-                    t.created as created,
-                    t.captainid as captainid,
-                    t.teamid as teamid
-            FROM teams t 
-            WHERE t.teamid = '$teamid'
-            LIMIT 1";
-    $result = $this->db1->query($sql);
-    $team = $result->row_array();
-
-    //Get players on the team
-    $sql = "SELECT  p.player_name as player_name,
-                    p.playerid as playerid,
-                    p.joined as joined
-            FROM players p 
-            INNER JOIN player_teams pt ON pt.playerid = p.playerid
-            WHERE pt.teamid = '$teamid'";
-    $result = $this->db1->query($sql);
-    $players = $result->result_array();
-    $team['players'] = $players;
-
-    //Get the League
-    $sql = "SELECT  l.league_name as league_name,
-                    l.leagueid as leagueid,
-                    s.seasonid,
-                    s.season_status,
-                    s.start_date,
-                    s.end_date
-            FROM leagues l, seasons s, season_teams st, league_teams lt, season_leagues sl
-            WHERE lt.teamid = '$teamid'
-              AND lt.leagueid = l.leagueid
-              AND lt.leagueid = sl.leagueid
-              AND sl.seasonid = s.seasonid
-              AND s.seasonid = st.seasonid
-              AND st.teamid = '$teamid'
-              AND lt.status = 'active'";
-
-    $result = $this->db1->query($sql);
-    $this->db1->trans_complete();
-    $results = $result->result_array();
-    $leagues = array();
-    if(!empty($results))
+    $teams = array();
+    foreach ($teamids as $teamid)
     {
-      foreach ($results as $result)
+      //Get Team information
+      $sql = "SELECT  t.team_name as team_name,
+                      t.created as created,
+                      t.captainid as captainid,
+                      t.teamid as teamid
+              FROM teams t 
+              WHERE t.teamid = '$teamid'
+              LIMIT 1";
+      $result = $this->db1->query($sql);
+      $team = $result->row_array();
+
+      //Get players on the team
+      $sql = "SELECT  p.player_name as player_name,
+                      p.playerid as playerid,
+                      p.joined as joined
+              FROM players p 
+              INNER JOIN player_teams pt ON pt.playerid = p.playerid
+              WHERE pt.teamid = '$teamid'";
+      $result = $this->db1->query($sql);
+      $players = $result->result_array();
+      foreach ($players as $player)
       {
-        if($result['season_status'] == 'active')
-        {
-          $leagues['current_league'] = $result['leagueid'];
-          $leagues['current_season'] = $result['seasonid'];
-        }
-        if(!array_key_exists($result['leagueid'], $leagues))
-        {
-          $league['leagueid'] = $result['leagueid'];
-          $league['league_name'] = $result['league_name'];
-          $league['seasons'] = array();
-          $leagues[$result['leagueid']] = $league;
-        }
-        if(array_key_exists('seasonid', $result))
-        {
-          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['seasonid'] = $result['seasonid'];
-          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['start_date'] = $result['start_date'];
-          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['end_date'] = $result['end_date'];
-          $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['season_status'] = $result['season_status'];
-        }
+        $team['players'][$player['playerid']] = $player;
       }
-      $team['leagues'] = $leagues;
+
+      //Get the League
+      $sql = "SELECT  l.league_name as league_name,
+                      l.leagueid as leagueid,
+                      s.seasonid,
+                      s.season_status,
+                      s.start_date,
+                      s.end_date
+              FROM leagues l, seasons s, season_teams st, league_teams lt, season_leagues sl
+              WHERE lt.teamid = '$teamid'
+                AND lt.leagueid = l.leagueid
+                AND lt.leagueid = sl.leagueid
+                AND sl.seasonid = s.seasonid
+                AND s.seasonid = st.seasonid
+                AND st.teamid = '$teamid'
+                AND lt.status = 'active'";
+
+      $result = $this->db1->query($sql);
+      
+      $results = $result->result_array();
+      $leagues = array();
+      if(!empty($results))
+      {
+        foreach ($results as $result)
+        {
+          if($result['season_status'] == 'active')
+          {
+            $leagues['current_league'] = $result['leagueid'];
+            $leagues['current_season'] = $result['seasonid'];
+          }
+          if(!array_key_exists($result['leagueid'], $leagues))
+          {
+            $league['leagueid'] = $result['leagueid'];
+            $league['league_name'] = $result['league_name'];
+            $league['seasons'] = array();
+            $leagues[$result['leagueid']] = $league;
+          }
+          if(array_key_exists('seasonid', $result))
+          {
+            $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['seasonid'] = $result['seasonid'];
+            $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['start_date'] = $result['start_date'];
+            $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['end_date'] = $result['end_date'];
+            $leagues[$result['leagueid']]['seasons'][$result['seasonid']]['season_status'] = $result['season_status'];
+          }
+        }
+        $team['leagues'] = $leagues;
+      }
+      $teams[$teamid] = $team;
     }
-    return $team;
+    $this->db1->trans_complete();
+    return $teams;
   }
 
   public function get_teamname_by_teamid($teamid) {

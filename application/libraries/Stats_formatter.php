@@ -20,22 +20,103 @@ class Stats_formatter
 	const AVERAGE_CS_LOL_LABEL = "avg. cs/game";
 	const AVERAGE_CS_PM_LOL_LABEL = "avg. cs/min";
 
+    const MAX_PERFORMER_COUNT = 8;
+
 
 	public function __construct()
 	{
     }
 
-    public function calculate_averages($match_stats, $esportid)
+    public function calculate_player_averages($player_stats, $esportid)
     {
-    	switch ($esportid) {
-    		case '1':
-    			return $this->_calculate_averages_lol($match_stats, $esportid);
-    			break;
-    		
-    		default:
-    			# code...
-    			break;
-    	}
+        $player_averages = array();
+        switch ($esportid)
+        {
+            case '1':
+                foreach ($player_stats as $playerid => $player_stats)
+                {
+                    $player_averages[$playerid]= $this->_calculate_averages_lol($player_stats, $esportid);
+                }
+                return $player_averages;
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+        
+    }
+
+    public function top_performers($player_stats)
+    {
+        $performers = array();
+        foreach ($player_stats as $playerid => $stats)
+        {
+            $performers[self::AVERAGE_KDA_LOL][$playerid] = round($stats[self::AVERAGE_KDA_LOL][0],1);
+            $performers[self::AVERAGE_GPM_LOL][$playerid] = $stats[self::AVERAGE_GPM_LOL][0];
+            $performers[self::AVERAGE_GPG_LOL][$playerid] = $stats[self::AVERAGE_GPG_LOL][0];
+            $performers[self::AVERAGE_CS_LOL][$playerid] = $stats[self::AVERAGE_CS_LOL][0];
+            $performers[self::AVERAGE_CS_PM_LOL][$playerid] = $stats[self::AVERAGE_CS_PM_LOL][0];
+        }
+        arsort($performers[self::AVERAGE_KDA_LOL]);
+        arsort($performers[self::AVERAGE_GPM_LOL]);
+        arsort($performers[self::AVERAGE_GPG_LOL]);
+        arsort($performers[self::AVERAGE_CS_LOL]);
+        arsort($performers[self::AVERAGE_CS_PM_LOL]);
+
+
+        //Choose top MAX_PERFORMER_COUNT
+        $performers[self::AVERAGE_KDA_LOL] = array_slice($performers[self::AVERAGE_KDA_LOL],0, self::MAX_PERFORMER_COUNT,TRUE);
+        $performers[self::AVERAGE_GPM_LOL] = array_slice($performers[self::AVERAGE_GPM_LOL],0, self::MAX_PERFORMER_COUNT,TRUE);
+        $performers[self::AVERAGE_GPG_LOL] = array_slice($performers[self::AVERAGE_GPG_LOL],0, self::MAX_PERFORMER_COUNT,TRUE);
+        $performers[self::AVERAGE_CS_LOL] = array_slice($performers[self::AVERAGE_CS_LOL],0, self::MAX_PERFORMER_COUNT,TRUE);
+        $performers[self::AVERAGE_CS_PM_LOL] = array_slice($performers[self::AVERAGE_CS_PM_LOL],0, self::MAX_PERFORMER_COUNT,TRUE);
+
+        return $performers;
+
+    }
+
+    public function unify_player_stats($team_stats)
+    {
+        $unified_stats = array();
+        foreach ($team_stats as $stats)
+        {
+            $unified_stats +=$stats;
+        }
+        return $unified_stats;
+    }
+
+    public function format_averages($stat_averages, $esportid)
+    {
+        switch ($esportid) {
+            case '1':
+            $return_stats = array();
+            foreach ($stat_averages as $playerid => $player_stats)
+            {
+                $stats = array();
+                $formatted_player_stats['value'] = round($this->_calculate_average($player_stats[self::AVERAGE_KDA_LOL]), 1);
+                $formatted_player_stats['label'] = self::AVERAGE_KDA_LOL_LABEL;
+                array_push($stats, $formatted_player_stats);
+                $formatted_player_stats['value'] = intval($this->_calculate_average($player_stats[self::AVERAGE_GPM_LOL]));
+                $formatted_player_stats['label'] = self::AVERAGE_GPM_LOL_LABEL;
+                array_push($stats, $formatted_player_stats);
+                $formatted_player_stats['value'] = round($this->_calculate_average($player_stats[self::AVERAGE_GPG_LOL])/1000, 1)."k";
+                $formatted_player_stats['label'] = self::AVERAGE_GPG_LOL_LABEL;
+                array_push($stats, $formatted_player_stats);
+                $formatted_player_stats['value'] = intval($this->_calculate_average($player_stats[self::AVERAGE_CS_LOL]));
+                $formatted_player_stats['label'] = self::AVERAGE_CS_LOL_LABEL;
+                array_push($stats, $formatted_player_stats);
+                $formatted_player_stats['value'] = intval($this->_calculate_average($player_stats[self::AVERAGE_CS_PM_LOL]));
+                $formatted_player_stats['label'] = self::AVERAGE_CS_PM_LOL_LABEL;
+                array_push($stats, $formatted_player_stats);
+                $return_stats[$playerid] = $stats;
+            }
+            return $return_stats;
+            
+            default:
+                # code...
+                break;
+        }
     }
 
     private function _calculate_averages_lol($match_stats, $esportid)
@@ -63,23 +144,7 @@ class Stats_formatter
     			}
     		}
     	}
-   		$return_stats = array();
-    	$stat['value'] = round($this->_calculate_average($stat_averages[self::AVERAGE_KDA_LOL]), 1);
-    	$stat['label'] = self::AVERAGE_KDA_LOL_LABEL;
-    	array_push($return_stats, $stat);
-    	$stat['value'] = round($this->_calculate_average($stat_averages[self::AVERAGE_GPM_LOL])/1000, 1)."k";
-    	$stat['label'] = self::AVERAGE_GPM_LOL_LABEL;
-    	array_push($return_stats, $stat);
-    	$stat['value'] = round($this->_calculate_average($stat_averages[self::AVERAGE_GPG_LOL])/1000, 1)."k";
-    	$stat['label'] = self::AVERAGE_GPG_LOL_LABEL;
-    	array_push($return_stats, $stat);
-    	$stat['value'] = intval($this->_calculate_average($stat_averages[self::AVERAGE_CS_LOL]));
-    	$stat['label'] = self::AVERAGE_CS_LOL_LABEL;
-    	array_push($return_stats, $stat);
-    	$stat['value'] = intval($this->_calculate_average($stat_averages[self::AVERAGE_CS_PM_LOL]));
-    	$stat['label'] = self::AVERAGE_CS_PM_LOL_LABEL;
-    	array_push($return_stats, $stat);
-    	return $return_stats;
+        return $stat_averages;
     }
 
     private function _calculate_average($stats)

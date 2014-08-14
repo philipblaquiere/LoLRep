@@ -19,7 +19,8 @@ class Teams extends MY_Controller{
  
     public function view($teamid)
     {
-        $team = $this->team_model->get_team($teamid, $this->get_esportid());
+        $team = $this->team_model->get_teams(array($teamid), $this->get_esportid());
+        $team = $team[$teamid];
         $data['team'] = $team;
         $data['banner']['title_big'] = $team['team_name'];
         //Verify if season started

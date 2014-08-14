@@ -21,6 +21,8 @@ class Leagues extends MY_Controller
         $this->load->model('player_model');
         $this->load->model('team_model');
         $this->load->library('league_standings');
+        $this->load->model('statistics_model');
+        $this->load->library('stats_formatter');
     }
 
     public function index()
@@ -144,8 +146,11 @@ class Leagues extends MY_Controller
     {
         $league = $this->league_model->get_leagues(array($leagueid));
         $league = $league[$leagueid];
+
         $league_teams = isset($league['seasons'][$league['current_season']]['teams']) ? $league['seasons'][$league['current_season']]['teams'] : array();
         $player = $this->get_player();
+        $league_teamids = isset($league_teams) ? array_keys($league_teams) : NULL;
+
         if(!$this->_can_player_view_league($player, $league))
         {
             redirect('leagues', 'refresh');
@@ -153,14 +158,8 @@ class Leagues extends MY_Controller
         $join_button = $this->_can_player_join_league($player, $league);
         $season = array();
 
-        foreach ($league['seasons'] as $league_season)
-        {
-            if($league_season['season_status'] == 'new' || $league_season['season_status'] == 'active')
-            {
-                $season = $league_season;
-                break;
-            }
-        }
+        $season = $league['seasons'][$league['current_season']];
+
         if($season['start_date'] != NULL)
         {
             //get the end date of the season
@@ -176,14 +175,46 @@ class Leagues extends MY_Controller
             {
                     $match['match_date'] = $this->gmt_to_local($match['match_date']);
             }
-        }
+            $teams = $this->team_model->get_teams($league_teamids);
 
+            $players = array();
+            foreach ($teams as $teamid => $team)
+            {
+                $players += $team['players'];
+            }
+
+            //Season is started, fetch top Performers
+            $league_players_stats = array();
+            foreach ($teams as $team)
+            {
+                $team_stats = $this->statistics_model->get_team_stats($team['teamid'], $leagueid, $season['seasonid'], $this->get_esportid());
+                
+                foreach ($team_stats['player_stats'] as $playerid => $player_stats)
+                {
+                    $league_players_stats[$playerid] = $player_stats;
+                }
+            }
+            $league_players_averages = array();
+            foreach ($league_players_stats as $playerid => $player_stats)
+            {
+                if(!empty($player_stats))
+                {
+                    $stats = array();
+                    $stats[$playerid] = $player_stats;
+                    $stats = $this->stats_formatter->calculate_player_averages($stats, $this->get_esportid());
+                    $league_players_averages[$playerid] = $stats[$playerid];
+                }
+            }
+            $performers = $this->stats_formatter->top_performers($league_players_averages);
+        }
         if(!empty($schedule))
         {
             $standings = $this->league_standings->get_standings($league, $schedule);
             $data['standings'] = $standings;
         }
+        $data['performers'] = $performers;
         $data['player'] = $player;
+        $data['players'] = $players;
         $data['join_button'] = $join_button;
         $data['season'] = $season;
         $data['teams'] = $league_teams;
@@ -300,7 +331,9 @@ class Leagues extends MY_Controller
         
         else
         {
-            $team_details = $this->team_model->get_team($player['teams']['teamid']);
+            $first_team = reset($player['teams']);
+            $team_details = $this->team_model->get_teams(array($first_team['teamid']));
+            $team_details = $team_details[$first_team['teamid']];
             if($team_details['captainid'] != $player['playerid'])
             {
                 //Player isn't team's captain
