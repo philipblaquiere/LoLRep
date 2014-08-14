@@ -135,7 +135,6 @@ class Ajax extends MY_Controller
 			return $team['leagues']['current_season'];
 		}
 		return NULL;
-
 	}
 
 	public function player_recent_matches($playerid)
@@ -183,12 +182,13 @@ class Ajax extends MY_Controller
 			$data['current_season'] = $player['teams_meta'][$player['teams'][0]]['current_season'];
 			$data['current_league'] = $player['teams_meta'][$player['teams'][0]]['current_league'];
 			$team_stats = $this->statistics_model->get_team_stats($data['current_team'], $data['current_league'],$data['current_season'], $this->get_esportid());
-			$player_stats = isset($team_stats['player_stats'][$playerid]) ? $team_stats['player_stats'][$playerid] : NULL;
+			$player_stats[$playerid] = isset($team_stats['player_stats'][$playerid]) ? $team_stats['player_stats'][$playerid] : NULL;
 			if($player_stats != NULL)
 			{
-				$player_stats = $this->stats_formatter->calculate_averages($player_stats, $this->get_esportid());
+				$player_stats = $this->stats_formatter->calculate_player_averages($player_stats, $this->get_esportid());
+				$player_stats = $this->stats_formatter->format_averages($player_stats, $this->get_esportid());
 			}
-			$data['stats'] = $player_stats;
+			$data['stats'] = $player_stats[$playerid];
 		}
 		$view = "stats";
 		$this->load->view($view, $data);
@@ -197,7 +197,8 @@ class Ajax extends MY_Controller
 	public function team_recent_matches($teamid)
 	{
 		$matches = array();
-		$team = $this->team_model->get_team($teamid);
+		$team = $this->team_model->get_teams(array($teamid));
+		$team = $team[$teamid];
 		$seasonid = $this->_get_team_seasonid($team);
 
 		if($seasonid != NULL)
@@ -220,7 +221,8 @@ class Ajax extends MY_Controller
 	public function team_upcoming_matches($teamid)
 	{
 		$matches = array();
-		$team = $this->team_model->get_team($teamid);
+		$team = $this->team_model->get_teams(array($teamid));
+		$team = $team[$teamid];
 		$seasonid = $this->_get_team_seasonid($team);
 
 		if($seasonid != NULL)
@@ -242,15 +244,16 @@ class Ajax extends MY_Controller
 
 	public function team_roster($teamid)
 	{
-		$team = $this->team_model->get_team($teamid, $this->get_esportid());
-		$data['team'] = $team;
+		$team = $this->team_model->get_teams(array($teamid), $this->get_esportid());
+		$data['team'] = $team[$teamid];
 		$this->load->view('team_roster',$data);
 	}
 
 	public function team_stats($teamid)
 	{
 		$data['stats'] = NULL;
-		$team = $this->team_model->get_team($teamid, $this->get_esportid());
+		$team = $this->team_model->get_teams(array($teamid), $this->get_esportid());
+		$team = $team[$teamid];
 		if(isset($team['leagues']) && isset($team['leagues']['current_season']))
 		{
 			$data['current_team'] = $team['teamid'];
@@ -260,9 +263,11 @@ class Ajax extends MY_Controller
 			$team_stats = isset($team_stats['player_stats']) ? $team_stats['player_stats'] : NULL;
 			if($team_stats != NULL)
 			{
-				$team_stats = $this->stats_formatter->calculate_averages($team_stats, $this->get_esportid());
+				$unified_team_stats[$teamid] = $this->stats_formatter->unify_player_stats($team_stats);
+				$team_stats = $this->stats_formatter->calculate_player_averages($unified_team_stats, $this->get_esportid());
+				$team_stats = $this->stats_formatter->format_averages($team_stats, $this->get_esportid());
 			}
-			$data['stats'] = $team_stats;
+			$data['stats'] = $team_stats[$teamid];
 		}
 		$prefix = $this->get_esport_prefix();
 		if($prefix == "")
