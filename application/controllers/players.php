@@ -19,7 +19,6 @@ class Players extends MY_Controller{
 
   public function index($playerid)
   {
-    print_r($_SESSION['player']);
     $player = $this->player_model->get_player($playerid,$this->get_esportid());
     $data['player'] = $player;
     $data['banner']['title_big'] = $player['player_name'];

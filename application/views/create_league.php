@@ -35,7 +35,7 @@
   <div class="form-group">
     <?php echo form_label('Description', 'name', array('class' => 'col-sm-2 control-label')); ?>
     <div class="col-sm-10">
-      <?php echo form_textarea(array('name' => 'league_description', 'class' => 'form-control league_description','maxlength'=>'500', 'placeholder' => 'League Name', 'value' => set_value('leaguename'))); ?>
+      <?php echo form_textarea(array('name' => 'league_description', 'class' => 'form-control league_description','maxlength'=>'500', 'placeholder' => 'League Description', 'value' => set_value('leaguename'))); ?>
       <span class="help-block">Attract teams by providing them with a short text on why your League is right for them</span>
     </div>
   </div>
