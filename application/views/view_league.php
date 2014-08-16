@@ -60,7 +60,7 @@
 <div class="row">
   <div class="col-md-4">
   	<div class="league-performers">
-  		<h2>Performers</h2>
+  		<h2>Top Performers</h2>
   		<?php if(isset($performers)) { ?>
   		<ul class="nav nav-tabs" role="tablist" id="league_performer_tabs">
 		  <li class="active"><a href="#kda" role="tab" data-toggle="tab">KDA</a></li>

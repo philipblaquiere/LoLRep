@@ -20,6 +20,7 @@ class Players extends MY_Controller{
   public function index($playerid)
   {
     $player = $this->player_model->get_player($playerid,$this->get_esportid());
+    print_r($player);
     $data['player'] = $player;
     $data['banner']['title_big'] = $player['player_name'];
     $data['is_logged_in'] = $this->is_logged_in();
