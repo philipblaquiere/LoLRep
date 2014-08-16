@@ -119,6 +119,7 @@ class Match_updater
                             {
                                 foreach ($recent_lol_matches['games'] as $game) 
                                 {
+                                    $formatted_match = array();
                                     $game['summonerId'] = $recent_lol_matches['summonerId'];
                                     if($game['gameId'] == $formatted_match['gameid'])
                                     {

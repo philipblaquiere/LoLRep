@@ -143,9 +143,8 @@ class Ajax extends MY_Controller
 		$seasonids = $this->_get_player_seasonid($player);
 		$params = array('team' => $player['teams'], 'esportid' => $this->get_esportid(), 'playerid' => $player['playerid'], 'seasonid' => $seasonids, 'region' => $player['region']);
 		$this->load->library('match_aggregator', $params);
-		$matches = array_filter($this->match_aggregator->get_recent_matches());
+		$matches = $this->match_aggregator->get_recent_matches();
 		$data['matches'] = $matches;
-		//print_r($matches);
 		$prefix = $this->get_esport_prefix();
 		if($prefix == "")
 		{
@@ -183,7 +182,7 @@ class Ajax extends MY_Controller
 			$data['current_league'] = $player['teams_meta'][$player['teams'][0]]['current_league'];
 			$team_stats = $this->statistics_model->get_team_stats($data['current_team'], $data['current_league'],$data['current_season'], $this->get_esportid());
 			$player_stats[$playerid] = isset($team_stats['player_stats'][$playerid]) ? $team_stats['player_stats'][$playerid] : NULL;
-			if($player_stats != NULL)
+			if($player_stats[$playerid] != NULL)
 			{
 				$player_stats = $this->stats_formatter->calculate_player_averages($player_stats, $this->get_esportid());
 				$player_stats = $this->stats_formatter->format_averages($player_stats, $this->get_esportid());

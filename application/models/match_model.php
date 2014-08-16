@@ -60,6 +60,7 @@ class Match_model extends MY_Model
 
 	public function get_scheduled_matches($teamids, $time_now)
 	{
+		$time_now = $this->local_to_gmt(intval($time_now), FALSE);
 		$sqla = "SELECT m.matchid
 				FROM matches AS m
 				WHERE m.match_date < '$time_now'
@@ -95,16 +96,15 @@ class Match_model extends MY_Model
 
 	public function get_scheduled_matchids($time_now, $esportid)
 	{
+		$time_now = $this->local_to_gmt(intval($time_now), FALSE);
 		$min_match_duration = $this->_get_min_match_length($esportid);
 		$max_match_duration = $this->_get_max_match_length($esportid);
-		$time_min_duration = $time_now - $min_match_duration;
 		$time_max_duration = $time_now - $max_match_duration;
 
 		$sql = "SELECT m.matchid
 				FROM matches m, leagues l
 				WHERE m.leagueid = l.leagueid
 					AND l.esportid = '$esportid'
-					AND m.match_date <= '$time_min_duration'
 					AND m.match_date <= '$time_max_duration'";
 		$result = $this->db1->query($sql);
 		$matchids_array = $result->result_array();
@@ -117,9 +117,9 @@ class Match_model extends MY_Model
 
 	}
 
-	public function get_upcoming_matchids($playerid, $esportid, $limit = 50, $pointer = 0)
+	public function get_upcoming_matchids($playerid, $esportid)
 	{
-		$time_now = time();
+		$time_delay = $this->local_to_gmt(time(), FALSE) -  $this->_get_max_match_length($esportid);
 		$sql = "SELECT m.matchid
 				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
 				WHERE p.playerid = '$playerid'
@@ -130,7 +130,7 @@ class Match_model extends MY_Model
 					AND lt.leagueid = m.leagueid
 					AND (m.teamaid = pt.teamid OR m.teambid = pt.teamid)
 					AND m.status = 'scheduled'
-					AND m.match_date > '$time_now'
+					AND m.match_date > '$time_delay'
 				ORDER BY m.match_date";
 		$result =$this->db1->query($sql);
 		$matchids_array = $result->result_array();
@@ -144,7 +144,7 @@ class Match_model extends MY_Model
 
 	public function get_upcoming_matchids_byteam($teamid, $esportid)
 	{
-		$time_now = time();
+		$time_now = $this->local_to_gmt(intval($time_now), FALSE);
 		$sql = "SELECT m.matchid
 				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
 				WHERE (m.teamaid = '$teamid' OR m.teambid = '$teamid')

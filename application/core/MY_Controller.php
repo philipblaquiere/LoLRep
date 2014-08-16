@@ -268,7 +268,7 @@ class MY_Controller extends CI_Controller  {
   protected function local_to_gmt($local_time, $to_human = TRUE)
   {
     $time = local_to_gmt($local_time);
-    return unix_to_human();
+    return $to_human ? unix_to_human($time) : $time;
   }
 
   protected function gmt_to_local($gmt_time, $to_human = TRUE)
