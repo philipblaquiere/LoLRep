@@ -215,9 +215,9 @@ class Leagues extends MY_Controller
             $data['standings'] = $standings;
         }
         $this->load->library('match_cache');
-        $data['performers'] = $performers;
+        $data['performers'] = isset($performers) ? $performers : NULL;
         $data['player'] = $player;
-        $data['players'] = $players;
+        $data['players'] = isset($players) ? $players : NULL;
         $data['join_button'] = $join_button;
         $data['season'] = $season;
         $data['teams'] = $league_teams;
@@ -314,7 +314,7 @@ class Leagues extends MY_Controller
         {
             //League is invite only
             $response['display_button'] = FALSE;
-            $response['label'] = "SEASON ALREADY STARTED";
+            $response['label'] = "SEASON STARTED";
             return $response;
         }
         elseif($league['invite'] == 1)

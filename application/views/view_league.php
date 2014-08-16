@@ -61,6 +61,7 @@
   <div class="col-md-4">
   	<div class="league-performers">
   		<h2>Performers</h2>
+  		<?php if(isset($performers)) { ?>
   		<ul class="nav nav-tabs" role="tablist" id="league_performer_tabs">
 		  <li class="active"><a href="#kda" role="tab" data-toggle="tab">KDA</a></li>
 		  <li><a href="#gpm" role="tab" data-toggle="tab">G/Min</a></li>
@@ -160,6 +161,7 @@
 		  		<?php } ?>
 		  	</div>
   		</div>
+  		<?php } //endif ?>
   	</div>
   </div>
   <div class="col-md-4">
@@ -189,6 +191,7 @@
 <!-- SCHEDULE -->
 <hr/>
 <h2>Schedule</h2>
+<?php if(!empty($schedule)) { ?>
 <table class="table table-striped table-condensed table-hover">
 	<th>Team A</th>
 	<th></th>
@@ -206,6 +209,7 @@
 	</tr>
 <?php  endforeach; } ?>
 </table>
+<?php } ?>
 <!-- SCHEDULE -->
 
 <!-- Set Start Date Modal -->
