@@ -22,6 +22,7 @@ class Player_model extends MY_Model {
 
 	public function get_player($playerid, $esportid)
 	{
+		$this->db1->trans_start();
 		$player = array();
 		$sql = "SELECT p.*
 				FROM players p
@@ -56,10 +57,10 @@ class Player_model extends MY_Model {
 				$player['teams_meta'][$team['teamid']]['team'] = $team['teamid'];
 				$player['teams_meta'][$team['teamid']]['team_name'] = $team['team_name'];
 			}
-			return $player;
 		}
 		else
 		{
+			$this->db1->trans_complete();
 			return $player;
 		}
 
@@ -72,6 +73,7 @@ class Player_model extends MY_Model {
 
 		if(empty($leagues))
 		{
+			$this->db1->trans_complete();
 			return $player;
 		}
 		else
@@ -149,6 +151,7 @@ class Player_model extends MY_Model {
 				}
 				$player['registered'] = TRUE;
 			}
+			$this->db1->trans_complete();
 			return $player;
 		}
 	}
