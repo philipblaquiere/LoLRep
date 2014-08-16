@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Cron_match extends CI_Controller 
+class Cron_match extends MY_Controller 
 {
 
     const SERVER_PATH_TO_PHP = "C:\wamp\bin\php";
@@ -16,10 +16,10 @@ class Cron_match extends CI_Controller
         $this->load->model('statistics_model');
         $this->load->library('match_cache');
         // this controller can only be called from the command line
-        if (!$this->input->is_cli_request()) 
+        /*if (!$this->input->is_cli_request()) 
         {
             show_error('Direct access is not allowed');
-        }
+        }*/
     }
 
     public function foo($bar = 'bar')
@@ -50,14 +50,14 @@ class Cron_match extends CI_Controller
     {
         $dirty_matches = $this->match_cache->get_dirty_matches();
         $this->match_model->update_matches($dirty_matches);
-        $this->statistics_model->add_match_stats($dirty_matches,$this->get_esportid());
+        $this->statistics_model->add_match_stats($dirty_matches, $this->get_esportid());
         //Update dirty bit to FALSE
         $dirty_matchids = array();
         foreach ($dirty_matches as $matchid => $match) 
         {
             array_push($dirty_matchids, $matchid);
         }
-        $this->match_cache->mark_dirty($dirty_matchids, FALSE);
+        $this->match_cache->mark_dirty($dirty_matchids, '0');
 
     }
 

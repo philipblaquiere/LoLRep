@@ -43,9 +43,11 @@ class Match_updater
     public function update($include_invalid_results = FALSE)
     {
         $scheduled_matchids = $this->_get_scheduled_matches();
+
         if(!empty($scheduled_matchids))
         {
             $scheduled_matches = $this->CI->match_model->get_matches($scheduled_matchids, $this->esportid);
+
             switch ($this->esportid)
             {
                 case '1':
@@ -98,7 +100,7 @@ class Match_updater
             {
                 if($this->playerid != NULL)
                 {
-                    $match_result = $this->_get_match_result($scheduled_match, $this->playerid, $include_invalid_results);
+                    $match_result = $this->_validate_match($scheduled_match, $this->playerid, $include_invalid_results);
                     
                     if(count($match_result['valid_matches']) >= 1)
                     {
@@ -148,7 +150,7 @@ class Match_updater
                     $playerids = $this->_get_team_playerids();
                     foreach ($playerids as $playerid)
                     {
-                        $match_result = $this->_get_match_result($scheduled_match, $playerid, $include_invalid_results);
+                        $match_result = $this->_validate_match($scheduled_match, $playerid, $include_invalid_results);
                         
                         if(isset($match_result['valid_matches']) && count($match_result['valid_matches']) >= 1)
                         {
@@ -161,7 +163,6 @@ class Match_updater
                             //Update Match Cache with a new, data incomplete match
                             $this->_add_match_to_cache($formatted_match);
                             $team_players = $this->_get_unified_team_array($formatted_match);
-                            
                             foreach ($team_players as $team_player)
                             {
                                 $recent_lol_matches = $this->CI->lol_api->get_recent_matches($team_player['summonerId']);
@@ -185,6 +186,7 @@ class Match_updater
                             $formatted_match = $this->CI->match_formatter->update_winner($formatted_match);
                             $formatted_match['complete'] = TRUE;
                             $this->_add_match_to_cache($formatted_match);
+                            
                             array_push($formatted_matches, $formatted_match);
                             continue;
                         }
@@ -202,7 +204,7 @@ class Match_updater
         }
         return $formatted_matches;
     }
-    private function _get_match_result($scheduled_match, $playerid, $include_invalid_results)
+    private function _validate_match($scheduled_match, $playerid, $include_invalid_results)
     {
         $recent_lol_matches = $this->CI->lol_api->get_recent_matches($playerid);
         if(empty($recent_lol_matches))

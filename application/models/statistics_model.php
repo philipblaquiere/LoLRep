@@ -4,6 +4,7 @@ class Statistics_model extends MY_Model
 {
 
 	private $lol_keys;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -88,15 +89,7 @@ class Statistics_model extends MY_Model
 	private function _add_lol_stats($matches)
 	{
 		$teams_all = array();
-		$keys = $this->_get_lol_keys();
-		foreach ($matches as $match)
-		{
-			$matchid = $match['matchid'];
-			$teama = $match['teama']['teama_players'];
-			$teamb = $match['teamb']['teamb_players'];
-			$teams_all = $teams_all + $teama + $teamb;
-		}
-		
+		$keys = $this->_lol_keys();
 
 		$sql = "INSERT INTO lol_statistics (";
 
@@ -108,32 +101,41 @@ class Statistics_model extends MY_Model
 	    }
 	    $sql = substr($sql, 0, -1);
 	    $sql .= ") VALUES ";
+	
 
-		foreach ($teams_all as $player)
+		foreach ($matches as $match)
 		{
-			$player['matchid'] = $matchid;
-			$player['playerid'] = $player['summonerId'];
-			unset($player['summonerId']);
-			if(array_key_exists('stats', $player))
+			$matchid = $match['matchid'];
+			$teama = $match['teama']['teama_players'];
+			$teamb = $match['teamb']['teamb_players'];
+			$teams_all = $teama + $teamb;
+		
+			foreach ($teams_all as $player)
 			{
-				$player = $player + $player['stats'];
-				unset($player['stats']);
-			}
+				$player['matchid'] = $matchid;
+				$player['playerid'] = $player['summonerId'];
+				unset($player['summonerId']);
+				if(array_key_exists('stats', $player))
+				{
+					$player = $player + $player['stats'];
+					unset($player['stats']);
+				}
 
- 			$sql .= "(";
-		    foreach ($keys as $key)
-		    {
-		    	if(array_key_exists($key, $player))
-		    	{
-		    		$sql .= "'".$player[$key]."',";
-		    	}
-		    	else
-		    	{
-		    		$sql .= "'',";
-		    	}
-		    }
-		    $sql = substr($sql, 0, -1);
-		    $sql .= "),";
+	 			$sql .= "(";
+			    foreach ($keys as $key)
+			    {
+			    	if(array_key_exists($key, $player))
+			    	{
+			    		$sql .= "'".$player[$key]."',";
+			    	}
+			    	else
+			    	{
+			    		$sql .= "'',";
+			    	}
+			    }
+			    $sql = substr($sql, 0, -1);
+			    $sql .= "),";
+			}
 		}
 		$sql = substr($sql, 0, -1);
 		$sql .= ";";
@@ -141,7 +143,7 @@ class Statistics_model extends MY_Model
 		return;
 	}
 
-	private function _get_lol_keys()
+	private function _lol_keys()
 	{
 		if(empty($this->lol_keys))
 		{

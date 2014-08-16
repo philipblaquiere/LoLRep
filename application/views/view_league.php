@@ -23,8 +23,9 @@
 <!-- Join League Button -->
 <?php if($join_button['display_button']) { ?>
 	<a href="<?php echo site_url($join_button['url']) ?>" class="btn btn-default btn-lg btn-block" role="button"><?php echo $join_button['label'] ?></a>
-	<hr/>
-<?php } ?>
+<?php } else { ?>
+	<h4 class="text-center"><?php echo $join_button['label'] ?></h4>
+<?php }?>
 
 <!-- Join League Button -->
 

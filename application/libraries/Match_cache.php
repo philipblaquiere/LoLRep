@@ -141,7 +141,7 @@ class Match_cache
         foreach ($matchids as $matchid)
         {
             $dirty = $this->CI->redis->hget($matchid, self::DIRTY_BIT);
-            if($dirty)
+            if(intval($dirty) == 1)
             {
                 $match = json_decode($this->CI->redis->hget($matchid, self::MATCH_DETAILS), TRUE);
                 $dirty_matches[$matchid] = $match;

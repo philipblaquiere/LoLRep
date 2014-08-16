@@ -114,7 +114,6 @@ class Match_model extends MY_Model
 			array_push($matchids, $matchid['matchid']);
 		}
 		return $matchids;
-
 	}
 
 	public function get_upcoming_matchids($playerid, $esportid)
@@ -144,7 +143,7 @@ class Match_model extends MY_Model
 
 	public function get_upcoming_matchids_byteam($teamid, $esportid)
 	{
-		$time_now = $this->local_to_gmt(intval($time_now), FALSE);
+		$time_now = $this->local_to_gmt(intval(time()), FALSE);
 		$sql = "SELECT m.matchid
 				FROM matches m, players p, player_teams pt, league_teams lt, leagues l
 				WHERE (m.teamaid = '$teamid' OR m.teambid = '$teamid')
@@ -419,14 +418,13 @@ class Match_model extends MY_Model
 					$item_key = 'item'.$i;
 					if(!array_key_exists($item_key, $stats))
 					{
-
 						$stats[$item_key] = 0;
 					}
 					else
 					{
 						$sprite = $stats[$item_key] . ".png";
 						$img_url = $this->lol_image_formatter->to_image_url($sprite,'item');
-						$stats[$item_key] = $img_url;
+						$stats[$item_key."_icon"] = $img_url;
 					}
 				}
 				$temp_stats['stats'] = $stats;
@@ -454,7 +452,6 @@ class Match_model extends MY_Model
 		$results = $this->db1->query($sql);
 		$results = $results->result_array();
 		return $results;
-
 	}
 
 	public function get_matches_by_leagueid($leagueid, $season) {
@@ -462,7 +459,8 @@ class Match_model extends MY_Model
 
 		$sql = "SELECT * FROM matches
 				WHERE leagueid = '$leagueid'
-				AND seasonid = '$seasonid'";
+				AND seasonid = '$seasonid'
+				ORDER BY match_date";
 		$results = $this->db1->query($sql);
 		$results = $results->result_array();
 		return $results;

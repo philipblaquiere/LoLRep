@@ -188,10 +188,12 @@ class Leagues extends MY_Controller
             foreach ($teams as $team)
             {
                 $team_stats = $this->statistics_model->get_team_stats($team['teamid'], $leagueid, $season['seasonid'], $this->get_esportid());
-                
-                foreach ($team_stats['player_stats'] as $playerid => $player_stats)
+                if(!empty($team_stats))
                 {
-                    $league_players_stats[$playerid] = $player_stats;
+                    foreach ($team_stats['player_stats'] as $playerid => $player_stats)
+                    {
+                        $league_players_stats[$playerid] = $player_stats;
+                    }
                 }
             }
             $league_players_averages = array();
@@ -212,6 +214,7 @@ class Leagues extends MY_Controller
             $standings = $this->league_standings->get_standings($league, $schedule);
             $data['standings'] = $standings;
         }
+        $this->load->library('match_cache');
         $data['performers'] = $performers;
         $data['player'] = $player;
         $data['players'] = $players;
@@ -307,7 +310,14 @@ class Leagues extends MY_Controller
     private function _can_player_join_league($player, $league)
     {
         $response = array();
-        if($league['invite'] == 1)
+        if($league['seasons'][$league['current_season']]['start_date'] != "")
+        {
+            //League is invite only
+            $response['display_button'] = FALSE;
+            $response['label'] = "SEASON ALREADY STARTED";
+            return $response;
+        }
+        elseif($league['invite'] == 1)
         {
             //League is invite only
             $response['display_button'] = FALSE;
@@ -378,7 +388,7 @@ class Leagues extends MY_Controller
                 //LOGIC FOR MULTIPLE LEAGUES START HERE, SINGLE LEAGUE FOR NOW
                 else
                 {
-                    //Player can leave their league, since it already started
+                    //Player cant leave their league, since it already started
                     $response['url'] = "#";
                     $response['display_button'] = FALSE;
                     $response['label'] = "ALREADY PART OF AN ACTIVE LEAGUE";
@@ -387,7 +397,6 @@ class Leagues extends MY_Controller
             }
             else
             {
-                 
                 //Player is captain, has a complete team, and isn't part of a league
                 $response['url'] = "leagues/join/".$league['leagueid'];
                 $response['display_button'] = TRUE;

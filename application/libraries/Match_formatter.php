@@ -35,7 +35,7 @@ class Match_formatter
 
     const TEAM_ROSTER = "roster";
 
-    const LOL_TEAM_SIZE = 1;
+    const LOL_TEAM_SIZE = "1";
 
     private $lol_champions;
     private $lol_spells;
@@ -246,7 +246,7 @@ class Match_formatter
             {
                 $sprite = $stats[$item_key] . ".png";
                 $img_url = $this->CI->lol_image_formatter->to_image_url($sprite,'item');
-                $stats[$item_key] = $img_url;
+                $stats[$item_key."_icon"] = $img_url;
             }
         }
         return $stats;

@@ -56,7 +56,7 @@
 					<td><?php for ($i=0; $i < 7; $i++) { ?> 
 							<div class="lol-match-icon">
 								<?php if(isset($player['stats']) && $player['stats']['item'.$i] != "0") { ?>
-									<img src="<?php echo $match['teama']['teama_players'][$playerid]['stats']['item'.$i] ?>" class="img-responsive" alt="Responsive image">
+									<img src="<?php echo $match['teama']['teama_players'][$playerid]['stats']['item'.$i."_icon"] ?>" class="img-responsive" alt="Responsive image">
 								<?php } ?>
 							</div> 
 						<?php } ?>
@@ -132,7 +132,7 @@
 						<?php for ($i=0; $i < 7; $i++) { ?> 
 							<div class="lol-match-icon">
 								<?php if(isset($player['stats']) && $player['stats']['item'.$i] != "0") { ?>
-								<img src="<?php echo $player['stats']['item'.$i] ?>" class="img-responsive" alt="Responsive image">
+								<img src="<?php echo $player['stats']['item'.$i."_icon"] ?>" class="img-responsive" alt="Responsive image">
 							<?php } ?>
 							</div> 
 						<?php } ?>
