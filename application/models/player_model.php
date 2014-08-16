@@ -67,7 +67,7 @@ class Player_model extends MY_Model {
 		//Check to see if team is in league
 		$sql = "SELECT lt.leagueid
 				FROM league_teams lt
-				WHERE lt.teamid IN ('" . implode("','", $player['teams_meta'][$team['teamid']]['team']) . "')";
+				WHERE lt.teamid IN ('" . implode("','", $player['teams']) . "')";
 		$result = $this->db1->query($sql);
 		$leagues = $result->result_array();
 
@@ -243,21 +243,22 @@ class Player_model extends MY_Model {
 	    if(!empty($player))
 	    {
 	    	$playerid = $player['playerid'];
-			$sql = "SELECT 	pt.teamid AS teamid,
+			$sql = "SELECT 	t.teamid,
 							t.team_name
-							FROM player_teams AS pt, teams AS t, league_teams as lt
+							FROM player_teams AS pt, teams AS t
 							WHERE pt.playerid = '$playerid'
-								AND t.teamid = pt.teamid
-								AND lt.teamid = t.teamid
-								AND lt.status = 'active'";
+								AND pt.status = 'active'
+								AND pt.teamid = t.teamid";
 			$result = $this->db1->query($sql);
 			$result = $result->result_array();
 			$player['teams'] = array();
 			if($result)
 			{
+				$count = 0;
 				foreach ($result as $team) {
-					$player['teams'][$team['teamid']]['teamid'] = $team['teamid'];
-					$player['teams'][$team['teamid']]['team_name'] = $team['team_name'];
+					$player['teams'][$count]['teamid'] = $team['teamid'];
+					$player['teams'][$count]['team_name'] = $team['team_name'];
+					$count+=1;
 				}
 				
 			}

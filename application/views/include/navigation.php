@@ -23,11 +23,16 @@
                   <?php if(empty($_SESSION['player'])){ ?>
                   <li><a href="<?php echo site_url('add_esport'); ?>">Add eSport</a></li>
                   <?php } else { ?>
+                  <li role="presentation" class="dropdown-header">Player</li>
                   <li><a href="<?php echo site_url('players') . "/" . $_SESSION['player']['playerid']; ?>"><?php echo $_SESSION['player']['player_name']; ?></a></li>
                   <?php } ?>
-                  <li><a href="<?php echo site_url('teams'); ?>">My Team</a></li>
+                  <?php if(empty($_SESSION['player']['teams'])){ ?>
                   <li><a href="<?php echo site_url('teams/create'); ?>">Create Team</a></li>
                   <li><a href="<?php echo site_url('leagues/create'); ?>">Create League</a></li>
+                  <?php } else { ?>
+                  <li role="presentation" class="dropdown-header">Teams</li>
+                    <li><a href="<?php echo site_url('teams/view/') . "/" . $_SESSION['player']['teams'][0]['teamid'] ?>"><?php echo $_SESSION['player']['teams'][0]['team_name'] ?></a></li>
+                  <?php } ?>
                   <li role="presentation" class="divider"></li>
                   <li><a href="<?php echo site_url('sign_in/sign_out'); ?>">Sign out</a></li>
                 </ul>
